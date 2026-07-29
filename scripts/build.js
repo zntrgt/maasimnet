@@ -43,7 +43,7 @@ await applySharedShell(distDir);
 await applyPrivacyLayer(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.7.0-privacy-consent', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.6.7-privacy-consent', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
