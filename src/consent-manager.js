@@ -65,12 +65,18 @@
     }
   }
 
+  function isCertifiedCmpReady() {
+    return window.__MAASIM_CERTIFIED_CMP_READY__ === true
+      || document.documentElement.dataset.certifiedCmp === 'ready';
+  }
+
   function googleConsentPayload(consent) {
+    const marketingGranted = Boolean(consent?.marketing && isCertifiedCmpReady());
     return {
       analytics_storage: consent?.analytics ? 'granted' : 'denied',
-      ad_storage: consent?.marketing ? 'granted' : 'denied',
-      ad_user_data: consent?.marketing ? 'granted' : 'denied',
-      ad_personalization: consent?.marketing ? 'granted' : 'denied',
+      ad_storage: marketingGranted ? 'granted' : 'denied',
+      ad_user_data: marketingGranted ? 'granted' : 'denied',
+      ad_personalization: marketingGranted ? 'granted' : 'denied',
       functionality_storage: 'denied',
       personalization_storage: 'denied',
       security_storage: 'granted'
@@ -128,8 +134,7 @@
 
   function activateMarketingScripts() {
     if (!state.consent?.marketing || state.marketingActivated) return;
-    const certifiedCmpReady = window.__MAASIM_CERTIFIED_CMP_READY__ === true
-      || document.documentElement.dataset.certifiedCmp === 'ready';
+    const certifiedCmpReady = isCertifiedCmpReady();
     const blockedScripts = [...document.querySelectorAll('script[type="text/plain"][data-consent-category="marketing"]')];
     const hasGoogleAdvertising = blockedScripts.some((script) => /googlesyndication|doubleclick/i.test(script.dataset.consentSrc || script.textContent));
     if (hasGoogleAdvertising && !certifiedCmpReady) return;
@@ -387,8 +392,17 @@
     loadAnalytics();
   }
 
+  function certifiedCmpReady() {
+    window.__MAASIM_CERTIFIED_CMP_READY__ = true;
+    updateGoogleConsent(state.consent);
+    activateMarketingScripts();
+  }
+
+  window.addEventListener('maasim:certified-cmp-ready', certifiedCmpReady);
+
   window.MaasimConsent = Object.freeze({
     openPreferences,
+    certifiedCmpReady,
     getConsent: () => state.consent ? { ...state.consent } : null,
     version: CONSENT_VERSION
   });
