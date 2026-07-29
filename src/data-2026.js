@@ -1,0 +1,63 @@
+export const DATA_2026 = Object.freeze({
+  year: 2026,
+  validity: Object.freeze({ from: '2026-01-01', to: '2026-12-31' }),
+  checkedAt: '2026-07-29',
+  engineVersion: 'central-kurus-engine',
+  sources: Object.freeze({
+    minimumWage: Object.freeze({
+      institution: 'Çalışma ve Sosyal Güvenlik Bakanlığı',
+      documentTitle: 'Asgari Ücretin Net Hesabı ve İşverene Maliyeti (01.01.2026–31.12.2026)',
+      legalBasis: '4857 sayılı İş Kanunu m.39 ve Asgari Ücret Yönetmeliği kapsamında Asgari Ücret Tespit Komisyonu kararı',
+      url: 'https://www.csgb.gov.tr/tr/poco-pages/asgari-ucret/',
+      publishedAt: '2025-12-23'
+    }),
+    incomeTax: Object.freeze({
+      institution: 'Gelir İdaresi Başkanlığı',
+      documentTitle: '332 Seri No.lu Gelir Vergisi Genel Tebliği – 2026 ücret geliri tarifesi',
+      legalBasis: '193 sayılı Gelir Vergisi Kanunu m.103',
+      url: 'https://www.gib.gov.tr/vergi-konulari/1_bireysel/11_ucret_geliri/11'
+    }),
+    sgk: Object.freeze({
+      institution: 'Sosyal Güvenlik Kurumu',
+      documentTitle: '2026 Prime Esas Kazanç Miktarları',
+      legalBasis: '5510 sayılı Sosyal Sigortalar ve Genel Sağlık Sigortası Kanunu m.82',
+      url: 'https://www.sgk.gov.tr/Content/Post/2e0c9e1a-2cfe-4456-af10-49d3de0c58ba/Prime-Esas-Kazanc-Miktarlari-2026-01-14-10-35-39',
+      publishedAt: '2026-01-14'
+    }),
+    severance: Object.freeze({
+      institution: 'Çalışma ve Sosyal Güvenlik Bakanlığı',
+      documentTitle: 'Çalışma Hayatı İstatistikleri E-Bülteni – Temmuz 2026, Kıdem Tazminatı Tavanı',
+      legalBasis: '1475 sayılı İş Kanunu m.14 ve en yüksek Devlet memuruna ödenecek azami emeklilik ikramiyesi ölçütü',
+      url: 'https://www.csgb.gov.tr/yayinlar/calisma-hayati-istatistikleri-e-bulteni/temmuz-2026/ucret-ve-sendikal-istatistikler.html',
+      publishedAt: '2026-07-01'
+    }),
+    mealIncomeTax: Object.freeze({
+      institution: 'Gelir İdaresi Başkanlığı',
+      documentTitle: '332 Seri No.lu Gelir Vergisi Genel Tebliği – 2026 yemek bedeli istisnası',
+      legalBasis: '193 sayılı Gelir Vergisi Kanunu m.23/8',
+      url: 'https://istanbul.gib.gov.tr/mevzuat/kanun/433'
+    })
+  }),
+  payroll: Object.freeze({
+    minimumGrossKurus: 3_303_000,
+    referenceMinimumNetKurus: 2_807_550,
+    sgkCeilingKurus: 29_727_000,
+    stampTaxRatePpm: 7_590,
+    employeeRatesPpm: Object.freeze({ sgk: 140_000, unemployment: 10_000, retiredSgdp: 75_000 }),
+    employerRatesPpm: Object.freeze({ manufacturing: 167_500, other: 197_500, none: 217_500, unemployment: 20_000, retiredSgdp: 247_500 }),
+    disabilityDeductionKurus: Object.freeze({ 0: 0, 1: 1_200_000, 2: 700_000, 3: 300_000 }),
+    incomeTaxBrackets: Object.freeze([
+      Object.freeze({ upToKurus: 19_000_000, ratePpm: 150_000 }),
+      Object.freeze({ upToKurus: 40_000_000, ratePpm: 200_000 }),
+      Object.freeze({ upToKurus: 150_000_000, ratePpm: 270_000 }),
+      Object.freeze({ upToKurus: 530_000_000, ratePpm: 350_000 }),
+      Object.freeze({ upToKurus: Number.POSITIVE_INFINITY, ratePpm: 400_000 })
+    ])
+  }),
+  publishedData: Object.freeze({
+    minimumWage: Object.freeze({ grossKurus: 3_303_000, netKurus: 2_807_550, period: '2026-01-01/2026-12-31', sourceKey: 'minimumWage' }),
+    sgkCeiling: Object.freeze({ dailyKurus: 990_900, monthlyKurus: 29_727_000, multiplier: 9, period: '2026-01-01/2026-12-31', sourceKey: 'sgk' }),
+    severanceCeiling: Object.freeze({ firstHalfKurus: 6_494_877, secondHalfKurus: 7_372_987, currentKurus: 7_372_987, currentPeriod: '2026-07-01/2026-12-31', sourceKey: 'severance' }),
+    mealAllowance: Object.freeze({ incomeTaxDailyKurus: 30_000, sgkDailyKurus: 15_800, period: '2026-01-01/2026-12-31', incomeTaxSourceKey: 'mealIncomeTax', sgkSourceKey: 'sgk' })
+  })
+});
