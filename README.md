@@ -61,6 +61,47 @@ Repository ayarlarında gereken değerler:
 
 Secret değerleri hiçbir commit, issue veya dokümana yazılmaz; yalnızca GitHub Actions encrypted secrets alanında tutulur.
 
+## İletişim formu ve Private Email
+
+`/iletisim/` sayfasındaki form, mesajları tarayıcıdan doğrudan SMTP'ye göndermez. Form isteği `/api/contact` üzerinden Cloudflare Worker'a ulaşır ve Worker, Namecheap Private Email'in şifreli SMTP bağlantısını kullanır.
+
+Önerilen posta kutusu: `iletisim@maasim.net`
+
+Cloudflare DNS üzerinde Private Email aktivasyonu için aşağıdaki kayıtlar bulunmalıdır:
+
+| Host | Tür | Öncelik | Değer |
+| --- | --- | ---: | --- |
+| `@` | MX | 10 | `mx1.privateemail.com` |
+| `@` | MX | 10 | `mx2.privateemail.com` |
+| `@` | TXT | — | `v=spf1 include:spf.privateemail.com ~all` |
+
+Aynı alan adında başka bir SPF kaydı varsa ikinci bir SPF TXT kaydı oluşturmayın; izinleri tek SPF kaydında birleştirin. Eski veya farklı bir e-posta sağlayıcısına ait MX kayıtları bırakılmamalıdır.
+
+Aktivasyon tamamlandıktan sonra Namecheap panelinde gösterilen DKIM kaydı da Cloudflare DNS'e eklenmelidir. 2 Haziran 2026 ve sonrasında satın alınan Private Email planlarında DKIM host adı genellikle `privateemail._domainkey` olur; TXT değeri hesap özelidir ve Namecheap panelinden aynen kopyalanmalıdır. DKIM eklenmeden SMTP ile gönderilen mesajlar teslim edilebilirlik sorunu yaşayabilir.
+
+Posta kutusunu oluşturduktan sonra SMTP bilgilerini Cloudflare Worker secret olarak tanımlayın:
+
+```bash
+npx wrangler secret put SMTP_USERNAME
+# Değer: iletisim@maasim.net
+
+npx wrangler secret put SMTP_PASSWORD
+# Değer: posta kutusunun parolası
+
+npx wrangler secret put CONTACT_TO
+# Değer: iletisim@maasim.net
+```
+
+`CONTACT_TO` verilmezse alıcı olarak `SMTP_USERNAME` kullanılır. Varsayılan SMTP sunucusu `mail.privateemail.com`, varsayılan port ise SSL/TLS için `465`'tir. Gerektiğinde `SMTP_HOST`, `SMTP_PORT` ve `SMTP_FROM_NAME` Worker değişkenleriyle özelleştirilebilir.
+
+Form güvenliği:
+
+- SMTP parolası hiçbir zaman istemci koduna veya repository'ye yazılmaz.
+- İstekler aynı origin ile sınırlandırılır.
+- Alan uzunlukları ve e-posta biçimi sunucu tarafında doğrulanır.
+- Honeypot ve minimum doldurma süresiyle temel bot trafiği filtrelenir.
+- Form, T.C. kimlik numarası ve bordro belgesi gibi gereksiz hassas verilerin paylaşılmaması konusunda kullanıcıyı uyarır.
+
 ## Kilit benchmark
 
 100.000 TL sabit aylık brüt için:
