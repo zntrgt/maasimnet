@@ -34,7 +34,7 @@ await addHomeFreshness(distDir);
 await applySharedShell(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.6.3-financial-health-blog', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.6.4-public-metadata-cleanup', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
