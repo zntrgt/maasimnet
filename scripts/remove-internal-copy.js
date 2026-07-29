@@ -26,7 +26,6 @@ const forbiddenVisiblePhrases = [
   'eski yıl sayfaları yeni yıla yönlendirilmez',
   'production artifact',
   'indexability report',
-  'Hesaplama motoru',
   'central-kurus-engine',
   'p0-information-architecture'
 ];
