@@ -48,13 +48,15 @@ npm run check
 npx wrangler deploy
 ```
 
-GitHub Actions deployment akışı güvenlik amacıyla varsayılan olarak kapalıdır. Otomatik production deployment için repository ayarlarında aşağıdakiler tanımlanmalıdır:
+GitHub Actions production deployment akışı etkinleştirilmiştir. `main` branch’e yapılan push sonrasında test, build, doğrulama ve smoke test başarılı olursa Cloudflare Worker deployment adımı çalışır.
+
+Repository ayarlarında gereken değerler:
 
 - Secret: `CLOUDFLARE_API_TOKEN`
 - Secret: `CLOUDFLARE_ACCOUNT_ID`
 - Variable: `CLOUDFLARE_DEPLOY_ENABLED=true`
 
-Bu değerler tanımlanana kadar push işlemleri yalnızca test ve production artifact üretir; canlı siteyi değiştirmez.
+Secret değerleri hiçbir commit, issue veya dokümana yazılmaz; yalnızca GitHub Actions encrypted secrets alanında tutulur.
 
 ## Kilit benchmark
 
