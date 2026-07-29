@@ -8,12 +8,14 @@ const dist = join(root, 'dist');
 const required = [
   'index.html','assets/styles.css','assets/app.js','assets/payroll-engine.js',
   'assets/data-2026.js','assets/parameters-2026.js','assets/mobile-payroll-view.js','assets/calculator-actions.js',
-  'assets/blog.css','assets/p0-content.css','assets/2027-maas-zammi-veri-ozeti.svg','assets/2027-maas-takvimi.svg',
+  'assets/blog.css','assets/p0-content.css','assets/consent-manager.js','assets/consent-manager.css',
+  'assets/2027-maas-zammi-veri-ozeti.svg','assets/2027-maas-takvimi.svg',
   'assets/is-yerinde-finansal-saglik.svg',
   'blog/index.html','blog/2027-maas-zammi-beklentileri/index.html','blog/is-yerinde-finansal-saglik/index.html','sss/index.html','sozluk/index.html',
   'veriler/2026/index.html','veriler/2026-asgari-ucret/index.html','veriler/2026-gelir-vergisi-dilimleri/index.html',
   'veriler/2026-sgk-tavani/index.html','veriler/2026-kidem-tazminati-tavani/index.html','veriler/2026-yemek-yardimi-istisnasi/index.html',
-  'sgk/sgk-tavani/index.html','indexability-report.json','llms.txt','robots.txt','sitemap.xml','ads.txt','version.json'
+  'sgk/sgk-tavani/index.html','gizlilik/index.html','kvkk-aydinlatma-metni/index.html','cerez-politikasi/index.html',
+  'indexability-report.json','llms.txt','robots.txt','sitemap.xml','ads.txt','version.json'
 ];
 for (const path of required) await access(join(dist, path));
 
@@ -60,7 +62,7 @@ if (sss.includes('"@type":"FAQPage"')) throw new Error('/sss/ sayfasında 25 sor
 const glossary = await readFile(join(dist,'sozluk','index.html'),'utf8');
 if (!glossary.includes('Maaş ve Bordro Terimleri Sözlüğü') || !glossary.includes('<dl class="glossary">')) throw new Error('Sözlük ayrı URL’de doğru üretilmedi.');
 
-for (const path of ['/blog/is-yerinde-finansal-saglik/','/veriler/2026/','/veriler/2026-asgari-ucret/','/veriler/2026-gelir-vergisi-dilimleri/','/veriler/2026-sgk-tavani/','/veriler/2026-kidem-tazminati-tavani/','/veriler/2026-yemek-yardimi-istisnasi/','/sgk/sgk-tavani/','/sss/','/sozluk/']) {
+for (const path of ['/blog/is-yerinde-finansal-saglik/','/veriler/2026/','/veriler/2026-asgari-ucret/','/veriler/2026-gelir-vergisi-dilimleri/','/veriler/2026-sgk-tavani/','/veriler/2026-kidem-tazminati-tavani/','/veriler/2026-yemek-yardimi-istisnasi/','/sgk/sgk-tavani/','/sss/','/sozluk/','/gizlilik/','/kvkk-aydinlatma-metni/','/cerez-politikasi/']) {
   if (!sitemap.includes(`<loc>https://maasim.net${path}</loc>`)) throw new Error(`Yeni URL sitemap içinde yok: ${path}`);
 }
 const sgkPage = await readFile(join(dist,'veriler','2026-sgk-tavani','index.html'),'utf8');
@@ -79,10 +81,19 @@ for (const row of indexability.scenarios) {
 const htmlFiles=[];
 async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const path=join(dir,entry.name);if(entry.isDirectory())await walk(path);else if(entry.name.endsWith('.html'))htmlFiles.push(path)}}
 await walk(dist);
-if (htmlFiles.length !== 27) throw new Error(`27 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
+if (htmlFiles.length !== 29) throw new Error(`29 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
 for (const path of htmlFiles) {
   const html = await readFile(path,'utf8');
-  if (!html.includes('Güncellik') && !html.includes('site-freshness') && !html.includes('class="freshness"')) throw new Error(`Güncellik bloğu eksik: ${path}`);
+  if (!html.includes('Güncellik') && !html.includes('site-freshness') && !html.includes('class="freshness"') && !html.includes('class="legal-meta"')) throw new Error(`Güncellik bloğu eksik: ${path}`);
+  if (!html.includes('/assets/consent-manager.js') || !html.includes('/assets/consent-manager.css')) throw new Error(`Rıza yöneticisi eksik: ${path}`);
+  if (/<script[^>]+src=["'][^"']*(?:googletagmanager\.com\/(?:gtag\/js|gtm\.js)|google-analytics\.com)/i.test(html)) throw new Error(`Rıza öncesi Analytics etiketi aktif kaldı: ${path}`);
+  if (/<script(?![^>]+type=["']text\/plain["'])[^>]+src=["'][^"']*pagead2\.googlesyndication\.com/i.test(html)) throw new Error(`Rıza öncesi AdSense etiketi aktif kaldı: ${path}`);
+}
+
+const consentManager = await readFile(join(dist,'assets','consent-manager.js'),'utf8');
+if (!consentManager.includes("analytics_storage: 'denied'") || !consentManager.includes('isCertifiedCmpReady')) throw new Error('Consent Mode varsayılan ret veya sertifikalı CMP kilidi eksik.');
+for (const forbidden of ['baseGross','extraGross','incomeTaxBase','cumulativeTaxBase','employerCost','salaryValue']) {
+  if (consentManager.includes(`'${forbidden}'`) || consentManager.includes(`"${forbidden}"`)) throw new Error(`Hassas finansal alan analitik izin listesine girdi: ${forbidden}`);
 }
 
 const scenarioHtml=await readFile(join(dist,'100000-brut-maas-hesaplama','index.html'),'utf8');
@@ -90,4 +101,4 @@ const scenario=createGross100kScenarioData();
 for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includes(value)) throw new Error(`100.000 TL senaryosunda merkezi motor değeri yok: ${value}`);
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
-console.log('dist doğrulaması başarılı: 27 HTML, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
+console.log('dist doğrulaması başarılı: 29 HTML, gizlilik katmanı, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
