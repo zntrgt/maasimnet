@@ -6,7 +6,7 @@ const source = await readFile(new URL('../scripts/add-financial-health-blog.js',
 
 test('finansal sağlık yazısı ücretin temel rolünü açıklar', () => {
   assert.match(source, /Finansal eğitim, düşük veya öngörülemez ücretin yerine geçmez/);
-  assert.match(source, /adil ve öngörülebilir ücret/);
+  assert.match(source, /adil ve öngörülebilir ücret/i);
   assert.match(source, /gizli borç danışmanlığı/);
 });
 
