@@ -1,6 +1,7 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createGross100kScenarioData } from './render-scenarios.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, 'dist');
@@ -44,4 +45,18 @@ if (htmlFiles.length !== 15) {
   throw new Error(`15 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
 }
 
-console.log('dist doğrulaması başarılı: 15 HTML ve merkezi hesap motoru hazır.');
+const scenarioHtml = await readFile(
+  join(dist, '100000-brut-maas-hesaplama', 'index.html'),
+  'utf8'
+);
+const gross100kScenario = createGross100kScenarioData();
+for (const value of Object.values(gross100kScenario.replacements)) {
+  if (!scenarioHtml.includes(value)) {
+    throw new Error(`100.000 TL senaryo sayfasında merkezi motor değeri bulunamadı: ${value}`);
+  }
+}
+if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) {
+  throw new Error('Senaryo sayfasında çözümlenmemiş hesap tokenı kaldı.');
+}
+
+console.log('dist doğrulaması başarılı: 15 HTML, merkezi motor ve dinamik senaryo değerleri hazır.');

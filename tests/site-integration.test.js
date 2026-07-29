@@ -47,3 +47,15 @@ test('ana hesaplama ve CSV indirme fonksiyonları tarayıcıya güvenli biçimde
   assert.match(appJs, /calculateAndShowPayroll/);
   assert.match(appJs, /downloadCSV/);
 });
+
+test('100.000 TL senaryo sayfası hesap değerlerini build tokenlarından alır', async () => {
+  const scenarioTemplate = await readFile(
+    new URL('../static/100000-brut-maas-hesaplama/index.html', import.meta.url),
+    'utf8'
+  );
+
+  assert.match(scenarioTemplate, /\{\{SCENARIO_100K_JAN_NET\}\}/);
+  assert.match(scenarioTemplate, /\{\{SCENARIO_100K_ANNUAL_NET\}\}/);
+  assert.doesNotMatch(scenarioTemplate, /75\.953,03 TL/);
+  assert.doesNotMatch(scenarioTemplate, /833\.881,63 TL/);
+});

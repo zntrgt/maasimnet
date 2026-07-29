@@ -7,8 +7,11 @@
     "test": "node --test",
     "build": "node scripts/build.js",
     "verify": "node scripts/verify-dist.js",
+    "check": "npm test && npm run build && npm run verify && npm run smoke",
     "smoke": "node scripts/smoke-check.js",
-    "check": "npm test && npm run build && npm run verify && npm run smoke"
+    "prepare:static": "node scripts/unpack-static.js",
+    "pretest": "npm run prepare:static",
+    "prebuild": "npm run prepare:static"
   },
   "engines": {
     "node": ">=22"

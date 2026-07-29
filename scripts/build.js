@@ -1,6 +1,7 @@
 import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { renderScenarioPages } from './render-scenarios.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -22,6 +23,8 @@ for (const file of [
   await cp(join(sourceDir, file), join(assetsDir, file));
 }
 
+const scenarioResult = await renderScenarioPages(distDir);
+
 const version = {
   version: '0.2.0-phase1a',
   builtAt: new Date().toISOString(),
@@ -30,3 +33,4 @@ const version = {
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 
 console.log('dist hazır:', distDir);
+console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
