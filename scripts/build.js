@@ -10,6 +10,7 @@ import { compactBlogIndex } from './compact-blog-index.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { applySharedShell } from './apply-shared-shell.js';
+import { addContactForm } from './add-contact-form.js';
 import { removeInternalCopy } from './remove-internal-copy.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -36,9 +37,10 @@ await compactBlogIndex(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
 await applySharedShell(distDir);
+await addContactForm(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.6.6-compact-blog-cards', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.6.7-contact-form', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
