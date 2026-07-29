@@ -47,7 +47,8 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+          wranglerVersion: "4"
+          command: deploy --config wrangler.jsonc
 
       - name: Report deployment result
         if: ${{ always() }}
