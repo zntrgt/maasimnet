@@ -9,17 +9,21 @@ export function renderMobilePayrollRows({
   openDetails,
   formatCurrency,
   formatInputMoney,
-  renderPayrollDetail
+  renderPayrollDetail,
+  changeReasons = new Map(),
+  renderPayrollChangeReason = () => ''
 }) {
   return payrolls.map((row) => {
     const monthName = months[row.month];
     const isOpen = openDetails.has(row.month);
     const disabledAttribute = currentMode === 'net' ? 'disabled' : '';
+    const changeReason = changeReasons.get(row.month);
 
     return `<tr class="mobile-summary-row">
       <th scope="row" class="mobile-month-cell">${monthName}</th>
       <td class="mobile-gross-cell">
-        <input type="text" inputmode="decimal" value="${formatInputMoney(row.baseGross)}" ${disabledAttribute}
+        <input type="text" inputmode="decimal" data-money-input="true" data-raw-value="${row.baseGross}" value="${formatInputMoney(row.baseGross)}" ${disabledAttribute}
+          oninput="formatMoneyInputElement(this)"
           onkeydown="handleTableInputKeydown(event)"
           onchange="updateBaseGrossFromMonth(${row.month}, this.value)"
           aria-label="${monthName} brüt maaş"
@@ -37,12 +41,15 @@ export function renderMobilePayrollRows({
         </button>
       </td>
     </tr>
+    ${renderPayrollChangeReason(changeReason, 4)}
     <tr id="mobile-payroll-detail-${row.month}" class="mobile-detail-row" ${isOpen ? '' : 'hidden'}>
       <td colspan="4">
         <div class="mobile-extra-editor">
           <label for="mobile-extra-${row.month}">Ek Brüt</label>
           <input id="mobile-extra-${row.month}" type="text" inputmode="decimal"
+            data-money-input="true" data-raw-value="${row.extraGross}"
             value="${row.extraGross ? formatInputMoney(row.extraGross) : ''}" placeholder="0" ${disabledAttribute}
+            oninput="formatMoneyInputElement(this)"
             onkeydown="handleTableInputKeydown(event)"
             onchange="updateExtraGrossForMonth(${row.month}, this.value)"
             aria-label="${monthName} ek brüt ödeme"

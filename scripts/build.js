@@ -18,7 +18,9 @@ for (const file of [
   'parameters-2026.js',
   'payroll-engine.js',
   'mobile-payroll-view.js',
-  'calculator-actions.js'
+  'calculator-actions.js',
+  'money-input.js',
+  'payroll-change-reasons.js'
 ]) {
   await cp(join(sourceDir, file), join(assetsDir, file));
 }
@@ -26,7 +28,7 @@ for (const file of [
 const scenarioResult = await renderScenarioPages(distDir);
 
 const version = {
-  version: '0.2.0-phase1a',
+  version: '0.3.0-money-inputs',
   builtAt: new Date().toISOString(),
   calculationEngine: 'central-kurus-engine'
 };

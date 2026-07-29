@@ -16,14 +16,19 @@ const months = ['Ocak'];
 const openDetails = new Set([0]);
 
 function formatCurrency(value) {
-  return `${value.toFixed(2)} ₺`;
+  return new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value) + ' ₺';
 }
 
 function formatInputMoney(value) {
-  return String(value);
+  return new Intl.NumberFormat('tr-TR', {
+    maximumFractionDigits: 2
+  }).format(value);
 }
 
-test('mobil bordro dört ana sütun ve detay satırı üretir', () => {
+test('mobil bordro dört ana sütun, canlı formatlı input ve detay satırı üretir', () => {
   const html = renderMobilePayrollRows({
     payrolls,
     months,
@@ -31,14 +36,19 @@ test('mobil bordro dört ana sütun ve detay satırı üretir', () => {
     openDetails,
     formatCurrency,
     formatInputMoney,
-    renderPayrollDetail: () => '<div>Vergi detayı</div>'
+    renderPayrollDetail: () => '<div>Vergi detayı</div>',
+    changeReasons: new Map([[0, { type: 'increase', text: 'Açıklama' }]]),
+    renderPayrollChangeReason: (reason, columns) => `<tr><td colspan="${columns}">${reason.text}</td></tr>`
   });
 
   assert.match(html, /Ocak/);
-  assert.match(html, /100000/);
-  assert.match(html, /75953\.02 ₺/);
-  assert.match(html, /Detay|Kapat/);
+  assert.match(html, /value="100\.000"/);
+  assert.match(html, /data-raw-value="100000"/);
+  assert.match(html, /inputmode="decimal"/);
+  assert.match(html, /oninput="formatMoneyInputElement\(this\)"/);
+  assert.match(html, /75\.953,02 ₺/);
   assert.match(html, /colspan="4"/);
+  assert.match(html, /Açıklama/);
   assert.match(html, /Ek Brüt/);
   assert.match(html, /Vergi detayı/);
 });

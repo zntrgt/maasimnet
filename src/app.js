@@ -7,6 +7,12 @@ import {
 } from './payroll-engine.js';
 import { renderMobilePayrollRows } from './mobile-payroll-view.js';
 import { runCalculationAndFocusPayroll } from './calculator-actions.js';
+import {
+  formatMoneyInputElement as applyMoneyInputFormat,
+  formatTurkishMoney,
+  parseTurkishMoney
+} from './money-input.js';
+import { getPayrollChangeReasons } from './payroll-change-reasons.js';
 
 const MONTHS = Object.freeze([
   'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
@@ -32,31 +38,25 @@ function formatKurus(valueKurus) {
 }
 
 function formatInputMoney(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return '';
-  return new Intl.NumberFormat('tr-TR', {
-    useGrouping: false,
-    minimumFractionDigits: Number.isInteger(number) ? 0 : 2,
-    maximumFractionDigits: 2
-  }).format(number);
+  return formatTurkishMoney(value);
 }
 
 function parseMoneyInput(value) {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
-  const raw = String(value ?? '').trim().replace(/\s|₺/g, '');
-  if (!raw) return 0;
+  return parseTurkishMoney(value);
+}
 
-  let normalized = raw;
-  if (raw.includes(',') && raw.includes('.')) {
-    normalized = raw.replace(/\./g, '').replace(',', '.');
-  } else if (raw.includes(',')) {
-    normalized = raw.replace(',', '.');
-  } else if (/^\d{1,3}(\.\d{3})+$/.test(raw)) {
-    normalized = raw.replace(/\./g, '');
-  }
+function formatMoneyInputElement(input) {
+  return applyMoneyInputFormat(input);
+}
 
-  const parsed = Number(normalized.replace(/[^0-9.-]/g, ''));
-  return Number.isFinite(parsed) ? parsed : 0;
+function renderPayrollChangeReason(reason, columnCount) {
+  if (!reason) return '';
+
+  return `<tr class="payroll-change-reason-row payroll-change-reason-row--${reason.type}">
+    <td colspan="${columnCount}">
+      <span class="payroll-change-reason"><span aria-hidden="true">ⓘ</span>${reason.text}</span>
+    </td>
+  </tr>`;
 }
 
 function mapEngineRowToUi(row) {
@@ -124,8 +124,9 @@ function setMode(mode) {
   calculate();
 }
 
-function handleMainSalaryInput() {
-  const rawValue = parseMoneyInput(document.getElementById('input-salary').value);
+function handleMainSalaryInput(event) {
+  const salaryInput = event?.currentTarget || document.getElementById('input-salary');
+  const rawValue = formatMoneyInputElement(salaryInput);
   if (currentMode === 'gross') {
     const valueKurus = tlToKurus(Math.max(0, rawValue));
     monthlyBaseGrossKurus = Array(12).fill(valueKurus);
@@ -145,7 +146,9 @@ function updateBaseGrossFromMonth(monthIndex, rawValue) {
   }
 
   if (monthIndex === 0) {
-    document.getElementById('input-salary').value = String(parsed);
+    const salaryInput = document.getElementById('input-salary');
+    salaryInput.value = formatInputMoney(parsed);
+    salaryInput.dataset.rawValue = String(parsed);
   }
   calculate();
 }
@@ -246,18 +249,20 @@ function calculate() {
   updateUI();
 }
 
-function renderDesktopPayrollRows() {
+function renderDesktopPayrollRows(changeReasons) {
   return payrolls.map((row) => {
     const monthName = MONTHS[row.month];
     const isOpen = openPayrollDetails.has(row.month);
     const disabledAttribute = currentMode === 'net' ? 'disabled' : '';
+    const changeReason = changeReasons.get(row.month);
     const baseInputClass = 'w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-2 text-right font-bold text-slate-800 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400';
     const extraInputClass = 'w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-2 text-right font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400';
 
     return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
       <td class="px-3 py-4 font-black sticky-col">${monthName}</td>
       <td class="px-3 py-3">
-        <input type="text" inputmode="decimal" value="${formatInputMoney(row.baseGross)}" ${disabledAttribute}
+        <input type="text" inputmode="decimal" data-money-input="true" data-raw-value="${row.baseGross}" value="${formatInputMoney(row.baseGross)}" ${disabledAttribute}
+          oninput="formatMoneyInputElement(this)"
           onkeydown="handleTableInputKeydown(event)"
           onchange="updateBaseGrossFromMonth(${row.month}, this.value)"
           aria-label="${monthName} temel brüt maaş"
@@ -265,7 +270,8 @@ function renderDesktopPayrollRows() {
           class="${baseInputClass}">
       </td>
       <td class="px-3 py-3">
-        <input type="text" inputmode="decimal" value="${row.extraGross ? formatInputMoney(row.extraGross) : ''}" placeholder="0" ${disabledAttribute}
+        <input type="text" inputmode="decimal" data-money-input="true" data-raw-value="${row.extraGross}" value="${row.extraGross ? formatInputMoney(row.extraGross) : ''}" placeholder="0" ${disabledAttribute}
+          oninput="formatMoneyInputElement(this)"
           onkeydown="handleTableInputKeydown(event)"
           onchange="updateExtraGrossForMonth(${row.month}, this.value)"
           aria-label="${monthName} ek brüt ödeme"
@@ -284,6 +290,7 @@ function renderDesktopPayrollRows() {
         </button>
       </td>
     </tr>
+    ${renderPayrollChangeReason(changeReason, 8)}
     <tr id="payroll-detail-${row.month}" ${isOpen ? '' : 'hidden'}>
       <td colspan="8" class="bg-slate-50 p-4">${renderPayrollDetail(row)}</td>
     </tr>`;
@@ -294,6 +301,7 @@ function updateUI() {
   if (payrollRowsKurus.length === 0) return;
 
   const summary = summarizePayroll(payrollRowsKurus);
+  const changeReasons = getPayrollChangeReasons(payrollRowsKurus);
   const averageNet = kurusToTl(summary.averageNetKurus);
   const annualNet = kurusToTl(summary.annualNetKurus);
   const averageGross = kurusToTl(summary.averageGrossKurus);
@@ -327,7 +335,7 @@ function updateUI() {
   document.getElementById('detail-avg-cost').textContent = `${formatCurrency(annualEmployerCost)} ÷ 12 = ${formatCurrency(averageEmployerCost)}`;
   document.getElementById('detail-tax-rate').textContent = `(${formatCurrency(averageGross)} − ${formatCurrency(averageNet)}) ÷ ${formatCurrency(averageGross)} × 100 = ${effectiveDeductionRate.toFixed(1)}%`;
 
-  document.getElementById('payroll-body').innerHTML = renderDesktopPayrollRows();
+  document.getElementById('payroll-body').innerHTML = renderDesktopPayrollRows(changeReasons);
   document.getElementById('payroll-mobile').innerHTML = renderMobilePayrollRows({
     payrolls,
     months: MONTHS,
@@ -335,7 +343,9 @@ function updateUI() {
     openDetails: openPayrollDetails,
     formatCurrency,
     formatInputMoney,
-    renderPayrollDetail
+    renderPayrollDetail,
+    changeReasons,
+    renderPayrollChangeReason
   });
 }
 
@@ -384,7 +394,8 @@ function downloadCSV() {
 }
 
 function initializeMaasimApp() {
-  const initialSalary = parseMoneyInput(document.getElementById('input-salary').value) || 100000;
+  const salaryInput = document.getElementById('input-salary');
+  const initialSalary = formatMoneyInputElement(salaryInput) || 100000;
   monthlyBaseGrossKurus = Array(12).fill(tlToKurus(initialSalary));
   monthlyExtraGrossKurus = Array(12).fill(0);
   calculate();
@@ -394,6 +405,7 @@ Object.assign(window, {
   setMode,
   calculate,
   handleMainSalaryInput,
+  formatMoneyInputElement,
   updateBaseGrossFromMonth,
   updateExtraGrossForMonth,
   handleTableInputKeydown,
