@@ -30,7 +30,7 @@ await applyResultHierarchy(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 
 const version = {
-  version: '0.4.0-result-hierarchy',
+  version: '0.4.1-layout-fix',
   builtAt: new Date().toISOString(),
   calculationEngine: 'central-kurus-engine'
 };
