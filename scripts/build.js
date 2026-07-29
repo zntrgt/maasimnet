@@ -6,6 +6,7 @@ import { applyResultHierarchy } from './apply-result-hierarchy.js';
 import { addBlog } from './add-blog.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
+import { applySharedShell } from './apply-shared-shell.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -25,7 +26,9 @@ for (const file of [
   'mobile-payroll-view.js',
   'calculator-actions.js',
   'money-input.js',
-  'payroll-change-reasons.js'
+  'payroll-change-reasons.js',
+  'site-shell.css',
+  'site-shell.js'
 ]) {
   await cp(join(sourceDir, file), join(assetsDir, file));
 }
@@ -35,9 +38,10 @@ const scenarioResult = await renderScenarioPages(distDir);
 await addBlog(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
+await applySharedShell(distDir);
 
 const version = {
-  version: '0.6.0-p0-information-architecture',
+  version: '0.6.1-shared-site-shell',
   builtAt: new Date().toISOString(),
   calculationEngine: 'central-kurus-engine'
 };
