@@ -32,10 +32,15 @@ const forbiddenVisiblePhrases = [
 ];
 
 function removeTechnicalMetadata(html) {
-  return html.replace(
-    /<div[^>]*>\s*<dt[^>]*>\s*(?:Hesaplama motoru|Sürüm)\s*<\/dt>[\s\S]*?<\/div>/gi,
+  html = html.replace(
+    /<div[^>]*>\s*<dt[^>]*>\s*(?:Hesaplama motoru|Motor|Sürüm)\s*<\/dt>[\s\S]*?<\/div>/gi,
     ''
   );
+  html = html.replace(
+    /<div[^>]*>[\s\S]*?central-kurus-engine[\s\S]*?<\/div>/gi,
+    ''
+  );
+  return html;
 }
 
 function visibleText(html) {
