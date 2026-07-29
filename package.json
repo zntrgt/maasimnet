@@ -1,11 +1,13 @@
 {
   "name": "maasimnet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "test:watch": "node --test --watch"
+    "build": "node scripts/build.js",
+    "verify": "node scripts/verify-dist.js",
+    "check": "npm test && npm run build && npm run verify"
   },
   "engines": {
     "node": ">=22"
