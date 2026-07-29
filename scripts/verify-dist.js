@@ -9,7 +9,8 @@ const required = [
   'index.html','assets/styles.css','assets/app.js','assets/payroll-engine.js',
   'assets/data-2026.js','assets/parameters-2026.js','assets/mobile-payroll-view.js','assets/calculator-actions.js',
   'assets/blog.css','assets/p0-content.css','assets/2027-maas-zammi-veri-ozeti.svg','assets/2027-maas-takvimi.svg',
-  'blog/index.html','blog/2027-maas-zammi-beklentileri/index.html','sss/index.html','sozluk/index.html',
+  'assets/is-yerinde-finansal-saglik.svg',
+  'blog/index.html','blog/2027-maas-zammi-beklentileri/index.html','blog/is-yerinde-finansal-saglik/index.html','sss/index.html','sozluk/index.html',
   'veriler/2026/index.html','veriler/2026-asgari-ucret/index.html','veriler/2026-gelir-vergisi-dilimleri/index.html',
   'veriler/2026-sgk-tavani/index.html','veriler/2026-kidem-tazminati-tavani/index.html','veriler/2026-yemek-yardimi-istisnasi/index.html',
   'sgk/sgk-tavani/index.html','indexability-report.json','llms.txt','robots.txt','sitemap.xml','ads.txt','version.json'
@@ -43,10 +44,14 @@ if (!indexHtml.includes('href="/sss/"') || !indexHtml.includes('href="/sozluk/"'
 if (indexHtml.includes('id="glossary-container"')) throw new Error('Tam sözlük ana sayfada kalmış.');
 
 const article = await readFile(join(dist,'blog','2027-maas-zammi-beklentileri','index.html'),'utf8');
+const financialHealthArticle = await readFile(join(dist,'blog','is-yerinde-finansal-saglik','index.html'),'utf8');
 const blogIndex = await readFile(join(dist,'blog','index.html'),'utf8');
 const sitemap = await readFile(join(dist,'sitemap.xml'),'utf8');
 for (const token of ['2027 Maaş Zammı Ne Kadar Olabilir?','%32,11','%17,76','%15','%21,47','%29,21','%23,95','%17,83','TÜİK','Piyasa Katılımcıları Anketi']) if (!article.includes(token)) throw new Error(`Blog yazısında beklenen içerik yok: ${token}`);
 for (const schema of ['"@type":"Article"','"@type":"FAQPage"','"@type":"BreadcrumbList"']) if (!article.includes(schema)) throw new Error(`Blog şeması eksik: ${schema}`);
+for (const token of ['İş Yerinde Finansal Sağlık','%32,11','%20','79.272 TL','396.360 TL','9.909 TL','gizli borç danışmanlığı']) if (!financialHealthArticle.includes(token)) throw new Error(`Finansal sağlık yazısında beklenen içerik yok: ${token}`);
+for (const schema of ['"@type":"Article"','"@type":"FAQPage"','"@type":"BreadcrumbList"']) if (!financialHealthArticle.includes(schema)) throw new Error(`Finansal sağlık şeması eksik: ${schema}`);
+if (!blogIndex.includes('href="/blog/is-yerinde-finansal-saglik/"')) throw new Error('Finansal sağlık yazısı blog merkezinde listelenmiyor.');
 if (!blogIndex.includes('"@type":"CollectionPage"')) throw new Error('Blog CollectionPage şeması eksik.');
 
 const sss = await readFile(join(dist,'sss','index.html'),'utf8');
@@ -55,7 +60,7 @@ if (sss.includes('"@type":"FAQPage"')) throw new Error('/sss/ sayfasında 25 sor
 const glossary = await readFile(join(dist,'sozluk','index.html'),'utf8');
 if (!glossary.includes('Maaş ve Bordro Terimleri Sözlüğü') || !glossary.includes('<dl class="glossary">')) throw new Error('Sözlük ayrı URL’de doğru üretilmedi.');
 
-for (const path of ['/veriler/2026/','/veriler/2026-asgari-ucret/','/veriler/2026-gelir-vergisi-dilimleri/','/veriler/2026-sgk-tavani/','/veriler/2026-kidem-tazminati-tavani/','/veriler/2026-yemek-yardimi-istisnasi/','/sgk/sgk-tavani/','/sss/','/sozluk/']) {
+for (const path of ['/blog/is-yerinde-finansal-saglik/','/veriler/2026/','/veriler/2026-asgari-ucret/','/veriler/2026-gelir-vergisi-dilimleri/','/veriler/2026-sgk-tavani/','/veriler/2026-kidem-tazminati-tavani/','/veriler/2026-yemek-yardimi-istisnasi/','/sgk/sgk-tavani/','/sss/','/sozluk/']) {
   if (!sitemap.includes(`<loc>https://maasim.net${path}</loc>`)) throw new Error(`Yeni URL sitemap içinde yok: ${path}`);
 }
 const sgkPage = await readFile(join(dist,'veriler','2026-sgk-tavani','index.html'),'utf8');
@@ -74,7 +79,7 @@ for (const row of indexability.scenarios) {
 const htmlFiles=[];
 async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const path=join(dir,entry.name);if(entry.isDirectory())await walk(path);else if(entry.name.endsWith('.html'))htmlFiles.push(path)}}
 await walk(dist);
-if (htmlFiles.length !== 26) throw new Error(`26 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
+if (htmlFiles.length !== 27) throw new Error(`27 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
 for (const path of htmlFiles) {
   const html = await readFile(path,'utf8');
   if (!html.includes('Güncellik') && !html.includes('site-freshness') && !html.includes('class="freshness"')) throw new Error(`Güncellik bloğu eksik: ${path}`);
@@ -85,4 +90,4 @@ const scenario=createGross100kScenarioData();
 for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includes(value)) throw new Error(`100.000 TL senaryosunda merkezi motor değeri yok: ${value}`);
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
-console.log('dist doğrulaması başarılı: 26 HTML, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
+console.log('dist doğrulaması başarılı: 27 HTML, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
