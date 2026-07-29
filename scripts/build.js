@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderScenarioPages } from './render-scenarios.js';
 import { applyResultHierarchy } from './apply-result-hierarchy.js';
+import { addBlog } from './add-blog.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -28,9 +29,10 @@ for (const file of [
 
 await applyResultHierarchy(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
+await addBlog(distDir);
 
 const version = {
-  version: '0.4.1-layout-fix',
+  version: '0.5.0-blog-2027-outlook',
   builtAt: new Date().toISOString(),
   calculationEngine: 'central-kurus-engine'
 };
