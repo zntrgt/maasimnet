@@ -7,6 +7,7 @@ import { addBlog } from './add-blog.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { applySharedShell } from './apply-shared-shell.js';
+import { removeInternalCopy } from './remove-internal-copy.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -29,8 +30,9 @@ await addBlog(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
 await applySharedShell(distDir);
+await removeInternalCopy(distDir);
 
-const version = { version: '0.6.1-shared-site-shell', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.6.2-public-copy-cleanup', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
