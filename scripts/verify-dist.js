@@ -8,7 +8,7 @@ const dist = join(root, 'dist');
 const required = [
   'index.html','assets/styles.css','assets/app.js','assets/payroll-engine.js',
   'assets/data-2026.js','assets/parameters-2026.js','assets/mobile-payroll-view.js','assets/calculator-actions.js',
-  'assets/blog.css','assets/p0-content.css','assets/2027-maas-zammi-veri-ozeti.svg','assets/2027-maas-takvimi.svg',
+  'assets/blog.css','assets/p0-content.css','assets/site-shell.css','assets/site-shell.js','assets/2027-maas-zammi-veri-ozeti.svg','assets/2027-maas-takvimi.svg',
   'blog/index.html','blog/2027-maas-zammi-beklentileri/index.html','sss/index.html','sozluk/index.html',
   'veriler/2026/index.html','veriler/2026-asgari-ucret/index.html','veriler/2026-gelir-vergisi-dilimleri/index.html',
   'veriler/2026-sgk-tavani/index.html','veriler/2026-kidem-tazminati-tavani/index.html','veriler/2026-yemek-yardimi-istisnasi/index.html',
@@ -32,9 +32,7 @@ if (calculatorStart < 0 || resultsColumn < calculatorStart || representativeGros
 if (!stylesCss.includes('.calculator-results-column') || !stylesCss.includes('.calculator-results-column > #payroll-results-shell')) throw new Error('Bordro geniş sonuç kolonu stilleri eksik.');
 if (!appJs.includes('netGrossTableExpanded = false;')) throw new Error('Netten brüte dağılımı varsayılan kapalı değil.');
 
-for (const type of ['Organization','WebSite','WebApplication','WebPage','BreadcrumbList','FAQPage','Dataset']) {
-  if (!indexHtml.includes(`"@type":"${type}"`)) throw new Error(`Ana sayfa schema graph eksik: ${type}`);
-}
+for (const type of ['Organization','WebSite','WebApplication','WebPage','BreadcrumbList','FAQPage','Dataset']) if (!indexHtml.includes(`"@type":"${type}"`)) throw new Error(`Ana sayfa schema graph eksik: ${type}`);
 const homeFaqSection = indexHtml.match(/<section class="mb-24" id="sss">[\s\S]*?<\/section>/)?.[0] || '';
 if ((homeFaqSection.match(/<details/g) || []).length !== 6) throw new Error('Ana sayfada tam 6 görünür SSS olmalı.');
 const homeScenarioSection = indexHtml.match(/<section class="mb-24" id="senaryolar">[\s\S]*?<\/section>/)?.[0] || '';
@@ -55,9 +53,7 @@ if (sss.includes('"@type":"FAQPage"')) throw new Error('/sss/ sayfasında 25 sor
 const glossary = await readFile(join(dist,'sozluk','index.html'),'utf8');
 if (!glossary.includes('Maaş ve Bordro Terimleri Sözlüğü') || !glossary.includes('<dl class="glossary">')) throw new Error('Sözlük ayrı URL’de doğru üretilmedi.');
 
-for (const path of ['/veriler/2026/','/veriler/2026-asgari-ucret/','/veriler/2026-gelir-vergisi-dilimleri/','/veriler/2026-sgk-tavani/','/veriler/2026-kidem-tazminati-tavani/','/veriler/2026-yemek-yardimi-istisnasi/','/sgk/sgk-tavani/','/sss/','/sozluk/']) {
-  if (!sitemap.includes(`<loc>https://maasim.net${path}</loc>`)) throw new Error(`Yeni URL sitemap içinde yok: ${path}`);
-}
+for (const path of ['/veriler/2026/','/veriler/2026-asgari-ucret/','/veriler/2026-gelir-vergisi-dilimleri/','/veriler/2026-sgk-tavani/','/veriler/2026-kidem-tazminati-tavani/','/veriler/2026-yemek-yardimi-istisnasi/','/sgk/sgk-tavani/','/sss/','/sozluk/']) if (!sitemap.includes(`<loc>https://maasim.net${path}</loc>`)) throw new Error(`Yeni URL sitemap içinde yok: ${path}`);
 const sgkPage = await readFile(join(dist,'veriler','2026-sgk-tavani','index.html'),'utf8');
 if (!sgkPage.includes('297.270,00 TL') || !sgkPage.includes('5510 sayılı') || !sgkPage.includes('"@type":"Dataset"')) throw new Error('SGK veri sayfası değer, dayanak veya Dataset schema eksik.');
 const mealPage = await readFile(join(dist,'veriler','2026-yemek-yardimi-istisnasi','index.html'),'utf8');
@@ -67,9 +63,7 @@ if (!severancePage.includes('64.948,77 TL') || !severancePage.includes('73.729,8
 
 const indexability = JSON.parse(await readFile(join(dist,'indexability-report.json'),'utf8'));
 if (indexability.scenarios.length !== 8) throw new Error('Sekiz senaryo için indexability raporu bekleniyordu.');
-for (const row of indexability.scenarios) {
-  if (!row.selfCanonical || !row.indexable || !row.inSitemap || !row.linkedFromHub) throw new Error(`Senaryo indexability kontrolü başarısız: ${row.url}`);
-}
+for (const row of indexability.scenarios) if (!row.selfCanonical || !row.indexable || !row.inSitemap || !row.linkedFromHub) throw new Error(`Senaryo indexability kontrolü başarısız: ${row.url}`);
 
 const htmlFiles=[];
 async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const path=join(dir,entry.name);if(entry.isDirectory())await walk(path);else if(entry.name.endsWith('.html'))htmlFiles.push(path)}}
@@ -78,6 +72,9 @@ if (htmlFiles.length !== 26) throw new Error(`26 HTML sayfası bekleniyordu, ${h
 for (const path of htmlFiles) {
   const html = await readFile(path,'utf8');
   if (!html.includes('Güncellik') && !html.includes('site-freshness') && !html.includes('class="freshness"')) throw new Error(`Güncellik bloğu eksik: ${path}`);
+  if ((html.match(/class="site-header"/g) || []).length !== 1) throw new Error(`Ortak header eksik veya tekrarlı: ${path}`);
+  if ((html.match(/class="site-footer"/g) || []).length !== 1) throw new Error(`Ortak footer eksik veya tekrarlı: ${path}`);
+  for (const token of ['/assets/site-shell.css','/assets/site-shell.js','class="site-menu-button"','id="site-mobile-menu"']) if (!html.includes(token)) throw new Error(`Ortak mobil shell eksik (${token}): ${path}`);
 }
 
 const scenarioHtml=await readFile(join(dist,'100000-brut-maas-hesaplama','index.html'),'utf8');
@@ -85,4 +82,4 @@ const scenario=createGross100kScenarioData();
 for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includes(value)) throw new Error(`100.000 TL senaryosunda merkezi motor değeri yok: ${value}`);
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
-console.log('dist doğrulaması başarılı: 26 HTML, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
+console.log('dist doğrulaması başarılı: 26 HTML, ortak header/footer, mobil hamburger, veri merkezi ve indexability hazır.');
