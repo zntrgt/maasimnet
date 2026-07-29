@@ -67,7 +67,7 @@ Secret değerleri hiçbir commit, issue veya dokümana yazılmaz; yalnızca GitH
 
 Önerilen posta kutusu: `iletisim@maasim.net`
 
-Cloudflare DNS üzerinde Private Email için aşağıdaki kayıtlar bulunmalıdır:
+Cloudflare DNS üzerinde Private Email aktivasyonu için aşağıdaki kayıtlar bulunmalıdır:
 
 | Host | Tür | Öncelik | Değer |
 | --- | --- | ---: | --- |
@@ -76,6 +76,8 @@ Cloudflare DNS üzerinde Private Email için aşağıdaki kayıtlar bulunmalıd�
 | `@` | TXT | — | `v=spf1 include:spf.privateemail.com ~all` |
 
 Aynı alan adında başka bir SPF kaydı varsa ikinci bir SPF TXT kaydı oluşturmayın; izinleri tek SPF kaydında birleştirin. Eski veya farklı bir e-posta sağlayıcısına ait MX kayıtları bırakılmamalıdır.
+
+Aktivasyon tamamlandıktan sonra Namecheap panelinde gösterilen DKIM kaydı da Cloudflare DNS'e eklenmelidir. 2 Haziran 2026 ve sonrasında satın alınan Private Email planlarında DKIM host adı genellikle `privateemail._domainkey` olur; TXT değeri hesap özelidir ve Namecheap panelinden aynen kopyalanmalıdır. DKIM eklenmeden SMTP ile gönderilen mesajlar teslim edilebilirlik sorunu yaşayabilir.
 
 Posta kutusunu oluşturduktan sonra SMTP bilgilerini Cloudflare Worker secret olarak tanımlayın:
 
