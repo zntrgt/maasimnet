@@ -28,6 +28,8 @@ test('arayüz hesaplama için yalnız merkezi bordro motorunu kullanır', () => 
   assert.match(appJs, /summarizePayroll/);
   assert.match(appJs, /renderMobilePayrollRows/);
   assert.match(appJs, /runCalculationAndFocusPayroll/);
+  assert.match(appJs, /formatTurkishMoney/);
+  assert.match(appJs, /getPayrollChangeReasons/);
   assert.doesNotMatch(appJs, /function runPayroll\(/);
   assert.doesNotMatch(appJs, /function tariffTax\(/);
 });
@@ -42,9 +44,32 @@ test('mobil bordro dört kolonlu tablo ve hesapla butonu olarak korunur', () => 
   assert.match(stylesCss, /\.cta-button--download/);
 });
 
+test('para inputları tr-TR canlı binlik ayraç ve decimal klavye kullanır', () => {
+  assert.match(indexHtml, /id="input-salary" inputmode="decimal"/);
+  assert.match(indexHtml, /data-money-input="true"/);
+  assert.match(indexHtml, /data-raw-value="100000"/);
+  assert.match(indexHtml, /oninput="handleMainSalaryInput\(event\)"/);
+  assert.match(indexHtml, /type="text" value="100\.000"/);
+  assert.doesNotMatch(indexHtml, /type="number" value="100000"/);
+  assert.match(appJs, /oninput="formatMoneyInputElement\(this\)"/);
+});
+
+test('net maaş farkı kartı nötr ve açıklamalıdır', () => {
+  assert.match(indexHtml, /text-slate-400 uppercase tracking-widest mb-1">Net Maaş Farkı/);
+  assert.doesNotMatch(indexHtml, /text-red-500 uppercase tracking-widest mb-1">Net Maaş Farkı/);
+  assert.match(indexHtml, /Dilim değişimleri nedeniyle en yüksek ve en düşük ay neti arasındaki fark\./);
+});
+
+test('bordro yön değişimi açıklamaları için görünür satır stili bulunur', () => {
+  assert.match(stylesCss, /\.payroll-change-reason-row/);
+  assert.match(stylesCss, /\.payroll-change-reason/);
+  assert.match(appJs, /renderPayrollChangeReason/);
+});
+
 test('ana hesaplama ve CSV indirme fonksiyonları tarayıcıya güvenli biçimde açılır', () => {
   assert.match(appJs, /Object\.assign\(window,/);
   assert.match(appJs, /calculateAndShowPayroll/);
+  assert.match(appJs, /formatMoneyInputElement/);
   assert.match(appJs, /downloadCSV/);
 });
 
