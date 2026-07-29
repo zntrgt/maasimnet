@@ -1,5 +1,8 @@
 # Maaşım.net
 
+[![Test and build](https://github.com/zntrgt/maasimnet/actions/workflows/ci.yml/badge.svg)](https://github.com/zntrgt/maasimnet/actions/workflows/ci.yml)
+[![Deploy to Cloudflare](https://github.com/zntrgt/maasimnet/actions/workflows/deploy.yml/badge.svg)](https://github.com/zntrgt/maasimnet/actions/workflows/deploy.yml)
+
 Türkiye için 2026 brütten nete ve netten brüte maaş hesaplama uygulaması.
 
 ## Mimari
