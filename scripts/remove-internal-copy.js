@@ -39,6 +39,10 @@ function removeTechnicalMetadata(html) {
     /\s*·\s*Motor\s+central-kurus-engine\s*·\s*Sürüm\s+[0-9A-Za-z._-]+/gi,
     ''
   );
+  html = html.replace(
+    /<li[^>]*>\s*Motor:\s*central-kurus-engine\s*<\/li>/gi,
+    ''
+  );
   return html;
 }
 
