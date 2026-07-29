@@ -25,8 +25,18 @@ const forbiddenVisiblePhrases = [
   'Yıllandırma politikası',
   'eski yıl sayfaları yeni yıla yönlendirilmez',
   'production artifact',
-  'indexability report'
+  'indexability report',
+  'Hesaplama motoru',
+  'central-kurus-engine',
+  'p0-information-architecture'
 ];
+
+function removeTechnicalMetadata(html) {
+  return html.replace(
+    /<div[^>]*>\s*<dt[^>]*>\s*(?:Hesaplama motoru|Sürüm)\s*<\/dt>[\s\S]*?<\/div>/gi,
+    ''
+  );
+}
 
 function visibleText(html) {
   return html
@@ -53,6 +63,7 @@ export async function removeInternalCopy(dist) {
   for (const path of files) {
     let html = await readFile(path, 'utf8');
     for (const { from, to } of replacements) html = html.replaceAll(from, to);
+    html = removeTechnicalMetadata(html);
     const text = visibleText(html);
     for (const phrase of forbiddenVisiblePhrases) {
       if (text.toLocaleLowerCase('tr-TR').includes(phrase.toLocaleLowerCase('tr-TR'))) {
