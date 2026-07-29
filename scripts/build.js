@@ -6,6 +6,7 @@ import { applyResultHierarchy } from './apply-result-hierarchy.js';
 import { addBlog } from './add-blog.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
+import { applySharedShell } from './apply-shared-shell.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -18,30 +19,18 @@ await cp(staticDir, distDir, { recursive: true });
 await mkdir(assetsDir, { recursive: true });
 
 for (const file of [
-  'app.js',
-  'data-2026.js',
-  'parameters-2026.js',
-  'payroll-engine.js',
-  'mobile-payroll-view.js',
-  'calculator-actions.js',
-  'money-input.js',
-  'payroll-change-reasons.js'
-]) {
-  await cp(join(sourceDir, file), join(assetsDir, file));
-}
+  'app.js','data-2026.js','parameters-2026.js','payroll-engine.js','mobile-payroll-view.js',
+  'calculator-actions.js','money-input.js','payroll-change-reasons.js','site-shell.css','site-shell.js'
+]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await applyResultHierarchy(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await addBlog(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
+await applySharedShell(distDir);
 
-const version = {
-  version: '0.6.0-p0-information-architecture',
-  builtAt: new Date().toISOString(),
-  calculationEngine: 'central-kurus-engine'
-};
+const version = { version: '0.6.1-shared-site-shell', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
-
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
