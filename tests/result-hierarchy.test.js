@@ -42,7 +42,7 @@ test('sonuçlar bağımsız sağ kolonda, bordro genişliği korunarak gruplanı
   assert.match(stylesCss, /min-width:\s*0/);
 });
 
-test('build sonucu hiyerarşi dönüşümünü uygular ve düzeltme sürümünü üretir', () => {
+test('build sonucu hiyerarşi dönüşümünü sürümden bağımsız uygular', () => {
   assert.match(buildJs, /applyResultHierarchy\(distDir\)/);
-  assert.match(buildJs, /0\.4\.1-layout-fix/);
+  assert.match(buildJs, /version:\s*'\d+\.\d+\.\d+-[a-z0-9-]+'/);
 });
