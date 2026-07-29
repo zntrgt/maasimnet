@@ -37,6 +37,9 @@ const REPRESENTATIVE_GROSS = `<!-- Netten brüte modunda tek temsili brüt -->
   <button type="button" id="toggle-net-gross-table" class="secondary-toggle" onclick="toggleNetGrossTable()" aria-expanded="false">Aylık brüt dağılımını göster</button>
 </section>`;
 
+const PAYROLL_MARKER = '<!-- Bordro Özeti: masaüstünde 8 kolon, mobilde 4 kolonlu tablo -->';
+const QUICK_NAV_MARKER = '<!-- Quick Nav -->';
+
 function buildMetricHierarchy(metricsBlock) {
   const articles = metricsBlock.match(/<article class="metric-card[\s\S]*?<\/article>/g) || [];
   if (articles.length !== 9) throw new Error(`Beklenen 9 metrik kartı bulunamadı: ${articles.length}`);
@@ -54,7 +57,7 @@ function buildMetricHierarchy(metricsBlock) {
   }).join('\n');
 
   return `<!-- Result Metrics Hierarchy -->
-<section class="result-hierarchy mb-8 md:mb-10" aria-label="Maaş sonucu özeti">
+<section class="result-hierarchy" aria-label="Maaş sonucu özeti">
   <article class="metric-hero">
     <div class="metric-heading-row">
       <p class="metric-title">Aylık Ort. Net</p>
@@ -74,8 +77,21 @@ function buildMetricHierarchy(metricsBlock) {
     <summary>Detaylı metrikler <span aria-hidden="true">▾</span></summary>
     <div class="secondary-metrics-grid">${compactCards}</div>
   </details>
-</section>
-`;
+</section>`;
+}
+
+function placeResultsColumn(html, hierarchy) {
+  const payrollStart = html.indexOf(PAYROLL_MARKER);
+  if (payrollStart < 0) throw new Error('Bordro tablosu başlangıç işareti bulunamadı.');
+
+  const calculatorEnd = html.indexOf('</section>', payrollStart);
+  if (calculatorEnd < 0) throw new Error('Hesaplayıcı bölümü kapanışı bulunamadı.');
+
+  return html.slice(0, payrollStart)
+    + `<div class="calculator-results-column">\n${REPRESENTATIVE_GROSS}\n${hierarchy}\n`
+    + html.slice(payrollStart, calculatorEnd)
+    + '</div>\n'
+    + html.slice(calculatorEnd);
 }
 
 function patchApp(appSource) {
@@ -86,7 +102,7 @@ function patchApp(appSource) {
   );
   app = app.replace(
     '  currentMode = mode;\n\n  const grossButton',
-    "  currentMode = mode;\n  netGrossTableExpanded = mode !== 'net';\n\n  const grossButton"
+    '  currentMode = mode;\n  netGrossTableExpanded = false;\n\n  const grossButton'
   );
   app = app.replace(
     'function togglePayrollDetail(monthIndex) {',
@@ -155,15 +171,14 @@ export async function applyResultHierarchy(distDir) {
     '<button type="button" class="cta-button cta-button--download" onclick="downloadCSV()">Bordroyu İndir (CSV)</button>',
     '<button type="button" class="cta-button cta-button--download" id="download-csv-button" onclick="downloadCSV()" disabled aria-disabled="true">Bordroyu İndir (CSV)</button>'
   );
-  html = html.replace(
-    '<!-- Bordro Özeti: masaüstünde 8 kolon, mobilde 4 kolonlu tablo -->',
-    `${REPRESENTATIVE_GROSS}\n<!-- Bordro Özeti: masaüstünde 8 kolon, mobilde 4 kolonlu tablo -->`
-  );
 
   const metricsStart = html.indexOf('<!-- Hero Metrics');
-  const metricsEnd = html.indexOf('<!-- Quick Nav -->');
+  const metricsEnd = html.indexOf(QUICK_NAV_MARKER);
   if (metricsStart < 0 || metricsEnd < 0) throw new Error('Metrik bölümü sınırları bulunamadı.');
-  html = html.slice(0, metricsStart) + buildMetricHierarchy(html.slice(metricsStart, metricsEnd)) + html.slice(metricsEnd);
+
+  const hierarchy = buildMetricHierarchy(html.slice(metricsStart, metricsEnd));
+  html = html.slice(0, metricsStart) + html.slice(metricsEnd);
+  html = placeResultsColumn(html, hierarchy);
 
   const hierarchyCss = await readFile(new URL('../src/result-hierarchy.css', import.meta.url), 'utf8');
   css += `\n${hierarchyCss}\n`;
