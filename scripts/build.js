@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { renderScenarioPages } from './render-scenarios.js';
 import { applyResultHierarchy } from './apply-result-hierarchy.js';
 import { addBlog } from './add-blog.js';
+import { addFinancialHealthBlog } from './add-financial-health-blog.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { applySharedShell } from './apply-shared-shell.js';
@@ -27,12 +28,13 @@ for (const file of [
 await applyResultHierarchy(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await addBlog(distDir);
+await addFinancialHealthBlog(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
 await applySharedShell(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.6.2-public-copy-cleanup', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.6.3-financial-health-blog', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
