@@ -1,0 +1,13 @@
+MAAŞIM.NET PRODUCTION KAYNAK DOSYALARI
+
+Bu klasör build sırasında dist klasörüne kopyalanır.
+Hesaplama motoru ve arayüz JavaScript dosyaları src klasöründen dist/assets altına eklenir.
+
+Deploy edilecek klasör: dist
+Kontrol komutu: npm run check
+Manuel deploy: npx wrangler deploy
+
+Önemli:
+- static/index.html içinde merkezi /assets/app.js ES modülü yüklenir.
+- Eski inline hesaplama motoru kullanılmaz.
+- version.json build sırasında otomatik oluşturulur.
