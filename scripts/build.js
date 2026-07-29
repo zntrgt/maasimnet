@@ -5,6 +5,7 @@ import { renderScenarioPages } from './render-scenarios.js';
 import { applyResultHierarchy } from './apply-result-hierarchy.js';
 import { addBlog } from './add-blog.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
+import { addHomeFreshness } from './add-home-freshness.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -33,6 +34,7 @@ await applyResultHierarchy(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await addBlog(distDir);
 await applyP0Architecture(distDir);
+await addHomeFreshness(distDir);
 
 const version = {
   version: '0.6.0-p0-information-architecture',
