@@ -24,6 +24,9 @@ for (const file of files) {
   const cookieBot = html.indexOf('id="Cookiebot"');
   const consent = html.indexOf('data-maasim-consent-mode');
   const google = html.indexOf('data-maasim-google-tag');
+  const header = html.indexOf('data-site-header');
+  const main = html.indexOf('<main');
+  const footer = html.indexOf('class="site-footer"');
 
   assert(cookieBot >= 0, `Cookiebot eksik: ${file}`);
   assert(consent >= 0, `Consent Mode eksik: ${file}`);
@@ -33,6 +36,8 @@ for (const file of files) {
   assert(html.includes("ad_storage: 'denied'"), `Reklam varsayılan reddi eksik: ${file}`);
   assert(html.includes('/cerez-politikasi/'), `Çerez politikası bağlantısı eksik: ${file}`);
   assert(html.includes('data-cookiebot-renew'), `Çerez tercihi yenileme kontrolü eksik: ${file}`);
+  assert(header >= 0 && main >= 0 && footer >= 0, `Ortak sayfa kabuğu eksik: ${file}`);
+  assert(header < main && main < footer, `Header/main/footer sırası hatalı: ${file}`);
 }
 
 const contact = await readFile(join(dist, 'iletisim', 'index.html'), 'utf8');
@@ -43,6 +48,6 @@ assert(contact.includes('/assets/contact-form.js'), 'İletişim formu istemci ko
 
 const contactClient = await readFile(join(dist, 'assets', 'contact-form.js'), 'utf8');
 assert(contactClient.includes("fetch('/api/contact'"), 'İletişim API bağlantısı eksik.');
-assert(contactClient.includes("generate_lead"), 'İletişim formu GA4 başarı olayı eksik.');
+assert(contactClient.includes('generate_lead'), 'İletişim formu GA4 başarı olayı eksik.');
 
-console.log(`İzin ve iletişim doğrulaması başarılı: ${files.length} HTML sayfası.`);
+console.log(`İzin, ortak kabuk ve iletişim doğrulaması başarılı: ${files.length} HTML sayfası.`);
