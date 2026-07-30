@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { renderScenarioPages } from './render-scenarios.js';
 import { applyResultHierarchy } from './apply-result-hierarchy.js';
 import { renderBlog } from './render-blog.js';
+import { addContactPage } from './add-contact-page.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { applySharedShell } from './apply-shared-shell.js';
@@ -23,12 +24,13 @@ await mkdir(assetsDir, { recursive: true });
 
 for (const file of [
   'app.js','data-2026.js','parameters-2026.js','payroll-engine.js','mobile-payroll-view.js',
-  'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','site-shell.css','site-shell.js'
+  'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await applyResultHierarchy(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await renderBlog(distDir);
+await addContactPage(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
 await applySharedShell(distDir);
@@ -36,7 +38,7 @@ await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.8.0-seo-geo-blog-quality', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.9.0-contact-consent-audit', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
