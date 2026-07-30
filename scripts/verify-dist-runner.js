@@ -37,11 +37,12 @@ const newLayoutVerification = `const calculatorStart = indexHtml.indexOf('<secti
 const resultsColumn = indexHtml.indexOf('<div class="calculator-results-column">', calculatorStart);
 const representativeGross = indexHtml.indexOf('id="representative-gross"', resultsColumn);
 const resultHierarchy = indexHtml.indexOf('class="result-hierarchy"', resultsColumn);
-const fullWidthTable = indexHtml.indexOf('class="calculator-table-full"', resultHierarchy);
+const calculatorClose = indexHtml.indexOf('</section>', resultHierarchy);
+const fullWidthTable = indexHtml.indexOf('class="calculator-table-full"', calculatorClose);
 const payrollShell = indexHtml.indexOf('id="payroll-results-shell"', fullWidthTable);
 const quickNav = indexHtml.indexOf('<!-- Quick Nav -->', payrollShell);
-if (calculatorStart < 0 || resultsColumn < calculatorStart || representativeGross < resultsColumn || resultHierarchy < representativeGross || fullWidthTable < resultHierarchy || payrollShell < fullWidthTable || quickNav < payrollShell) throw new Error('Hesaplayıcı dashboard hiyerarşisi doğru sırada üretilmedi.');
-if (!stylesCss.includes('.calculator-results-column') || !stylesCss.includes('.calculator-table-full') || !stylesCss.includes('grid-column: 1 / -1')) throw new Error('Tam genişlik bordro tablosu stilleri eksik.');`;
+if (calculatorStart < 0 || resultsColumn < calculatorStart || representativeGross < resultsColumn || resultHierarchy < representativeGross || calculatorClose < resultHierarchy || fullWidthTable < calculatorClose || payrollShell < fullWidthTable || quickNav < payrollShell) throw new Error('Hesaplayıcı dashboard hiyerarşisi doğru sırada üretilmedi.');
+if (!stylesCss.includes('.calculator-results-column') || !stylesCss.includes('.calculator-table-full') || !stylesCss.includes('width: min(100%, 1280px)')) throw new Error('Bağımsız tam genişlik bordro tablosu stilleri eksik.');`;
 
 if (!source.includes(oldLayoutVerification)) {
   throw new Error('Eski hesaplayıcı layout doğrulama bloğu bulunamadı.');
