@@ -22,6 +22,7 @@ import { applyFintechUi } from './apply-fintech-ui.js';
 import { mergeCriticalCss } from './merge-critical-css.js';
 import { inlineHomeCss } from './inline-home-css.js';
 import { fixCalculatorAnalyticsInputReset } from './fix-calculator-analytics-input-reset.js';
+import { applyCalculatorFlowFixes } from './apply-calculator-flow-fixes.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -42,6 +43,7 @@ for (const file of [
 // Lazy analitik modülü kullanıcı ilk etkileşimi sırasında yüklenir. Kaynak modüldeki
 // eski başlangıç temizliği, kullanıcının girdiği maaşı silmemesi için dist çıktısından kaldırılır.
 await fixCalculatorAnalyticsInputReset(distDir);
+await applyCalculatorFlowFixes(distDir);
 
 await applyResultHierarchy(distDir);
 await applyDashboardLayout(distDir);
