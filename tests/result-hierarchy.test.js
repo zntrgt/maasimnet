@@ -46,8 +46,9 @@ test('sonuçlar bağımsız sağ kolonda, bordro genişliği korunarak gruplanı
 test('detaylı metrik ve bordro okunabilirlik stilleri korunur', () => {
   assert.match(stylesCss, /\.secondary-metrics > summary/);
   assert.match(stylesCss, /font-size:\s*1rem/);
-  assert.match(stylesCss, /#payroll-results-shell table/);
-  assert.match(stylesCss, /#payroll-results-shell tbody td/);
+  assert.match(stylesCss, /#payroll-results-shell \.payroll-table/);
+  assert.match(stylesCss, /#payroll-results-shell \.payroll-table th/);
+  assert.match(stylesCss, /#payroll-results-shell \.payroll-table td/);
 });
 
 test('build sonucu hiyerarşi dönüşümünü sürümden bağımsız uygular', () => {
