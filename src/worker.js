@@ -11,9 +11,61 @@ const SECURITY_HEADERS = Object.freeze({
   'cross-origin-opener-policy': 'same-origin'
 });
 
+const CACHE_POLICIES = Object.freeze({
+  html: {
+    browser: 'public, max-age=0, must-revalidate',
+    edge: 'public, s-maxage=300, stale-while-revalidate=86400'
+  },
+  code: {
+    browser: 'public, max-age=86400, stale-while-revalidate=604800',
+    edge: 'public, s-maxage=604800, stale-while-revalidate=2592000'
+  },
+  image: {
+    browser: 'public, max-age=2592000, stale-while-revalidate=604800',
+    edge: 'public, s-maxage=2592000, stale-while-revalidate=2592000'
+  },
+  document: {
+    browser: 'public, max-age=3600, stale-while-revalidate=86400',
+    edge: 'public, s-maxage=86400, stale-while-revalidate=604800'
+  }
+});
+
 function withSecurityHeaders(response) {
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) headers.set(name, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+
+function cachePolicyFor(pathname, contentType = '') {
+  const lowerPath = pathname.toLowerCase();
+  const lowerType = contentType.toLowerCase();
+
+  if (
+    lowerType.includes('text/html') ||
+    lowerPath === '/' ||
+    lowerPath.endsWith('/') ||
+    lowerPath.endsWith('.html')
+  ) return CACHE_POLICIES.html;
+
+  if (/\.(?:css|js|mjs|json)$/.test(lowerPath)) return CACHE_POLICIES.code;
+  if (/\.(?:svg|png|jpe?g|webp|avif|gif|ico)$/.test(lowerPath)) return CACHE_POLICIES.image;
+  if (/\.(?:xml|txt)$/.test(lowerPath)) return CACHE_POLICIES.document;
+
+  return CACHE_POLICIES.html;
+}
+
+function withStaticCacheHeaders(response, pathname) {
+  if (!response.ok) return response;
+
+  const headers = new Headers(response.headers);
+  const policy = cachePolicyFor(pathname, headers.get('content-type') || '');
+  headers.set('cache-control', policy.browser);
+  headers.set('cdn-cache-control', policy.edge);
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -145,6 +197,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/contact') return handleContact(request, env);
-    return withSecurityHeaders(await env.ASSETS.fetch(request));
+
+    const assetResponse = await env.ASSETS.fetch(request);
+    return withSecurityHeaders(withStaticCacheHeaders(assetResponse, url.pathname));
   }
 };
