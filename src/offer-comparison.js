@@ -16,6 +16,15 @@ function getValue(id) {
   return document.getElementById(id)?.value || '';
 }
 
+function readPackage(prefix) {
+  return {
+    mode: getValue(`${prefix}-mode`),
+    salaryTl: parseMoney(getValue(`${prefix}-salary`)),
+    extraTl: parseMoney(getValue(`${prefix}-extra`)),
+    benefitTl: parseMoney(getValue(`${prefix}-benefit`))
+  };
+}
+
 function grossesFor(mode, monthlyValueTl) {
   if (mode === 'net') {
     return solveMonthlyGrossForFixedNet({ targetNetKurus: tlToKurus(monthlyValueTl), employerScheme: 'other' });
@@ -28,24 +37,21 @@ function firstBracketMonth(rows, ratePpm) {
   return row ? MONTHS[row.month] : 'Yıl içinde girilmiyor';
 }
 
-function scenario(prefix, startMonth = 0) {
-  const mode = getValue(`${prefix}-mode`);
-  const salaryTl = parseMoney(getValue(`${prefix}-salary`));
-  const extraTl = parseMoney(getValue(`${prefix}-extra`));
-  const benefitTl = parseMoney(getValue(`${prefix}-benefit`));
-  const grossByMonth = grossesFor(mode, salaryTl);
-  const extraByMonth = Array(12).fill(0);
-
-  for (let month = startMonth; month < 12; month += 1) extraByMonth[month] = tlToKurus(extraTl);
-
-  const rows = calculatePayrollYear({
-    baseGrossKurusByMonth: grossByMonth,
-    extraGrossKurusByMonth: extraByMonth,
-    employerScheme: 'other'
+function calculateScenario({ currentPackage, offerPackage = null, startMonth = 0 }) {
+  const currentGrosses = grossesFor(currentPackage.mode, currentPackage.salaryTl);
+  const offerGrosses = offerPackage ? grossesFor(offerPackage.mode, offerPackage.salaryTl) : currentGrosses;
+  const baseGrossKurusByMonth = currentGrosses.map((gross, month) => month < startMonth ? gross : offerGrosses[month]);
+  const extraGrossKurusByMonth = Array.from({ length: 12 }, (_, month) => {
+    const extraTl = month < startMonth || !offerPackage ? currentPackage.extraTl : offerPackage.extraTl;
+    return tlToKurus(extraTl);
   });
+  const annualBenefitsKurus = Array.from({ length: 12 }, (_, month) => {
+    const benefitTl = month < startMonth || !offerPackage ? currentPackage.benefitTl : offerPackage.benefitTl;
+    return tlToKurus(benefitTl);
+  }).reduce((sum, value) => sum + value, 0);
+
+  const rows = calculatePayrollYear({ baseGrossKurusByMonth, extraGrossKurusByMonth, employerScheme: 'other' });
   const summary = summarizePayroll(rows);
-  const activeMonths = 12 - startMonth;
-  const annualBenefitsKurus = tlToKurus(benefitTl * activeMonths);
 
   return {
     rows,
@@ -69,8 +75,10 @@ function signedMoney(valueKurus) {
 
 function render() {
   const startMonth = Number(getValue('offer-start-month') || 0);
-  const current = scenario('current', 0);
-  const offer = scenario('offer', startMonth);
+  const currentPackage = readPackage('current');
+  const offerPackage = readPackage('offer');
+  const current = calculateScenario({ currentPackage });
+  const offer = calculateScenario({ currentPackage, offerPackage, startMonth });
 
   const annualNetDiff = offer.summary.annualNetKurus - current.summary.annualNetKurus;
   const averageNetDiff = offer.summary.averageNetKurus - current.summary.averageNetKurus;
@@ -97,12 +105,11 @@ function render() {
       : 'İki senaryonun yıllık net geliri aynı.';
   setText('comparison-verdict', verdict);
 
-  const state = {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
     currentMode: getValue('current-mode'), currentSalary: getValue('current-salary'), currentExtra: getValue('current-extra'), currentBenefit: getValue('current-benefit'),
     offerMode: getValue('offer-mode'), offerSalary: getValue('offer-salary'), offerExtra: getValue('offer-extra'), offerBenefit: getValue('offer-benefit'),
     offerStartMonth: getValue('offer-start-month')
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }));
 }
 
 function restore() {
