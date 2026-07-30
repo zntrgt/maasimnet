@@ -5,6 +5,7 @@ import { renderScenarioPages } from './render-scenarios.js';
 import { applyResultHierarchy } from './apply-result-hierarchy.js';
 import { applyDashboardLayout } from './apply-dashboard-layout.js';
 import { applyMetricCardStandard } from './apply-metric-card-standard.js';
+import { applyTaxBracketColumn } from './apply-tax-bracket-column.js';
 import { renderBlog } from './render-blog.js';
 import { addContactPage } from './add-contact-page.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
@@ -36,6 +37,7 @@ for (const file of [
 await applyResultHierarchy(distDir);
 await applyDashboardLayout(distDir);
 await applyMetricCardStandard(distDir);
+await applyTaxBracketColumn(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await renderBlog(distDir);
 await addContactPage(distDir);
@@ -50,7 +52,7 @@ await applyAccessibilityPolish(distDir);
 await applyFintechUi(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.0.2-metric-card-standard', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.0.3-monthly-tax-brackets', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
