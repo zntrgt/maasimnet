@@ -12,6 +12,7 @@ import { applyConsentManagement } from './apply-consent-management.js';
 import { applyGoogleTags } from './apply-google-tags.js';
 import { removeInternalCopy } from './remove-internal-copy.js';
 import { normalizeSitemap } from './normalize-sitemap.js';
+import { applyLighthouseFixes } from './apply-lighthouse-fixes.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -38,9 +39,10 @@ await applySharedShell(distDir);
 await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
 await removeInternalCopy(distDir);
+await applyLighthouseFixes(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '0.9.0-contact-consent-audit', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.9.1-lighthouse-accessibility', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
