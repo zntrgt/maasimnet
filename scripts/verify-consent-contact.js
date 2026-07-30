@@ -47,7 +47,15 @@ for (const file of files) {
   assert(html.includes('data-cookiebot-renew'), `Çerez tercihi yenileme kontrolü eksik: ${file}`);
   assert(header >= 0 && main >= 0 && footer >= 0, `Ortak sayfa kabuğu eksik: ${file}`);
   assert(header < main && main < footer, `Header/main/footer sırası hatalı: ${file}`);
+  assert(html.slice(0, 1024).includes('<meta charset="utf-8">'), `Charset ilk 1024 baytta değil: ${file}`);
 }
+
+const home = await readFile(join(dist, 'index.html'), 'utf8');
+assert(!/<h3[^>]*id=["']stat-(?:high-net|low-net)["']/i.test(home), 'Kalan metrik değerleri başlık etiketi kullanıyor.');
+assert(home.includes('Bu Sayfadaki Maaş Terimleri'), 'Aynı adlı sözlük bağlantıları ayrıştırılmadı.');
+
+const styles = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
+assert(styles.includes('Erişilebilirlik kontrast düzeltmeleri'), 'Kontrast düzeltmeleri eksik.');
 
 const contact = await readFile(join(dist, 'iletisim', 'index.html'), 'utf8');
 assert(contact.includes('id="contact-form"'), 'İletişim formu eksik.');
@@ -65,4 +73,15 @@ assert(siteShell.includes('blog_cta_clicked'), 'Blog CTA ölçümü eksik.');
 assert(siteShell.includes('CookiebotOnAccept'), 'İzin sonrası ölçüm yenilemesi eksik.');
 assert(siteShell.includes('Cookiebot?.consent?.statistics'), 'Ortak analitik izin kontrolü eksik.');
 
-console.log(`Basic Consent Mode, ortak kabuk, iletişim ve analitik doğrulaması başarılı: ${files.length} HTML sayfası.`);
+const worker = await readFile(join(process.cwd(), 'src', 'worker.js'), 'utf8');
+for (const header of [
+  'strict-transport-security',
+  'x-frame-options',
+  'x-content-type-options',
+  'referrer-policy',
+  'permissions-policy',
+  'cross-origin-opener-policy'
+]) assert(worker.includes(`'${header}'`), `Güvenlik başlığı eksik: ${header}`);
+assert(worker.includes('withSecurityHeaders(await env.ASSETS.fetch(request))'), 'Statik yanıtlara güvenlik başlıkları uygulanmıyor.');
+
+console.log(`Basic Consent Mode, erişilebilirlik, güvenlik başlıkları, iletişim ve analitik doğrulaması başarılı: ${files.length} HTML sayfası.`);
