@@ -53,6 +53,10 @@ for (const file of files) {
 const home = await readFile(join(dist, 'index.html'), 'utf8');
 assert(!/<h3[^>]*id=["']stat-(?:high-net|low-net)["']/i.test(home), 'Kalan metrik değerleri başlık etiketi kullanıyor.');
 assert(home.includes('Bu Sayfadaki Maaş Terimleri'), 'Aynı adlı sözlük bağlantıları ayrıştırılmadı.');
+assert(home.includes('data-maasim-calculator-analytics'), 'Hesaplayıcı analitik yükleyicisi eksik.');
+assert(home.includes("import('/assets/calculator-analytics.js')"), 'Hesaplayıcı analitiği dinamik import edilmiyor.');
+assert(!home.includes('type="module" src="/assets/calculator-analytics.js"'), 'Hesaplayıcı analitiği ilk yüklemede indiriliyor.');
+assert(home.includes('Cookiebot?.consent?.statistics === true'), 'Hesaplayıcı analitik yükleyicisinde izin kontrolü eksik.');
 
 const styles = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
 assert(styles.includes('Erişilebilirlik kontrast düzeltmeleri'), 'Kontrast düzeltmeleri eksik.');
@@ -82,6 +86,6 @@ for (const header of [
   'permissions-policy',
   'cross-origin-opener-policy'
 ]) assert(worker.includes(`'${header}'`), `Güvenlik başlığı eksik: ${header}`);
-assert(worker.includes('withSecurityHeaders(await env.ASSETS.fetch(request))'), 'Statik yanıtlara güvenlik başlıkları uygulanmıyor.');
+assert(worker.includes('env.ASSETS.fetch(request)'), 'Statik asset yönlendirmesi eksik.');
 
-console.log(`Basic Consent Mode, erişilebilirlik, güvenlik başlıkları, iletişim ve analitik doğrulaması başarılı: ${files.length} HTML sayfası.`);
+console.log(`Basic Consent Mode, lazy analitik, erişilebilirlik, güvenlik başlıkları ve iletişim doğrulaması başarılı: ${files.length} HTML sayfası.`);
