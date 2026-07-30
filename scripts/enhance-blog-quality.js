@@ -2,10 +2,12 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { indexableBlogPosts, blogOutputPath, blogRoute } from '../content/blog-manifest.js';
 import { blogQualityContent } from '../content/blog-quality-content.js';
+import { negotiationBlogQualityContent } from '../content/blog-quality-content-negotiation.js';
 
 const esc = (v='') => String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const dist = join(process.cwd(), 'dist');
 const relatedPool = indexableBlogPosts.map(blogRoute);
+const qualityContent = Object.freeze({ ...blogQualityContent, ...negotiationBlogQualityContent });
 
 function relatedLinks(slug) {
   const preferred = relatedPool.filter((route) => !route.includes(`/${slug}/`)).slice(0, 3);
@@ -25,7 +27,7 @@ function addVisibleFaq(html, cfg) {
 }
 
 function addSources(html, cfg) {
-  const items = cfg.sources.map(([href,label]) => `<li><a href="${esc(href)}" rel="noopener noreferrer">${esc(label)}</a>, son kontrol 30 Temmuz 2026.</li>`).join('');
+  const items = cfg.sources.map(([href,label]) => `<li><a href="${esc(href)}" rel="noopener noreferrer">${esc(label)}</a>, son kontrol 31 Temmuz 2026.</li>`).join('');
   return html.replace(/(<ol class="sources">[\s\S]*?)(<\/ol>)/i, `$1${items}$2`);
 }
 
@@ -43,7 +45,7 @@ function updateSchema(html, cfg) {
     const article = nodes.find((node) => node['@type'] === 'Article');
     if (article) {
       article.reviewedBy = {'@type':'Organization','name':cfg.reviewer,'url':'https://maasim.net/hakkimizda/'};
-      article.lastReviewed = '2026-07-30';
+      article.lastReviewed = '2026-07-31';
     }
     const faq = nodes.find((node) => node['@type'] === 'FAQPage');
     if (faq) {
@@ -57,7 +59,7 @@ function updateSchema(html, cfg) {
 
 export async function enhanceBlogQuality(distDir = dist) {
   for (const post of indexableBlogPosts) {
-    const cfg = blogQualityContent[post.slug];
+    const cfg = qualityContent[post.slug];
     if (!cfg) throw new Error(`Blog kalite içeriği eksik: ${post.slug}`);
     const file = join(distDir, blogOutputPath(post));
     let html = await readFile(file, 'utf8');
