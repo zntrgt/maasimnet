@@ -73,8 +73,14 @@ function buildMetricHierarchy(metricsBlock) {
     <h3 id="stat-avg-net">0,00 ₺</h3>
     <p id="stat-avg-net-context">Bu maaşla yıl ortalaması net 0,00 ₺, ilk ay 0,00 ₺.</p>
   </article>
-  <details class="secondary-metrics">
-    <summary>Detaylı metrikler <span aria-hidden="true">▾</span></summary>
+  <details class="secondary-metrics" open>
+    <summary>
+      <span class="secondary-metrics__heading">
+        <strong>Detaylı maaş özeti</strong>
+        <small>Yıllık toplamlar, en yüksek ve en düşük net, kesinti oranı ve brüt değerler</small>
+      </span>
+      <span class="secondary-metrics__action" aria-hidden="true">Göster / gizle ▾</span>
+    </summary>
     <div class="secondary-metrics-grid">${compactCards}</div>
   </details>
 </section>`;
