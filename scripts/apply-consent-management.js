@@ -5,6 +5,9 @@ const COOKIEBOT_ID = 'fc0797fc-6cb3-4086-98c8-c276a7024462';
 const COOKIEBOT_CONFIGURATION_MARKER = 'id="CookiebotConfiguration"';
 const COOKIEBOT_MARKER = 'id="Cookiebot"';
 const CONSENT_MODE_MARKER = 'data-maasim-consent-mode';
+const COOKIEBOT_HINTS_MARKER = 'data-cookiebot-connection-hints';
+
+const cookiebotConnectionHints = `<link rel="preconnect" href="https://consent.cookiebot.com" crossorigin ${COOKIEBOT_HINTS_MARKER}><link rel="preconnect" href="https://consentcdn.cookiebot.com" crossorigin><link rel="dns-prefetch" href="//consent.cookiebot.com"><link rel="dns-prefetch" href="//consentcdn.cookiebot.com">`;
 
 const cookiebotConfiguration = `<script id="CookiebotConfiguration" type="application/json" data-cookieconsent="ignore">
 {
@@ -18,7 +21,7 @@ const cookiebotConfiguration = `<script id="CookiebotConfiguration" type="applic
 }
 </script>`;
 
-const cookiebotScript = `<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="${COOKIEBOT_ID}" data-blockingmode="auto" data-framework="TCFv2.2" data-culture="TR" type="text/javascript"></script>`;
+const cookiebotScript = `<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" fetchpriority="high" data-cbid="${COOKIEBOT_ID}" data-blockingmode="auto" data-framework="TCFv2.2" data-culture="TR" type="text/javascript"></script>`;
 
 const consentModeScript = `<script data-cookieconsent="ignore" ${CONSENT_MODE_MARKER}>
 window['gtag_enable_tcf_support'] = true;
@@ -91,8 +94,8 @@ async function walkHtml(dir, output = []) {
 }
 
 function injectCookiebot(html) {
-  if (html.includes(COOKIEBOT_CONFIGURATION_MARKER) && html.includes(COOKIEBOT_MARKER) && html.includes(CONSENT_MODE_MARKER)) return html;
-  return html.replace(/<head([^>]*)>/i, `<head$1>${cookiebotConfiguration}${cookiebotScript}${consentModeScript}`);
+  if (html.includes(COOKIEBOT_CONFIGURATION_MARKER) && html.includes(COOKIEBOT_MARKER) && html.includes(CONSENT_MODE_MARKER) && html.includes(COOKIEBOT_HINTS_MARKER)) return html;
+  return html.replace(/<head([^>]*)>/i, `<head$1>${cookiebotConnectionHints}${cookiebotConfiguration}${cookiebotScript}${consentModeScript}`);
 }
 
 function injectFooterControls(html) {
@@ -118,5 +121,5 @@ export async function applyConsentManagement(dist) {
     await writeFile(path, html);
   }
 
-  console.log(`Cookiebot CMP uygulandı: ${files.length} sayfa`);
+  console.log(`Cookiebot CMP ve bağlantı öncelikleri uygulandı: ${files.length} sayfa`);
 }
