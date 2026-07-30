@@ -37,6 +37,7 @@ const requiredCss = [
   '/* Simetrik finansal metrik kart standardı */',
   '/* Aylık gelir vergisi dilimi sütunu */',
   '/* Birleştirilmiş ortak site shell stilleri */',
+  '/* Legacy sayfa CSS\'lerinden ortak shell izolasyonu */',
   '--primary: #0f172a',
   '--accent: #10b981',
   'font-variant-numeric: tabular-nums',
@@ -49,6 +50,8 @@ const requiredCss = [
   '#payroll-results-shell .payroll-table',
   '.tax-bracket-badge',
   '.site-header',
+  '.site-footer{width:100%!important;max-width:none!important',
+  '.site-header{width:100%!important;max-width:none!important',
   'overflow-x: visible !important',
   'overflow-y: visible !important',
   'table-layout: fixed',
@@ -81,4 +84,4 @@ if (!app.includes("document.getElementById('stat-low-net').innerText = formatCur
   throw new Error('En düşük net kartında ay adı değer alanına karışıyor.');
 }
 
-console.log('SaaS fintech düzeni, aylık vergi dilimleri, tek CSS ve iç scrollsuz bordro tablosu doğrulandı.');
+console.log('SaaS fintech düzeni, ortak shell izolasyonu, tek CSS ve iç scrollsuz bordro tablosu doğrulandı.');
