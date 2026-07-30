@@ -30,10 +30,19 @@ for (const file of files) {
 
   assert(cookieBot >= 0, `Cookiebot eksik: ${file}`);
   assert(consent >= 0, `Consent Mode eksik: ${file}`);
-  assert(google >= 0, `Google tag eksik: ${file}`);
+  assert(google >= 0, `Google tag yükleyicisi eksik: ${file}`);
   assert(cookieBot < consent && consent < google, `İzin/etiket sırası hatalı: ${file}`);
   assert(html.includes("analytics_storage: 'denied'"), `Analitik varsayılan reddi eksik: ${file}`);
   assert(html.includes("ad_storage: 'denied'"), `Reklam varsayılan reddi eksik: ${file}`);
+  assert(!html.includes('<script async src="https://www.googletagmanager.com/gtag/js'), `GA4 izinden önce statik yükleniyor: ${file}`);
+  assert(!html.includes('<script async src="https://pagead2.googlesyndication.com/pagead/js'), `AdSense izinden önce statik yükleniyor: ${file}`);
+  assert(html.includes('Cookiebot?.consent?.statistics'), `GA4 istatistik izni kontrolü eksik: ${file}`);
+  assert(html.includes('Cookiebot?.consent?.marketing'), `AdSense pazarlama izni kontrolü eksik: ${file}`);
+  assert(html.includes("'maasim-ga4-script'"), `Dinamik GA4 yükleyicisi eksik: ${file}`);
+  assert(html.includes("'maasim-adsense-script'"), `Dinamik AdSense yükleyicisi eksik: ${file}`);
+  assert(html.includes('CookiebotOnConsentReady'), `İzin hazır olayı eksik: ${file}`);
+  assert(html.includes('CookiebotOnDecline'), `İzin geri çekme kontrolü eksik: ${file}`);
+  assert(html.includes('window.location.reload()'), `İzin geri çekilince etiket temizleme yenilemesi eksik: ${file}`);
   assert(html.includes('/cerez-politikasi/'), `Çerez politikası bağlantısı eksik: ${file}`);
   assert(html.includes('data-cookiebot-renew'), `Çerez tercihi yenileme kontrolü eksik: ${file}`);
   assert(header >= 0 && main >= 0 && footer >= 0, `Ortak sayfa kabuğu eksik: ${file}`);
@@ -56,4 +65,4 @@ assert(siteShell.includes('blog_cta_clicked'), 'Blog CTA ölçümü eksik.');
 assert(siteShell.includes('CookiebotOnAccept'), 'İzin sonrası ölçüm yenilemesi eksik.');
 assert(siteShell.includes('Cookiebot?.consent?.statistics'), 'Ortak analitik izin kontrolü eksik.');
 
-console.log(`İzin, ortak kabuk, iletişim ve analitik doğrulaması başarılı: ${files.length} HTML sayfası.`);
+console.log(`Basic Consent Mode, ortak kabuk, iletişim ve analitik doğrulaması başarılı: ${files.length} HTML sayfası.`);
