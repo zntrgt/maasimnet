@@ -18,6 +18,7 @@ import { normalizeSitemap } from './normalize-sitemap.js';
 import { applyLighthouseFixes } from './apply-lighthouse-fixes.js';
 import { applyAccessibilityPolish } from './apply-accessibility-polish.js';
 import { applyFintechUi } from './apply-fintech-ui.js';
+import { mergeCriticalCss } from './merge-critical-css.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -50,9 +51,10 @@ await removeInternalCopy(distDir);
 await applyLighthouseFixes(distDir);
 await applyAccessibilityPolish(distDir);
 await applyFintechUi(distDir);
+await mergeCriticalCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.0.3-monthly-tax-brackets', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.0.4-tax-brackets-single-css', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
