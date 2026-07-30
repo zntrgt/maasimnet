@@ -6,6 +6,7 @@
 .calculator-layout > :first-child,
 .calculator-results-column {
   align-self: start;
+  margin-top: 0 !important;
 }
 
 .calculator-results-column {
@@ -13,11 +14,11 @@
   width: 100%;
 }
 
+/* Tablo artık üst iki sütunlu grid'in dışında bağımsız bloktur. */
 .calculator-table-full {
-  grid-column: 1 / -1;
-  width: 100%;
+  width: min(100%, 1280px);
   min-width: 0;
-  margin-top: 0;
+  margin: 24px auto 0;
 }
 
 .calculator-table-full > #payroll-results-shell {
@@ -55,12 +56,15 @@
   }
 
   .calculator-layout > :first-child,
-  .calculator-results-column,
-  .calculator-table-full {
+  .calculator-results-column {
     grid-column: 1;
   }
 
   .calculator-layout > :first-child {
     position: static !important;
+  }
+
+  .calculator-table-full {
+    margin-top: 16px;
   }
 }
