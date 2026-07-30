@@ -49,7 +49,10 @@ const requiredCss = [
   '#payroll-results-shell .payroll-table',
   '.tax-bracket-badge',
   '.site-header',
-  'overflow-x: auto',
+  'overflow-x: visible !important',
+  'overflow-y: visible !important',
+  'table-layout: fixed',
+  'min-width: 0 !important',
   '.cta-button--calculate',
   '#senaryolar .grid'
 ];
@@ -78,4 +81,4 @@ if (!app.includes("document.getElementById('stat-low-net').innerText = formatCur
   throw new Error('En düşük net kartında ay adı değer alanına karışıyor.');
 }
 
-console.log('SaaS fintech düzeni, aylık vergi dilimleri ve tek CSS teslimi doğrulandı.');
+console.log('SaaS fintech düzeni, aylık vergi dilimleri, tek CSS ve iç scrollsuz bordro tablosu doğrulandı.');
