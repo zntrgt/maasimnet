@@ -75,19 +75,9 @@ function assertSharedShell(path, html) {
   assert.equal(count(html, /class="site-header"/g), 1, `${path}: ortak header sayısı 1 olmalı`);
   assert.equal(count(html, /class="site-footer"/g), 1, `${path}: ortak footer sayısı 1 olmalı`);
   assert.equal(count(html, /data-site-shell-css="v3"/g), 1, `${path}: ortak shell CSS bloğu 1 olmalı`);
-
-  const footerMatch = html.match(/<footer\b[^>]*class="[^"]*\bsite-footer\b[^"]*"[^>]*>[\s\S]*?<\/footer>/i);
-  assert.ok(footerMatch, `${path}: ortak footer bulunmalı`);
-  assert.equal(
-    count(footerMatch[0], /data-cookiebot-renew/g),
-    1,
-    `${path}: ortak footer içinde Cookiebot tercih bağlantısı 1 olmalı`
-  );
-  assert.ok(
-    count(html, /data-cookiebot-renew/g) >= 1,
-    `${path}: sayfada en az bir Cookiebot tercih bağlantısı olmalı`
-  );
-
+  assert.ok(count(html, /data-cookiebot-renew/g) >= 1, `${path}: en az bir Cookiebot tercih bağlantısı olmalı`);
+  const footerMatch = html.match(/<footer\b[^>]*class="site-footer"[\s\S]*?<\/footer>/i)?.[0] || '';
+  assert.equal(count(footerMatch, /data-cookiebot-renew/g), 1, `${path}: ortak footer içinde Cookiebot tercih bağlantısı 1 olmalı`);
   assert.doesNotMatch(html, /<header\b[^>]*class="[^"]*\btop\b/i, `${path}: eski P0 header kalmamalı`);
   assert.doesNotMatch(html, /\/assets\/site-shell\.css/, `${path}: ikinci shell CSS isteği kalmamalı`);
   assert.match(html, /<main\b/i, `${path}: ana içerik alanı bulunmalı`);
@@ -123,8 +113,8 @@ try {
 
   const estimate = await fetchText('/2027-maas-hesaplama/');
   assert.match(estimate.text, /2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin/i);
-  assert.match(estimate.text, /data-estimate-mode="gross-to-net"/);
-  assert.match(estimate.text, /data-estimate-mode="net-to-gross"/);
+  assert.match(estimate.text, /id="estimate-mode-gross"[^>]*aria-pressed="true"/);
+  assert.match(estimate.text, /id="estimate-mode-net"[^>]*aria-pressed="false"/);
   assert.match(estimate.text, /Bu bir tahmin aracıdır/i);
   assert.match(estimate.text, /FAQPage/);
 
@@ -138,6 +128,8 @@ try {
   assert.equal(estimateApp.response.status, 200);
   assert.match(estimateApp.text, /calculatePayrollYear/);
   assert.match(estimateApp.text, /solveMonthlyGrossForFixedNet/);
+  assert.match(estimateApp.text, /estimate-mode-gross/);
+  assert.match(estimateApp.text, /estimate-mode-net/);
 
   const engine = await fetchText('/assets/payroll-engine.js');
   assert.equal(engine.response.status, 200);
