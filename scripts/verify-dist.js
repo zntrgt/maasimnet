@@ -25,15 +25,21 @@ const cookiePolicy = await readFile(join(dist, 'cerez-politikasi', 'index.html')
 if (!indexHtml.includes('<script type="module" src="/assets/app.js"></script>')) throw new Error('index.html merkezi app modülünü yüklemiyor.');
 if (indexHtml.includes('function runPayroll(') || indexHtml.includes('const PARAMS =')) throw new Error('Eski inline hesap motoru index içinde kaldı.');
 
+const configurationPosition = indexHtml.indexOf('id="CookiebotConfiguration"');
 const cookiebotPosition = indexHtml.indexOf('id="Cookiebot"');
 const consentModePosition = indexHtml.indexOf('data-maasim-consent-mode');
 const appPosition = indexHtml.indexOf('<script type="module" src="/assets/app.js"></script>');
-if (cookiebotPosition < 0 || consentModePosition < cookiebotPosition || appPosition < consentModePosition) throw new Error('Cookiebot, Consent Mode ve uygulama script sırası hatalı.');
+if (configurationPosition < 0 || cookiebotPosition < configurationPosition || consentModePosition < cookiebotPosition || appPosition < consentModePosition) throw new Error('Cookiebot kısıtları, CMP, Consent Mode ve uygulama script sırası hatalı.');
 for (const token of [
+  '"AllowedVendors": [755]',
+  '"AllowedGoogleACVendors": []',
+  '"AllowedSpecialFeatures": []',
   'data-cbid="fc0797fc-6cb3-4086-98c8-c276a7024462"',
   'data-blockingmode="auto"',
   'data-framework="TCFv2.2"',
+  'data-culture="TR"',
   'data-cookieconsent="ignore"',
+  "window['gtag_enable_tcf_support'] = true",
   "analytics_storage: 'denied'",
   "ad_storage: 'denied'",
   "ad_user_data: 'denied'",
@@ -43,7 +49,7 @@ for (const token of [
 ]) if (!indexHtml.includes(token)) throw new Error(`Cookiebot veya Consent Mode production çıktısı eksik: ${token}`);
 if (indexHtml.includes('consent-manager.js') || indexHtml.includes('consent-manager.css') || indexHtml.includes('data-maasim-consent-bootstrap')) throw new Error('Eski özel izin yöneticisi production çıktısında kaldı.');
 if (!siteShellJs.includes('Cookiebot?.renew') || !siteShellJs.includes("localStorage.removeItem('maasim_consent_v1')")) throw new Error('Cookiebot tercih bağlantısı veya eski izin kaydı temizliği eksik.');
-if (!cookiePolicy.includes('Çerez Politikası') || !cookiePolicy.includes('id="CookieDeclaration"') || !cookiePolicy.includes('/cd.js') || !cookiePolicy.includes('Reklamlar') || !cookiePolicy.includes('İzin verilene kadar kapalı')) throw new Error('Çerez politikası Cookiebot bildirimi veya kategori bilgilerini içermiyor.');
+if (!cookiePolicy.includes('Çerez Politikası') || !cookiePolicy.includes('id="CookieDeclaration"') || !cookiePolicy.includes('/cd.js') || !cookiePolicy.includes('data-culture="TR"') || !cookiePolicy.includes('Google Advertising Products') || !cookiePolicy.includes('Reklamlar') || !cookiePolicy.includes('İzin verilene kadar kapalı')) throw new Error('Çerez politikası Cookiebot bildirimi, Türkçe kültür veya sağlayıcı kapsamını içermiyor.');
 
 const calculatorStart = indexHtml.indexOf('<section class="calculator-layout');
 const resultsColumn = indexHtml.indexOf('<div class="calculator-results-column">', calculatorStart);
@@ -104,7 +110,7 @@ await walk(dist);
 if (htmlFiles.length !== 28) throw new Error(`28 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
 for (const path of htmlFiles) {
   const html = await readFile(path,'utf8');
-  if (!html.includes('id="Cookiebot"') || !html.includes('data-maasim-consent-mode')) throw new Error(`Cookiebot veya Consent Mode eksik: ${path}`);
+  if (!html.includes('id="CookiebotConfiguration"') || !html.includes('id="Cookiebot"') || !html.includes('data-maasim-consent-mode')) throw new Error(`Cookiebot kısıtları, CMP veya Consent Mode eksik: ${path}`);
   if (!html.includes('Güncellik') && !html.includes('site-freshness') && !html.includes('class="freshness"') && !html.includes('Son güncelleme:')) throw new Error(`Güncellik bloğu eksik: ${path}`);
 }
 
@@ -113,4 +119,4 @@ const scenario=createGross100kScenarioData();
 for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includes(value)) throw new Error(`100.000 TL senaryosunda merkezi motor değeri yok: ${value}`);
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
-console.log('dist doğrulaması başarılı: 28 HTML, Cookiebot CMP, Consent Mode v2, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
+console.log('dist doğrulaması başarılı: 28 HTML, sınırlandırılmış Cookiebot TCF sağlayıcıları, Consent Mode v2, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');

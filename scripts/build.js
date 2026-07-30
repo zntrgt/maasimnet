@@ -40,7 +40,7 @@ await applySharedShell(distDir);
 await applyConsentManagement(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.6.8-cookiebot-cmp', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.6.9-cookiebot-vendor-restrictions', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
