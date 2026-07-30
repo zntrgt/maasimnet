@@ -20,10 +20,11 @@ for (const token of requiredHtml) {
 
 const layoutStart = html.indexOf('class="calculator-layout');
 const resultsStart = html.indexOf('class="calculator-results-column"', layoutStart);
-const fullTableStart = html.indexOf('class="calculator-table-full"', resultsStart);
+const layoutClose = html.indexOf('</section>', resultsStart);
+const fullTableStart = html.indexOf('class="calculator-table-full"', layoutClose);
 const payrollStart = html.indexOf('id="payroll-results-shell"', fullTableStart);
-if (!(layoutStart >= 0 && resultsStart > layoutStart && fullTableStart > resultsStart && payrollStart > fullTableStart)) {
-  throw new Error('Dashboard hiyerarşisi hatalı: form/özet üst grid ve tam genişlik tablo sırası korunmuyor.');
+if (!(layoutStart >= 0 && resultsStart > layoutStart && layoutClose > resultsStart && fullTableStart > layoutClose && payrollStart > fullTableStart)) {
+  throw new Error('Dashboard hiyerarşisi hatalı: üst iki sütun kapanmadan veya tablo bağımsız blok olarak başlamadan üretildi.');
 }
 
 const requiredCss = [
@@ -38,7 +39,7 @@ const requiredCss = [
   'justify-content: space-between',
   '.secondary-metrics-grid',
   '.calculator-table-full',
-  'grid-column: 1 / -1',
+  'width: min(100%, 1280px)',
   '#payroll-results-shell .payroll-table',
   'overflow-x: auto',
   '.cta-button--calculate',
@@ -59,4 +60,4 @@ if (!app.includes("document.getElementById('stat-low-net').innerText = formatCur
   throw new Error('En düşük net kartında ay adı değer alanına karışıyor.');
 }
 
-console.log('SaaS fintech dashboard düzeni ve simetrik metrik kart hiyerarşisi doğrulandı.');
+console.log('SaaS fintech dashboard düzeni doğrulandı: üstte bağımsız iki sütun, altında tam genişlik tablo.');
