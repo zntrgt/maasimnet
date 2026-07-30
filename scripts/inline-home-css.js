@@ -4,6 +4,15 @@ import { join } from 'node:path';
 const HOME_STYLE_MARKER = 'data-home-critical-css="v1"';
 const HOME_STYLESHEET_PATTERN = /<link\b[^>]*href=["']\/assets\/styles\.css["'][^>]*>/i;
 
+function minifyCss(source) {
+  return source
+    .replace(/\/\*(?!\!)[\s\S]*?\*\//g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([{}:;,])\s*/g, '$1')
+    .replace(/;}/g, '}')
+    .trim();
+}
+
 export async function inlineHomeCss(distDir) {
   const indexPath = join(distDir, 'index.html');
   const stylesPath = join(distDir, 'assets', 'styles.css');
@@ -19,7 +28,7 @@ export async function inlineHomeCss(distDir) {
     throw new Error('Ana sayfa styles.css bağlantısı bulunamadı.');
   }
 
-  const css = cssSource.trim();
+  const css = minifyCss(cssSource);
   if (css.length < 5000 || !css.includes('.calculator-layout')) {
     throw new Error('Ana sayfa CSS kaynağı beklenenden kısa veya hesaplayıcı stilleri eksik.');
   }
@@ -35,5 +44,5 @@ export async function inlineHomeCss(distDir) {
   }
 
   await writeFile(indexPath, optimized, 'utf8');
-  console.log(`Ana sayfa CSS'i inline teslim edildi: ${Buffer.byteLength(css, 'utf8')} bayt`);
+  console.log(`Ana sayfa CSS'i küçültülerek inline teslim edildi: ${Buffer.byteLength(css, 'utf8')} bayt`);
 }
