@@ -27,6 +27,37 @@ export function multiplyRateRoundedKurus(baseKurus, ratePpm) {
   return Math.round((baseKurus * ratePpm) / ONE_MILLION);
 }
 
+export function getApplicableIncomeTaxRatesPpm(
+  cumulativeBaseKurus,
+  currentBaseKurus,
+  { parameters = PAYROLL_PARAMETERS_2026 } = {}
+) {
+  assertSafeKurus(cumulativeBaseKurus, 'cumulativeBaseKurus');
+  assertSafeKurus(currentBaseKurus, 'currentBaseKurus');
+
+  let remainingKurus = currentBaseKurus;
+  let positionKurus = cumulativeBaseKurus - currentBaseKurus;
+  const rates = [];
+
+  for (const bracket of parameters.incomeTaxBrackets) {
+    if (positionKurus < bracket.upToKurus) {
+      const availableKurus = Number.isFinite(bracket.upToKurus)
+        ? bracket.upToKurus - positionKurus
+        : remainingKurus;
+      const taxableKurus = Math.min(remainingKurus, availableKurus);
+
+      if (taxableKurus > 0) {
+        rates.push(bracket.ratePpm);
+        remainingKurus -= taxableKurus;
+        positionKurus += taxableKurus;
+      }
+    }
+    if (remainingKurus === 0) break;
+  }
+
+  return Object.freeze([...new Set(rates)]);
+}
+
 export function calculateProgressiveTaxKurus(
   cumulativeBaseKurus,
   currentBaseKurus,
@@ -110,6 +141,11 @@ export function calculatePayrollYear({
       grossKurus - employeeSgkOrSgdpKurus - employeeUnemploymentKurus - disabilityDeductionKurus
     );
     cumulativeTaxBaseKurus += incomeTaxBaseKurus;
+    const incomeTaxRatesPpm = getApplicableIncomeTaxRatesPpm(
+      cumulativeTaxBaseKurus,
+      incomeTaxBaseKurus,
+      { parameters }
+    );
 
     const calculatedIncomeTaxKurus = calculateProgressiveTaxKurus(
       cumulativeTaxBaseKurus,
@@ -155,6 +191,7 @@ export function calculatePayrollYear({
       sgkBaseKurus,
       incomeTaxBaseKurus,
       cumulativeTaxBaseKurus,
+      incomeTaxRatesPpm,
       employeeSgkKurus: retired ? 0 : employeeSgkOrSgdpKurus,
       employeeUnemploymentKurus,
       employeeSgdpKurus: retired ? employeeSgkOrSgdpKurus : 0,
