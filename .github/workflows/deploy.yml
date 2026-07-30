@@ -46,8 +46,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Setup Node.js for manual deployment
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -101,13 +100,10 @@ jobs:
             return 1
           }
 
-          for url in \
-            "https://maasim.net/version.json" \
-            "https://maasim.net/blog/" \
-            "https://maasim.net/sitemap.xml" \
-            "https://maasim.net/blog/2026-maas-vergi-dilimleri/" \
-            "https://maasim.net/blog/is-degisikliginde-vergi-matrahi/"
-          do
+          mapfile -t smoke_urls < <(node scripts/production-smoke-urls.js)
+          test "${#smoke_urls[@]}" -ge 4 || { echo "Manifestten yeterli smoke URL üretilemedi"; exit 1; }
+
+          for url in "${smoke_urls[@]}"; do
             wait_for_200 "$url"
           done
 
