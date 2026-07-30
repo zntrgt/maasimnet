@@ -9,17 +9,19 @@ import {
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const RATE_PPM = [150000, 200000, 270000, 350000, 400000];
 let currentMode = 'gross';
+const salaryByMode = { gross: 150000, net: 100000 };
 
 const money = (value) => new Intl.NumberFormat('tr-TR', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2
 }).format(value) + ' ₺';
 
-const numberValue = (id) => {
-  const element = document.getElementById(id);
-  const normalized = String(element?.value || '').replace(/\./g, '').replace(',', '.');
+const parseNumber = (value) => {
+  const normalized = String(value || '').trim().replace(/\s/g, '').replace(/\./g, '').replace(',', '.');
   return Math.max(0, Number(normalized) || 0);
 };
+
+const numberValue = (id) => parseNumber(document.getElementById(id)?.value);
 
 function buildParameters() {
   const thresholdsTl = [1, 2, 3, 4].map((index) => numberValue(`estimate-bracket-${index}`));
@@ -82,6 +84,7 @@ function render() {
 
   try {
     const salary = numberValue('estimate-salary');
+    salaryByMode[currentMode] = salary;
     const parameters = buildParameters();
     const rows = rowsFor(parameters, salary);
     const summary = summarizePayroll(rows);
@@ -125,6 +128,9 @@ function render() {
 }
 
 function setMode(mode) {
+  if (mode !== 'gross' && mode !== 'net') return;
+  const salaryInput = document.getElementById('estimate-salary');
+  salaryByMode[currentMode] = parseNumber(salaryInput.value);
   currentMode = mode;
   const isNet = mode === 'net';
   document.getElementById('estimate-mode-gross').setAttribute('aria-pressed', String(!isNet));
@@ -135,8 +141,7 @@ function setMode(mode) {
   document.getElementById('estimate-salary-note').textContent = isNet
     ? 'Her ay hedeflenen net'
     : 'Kişisel girdin';
-  const salaryInput = document.getElementById('estimate-salary');
-  salaryInput.value = isNet ? '100000' : '150000';
+  salaryInput.value = String(salaryByMode[mode]);
   render();
 }
 
