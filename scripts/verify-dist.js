@@ -5,12 +5,35 @@ import { createGross100kScenarioData } from './render-scenarios.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, 'dist');
+const coreBlogPaths = [
+  'blog/2026-yemek-karti-istisnasi/index.html',
+  'blog/2026-maas-vergi-dilimleri/index.html',
+  'blog/is-degistirince-vergi-matrahi/index.html',
+  'blog/netten-brute-maas-neden-degisir/index.html',
+  'blog/maas-hesaplama-siteleri-neden-farkli/index.html',
+  'blog/2026-sgk-tavani/index.html',
+  'blog/100000-tl-brut-maas-2026-neti/index.html',
+  'blog/prim-ikramiye-net-maasi-neden-dusurur/index.html',
+  'blog/kidem-tazminatina-hangi-odemeler-dahil/index.html',
+  'blog/is-teklifinin-yillik-degeri/index.html'
+];
+const benefitsBlogPaths = [
+  'blog/isveren-katkili-bes/index.html',
+  'blog/esnek-yan-hak-butcesi/index.html',
+  'blog/ev-ofis-destegi-vergi/index.html',
+  'blog/mental-saglik-yan-haklari-burnout/index.html',
+  'blog/sirket-destekli-spor-wellness/index.html',
+  'blog/yasam-evresine-gore-yan-hak/index.html'
+];
 const required = [
   'index.html','assets/styles.css','assets/app.js','assets/payroll-engine.js',
   'assets/data-2026.js','assets/parameters-2026.js','assets/mobile-payroll-view.js','assets/calculator-actions.js',
   'assets/blog.css','assets/p0-content.css','assets/site-shell.js',
   'assets/2027-maas-zammi-veri-ozeti.svg','assets/2027-maas-takvimi.svg','assets/is-yerinde-finansal-saglik.svg',
-  'blog/index.html','blog/2027-maas-zammi-beklentileri/index.html','blog/is-yerinde-finansal-saglik/index.html','sss/index.html','sozluk/index.html',
+  'blog/index.html','blog/2027-maas-zammi-beklentileri/index.html','blog/is-yerinde-finansal-saglik/index.html',
+  ...coreBlogPaths,
+  ...benefitsBlogPaths,
+  'sss/index.html','sozluk/index.html',
   'cerez-politikasi/index.html','veriler/2026/index.html','veriler/2026-asgari-ucret/index.html','veriler/2026-gelir-vergisi-dilimleri/index.html',
   'veriler/2026-sgk-tavani/index.html','veriler/2026-kidem-tazminati-tavani/index.html','veriler/2026-yemek-yardimi-istisnasi/index.html',
   'sgk/sgk-tavani/index.html','indexability-report.json','llms.txt','robots.txt','sitemap.xml','ads.txt','version.json'
@@ -81,6 +104,15 @@ for (const token of ['İş Yerinde Finansal Sağlık','%32,11','%20','79.272 TL'
 for (const schema of ['"@type":"Article"','"@type":"FAQPage"','"@type":"BreadcrumbList"']) if (!financialHealthArticle.includes(schema)) throw new Error(`Finansal sağlık şeması eksik: ${schema}`);
 if (!blogIndex.includes('href="/blog/is-yerinde-finansal-saglik/"')) throw new Error('Finansal sağlık yazısı blog merkezinde listelenmiyor.');
 if (!blogIndex.includes('"@type":"CollectionPage"')) throw new Error('Blog CollectionPage şeması eksik.');
+for (const path of [...coreBlogPaths, ...benefitsBlogPaths]) {
+  const route = `/${path.replace(/index\.html$/, '')}`;
+  if (!blogIndex.includes(`href="${route}"`)) throw new Error(`Yeni blog yazısı blog merkezinde listelenmiyor: ${route}`);
+  if (!sitemap.includes(`<loc>https://maasim.net${route}</loc>`)) throw new Error(`Yeni blog URL sitemap içinde yok: ${route}`);
+  const html = await readFile(join(dist, path), 'utf8');
+  for (const schema of ['"@type":"Article"','"@type":"FAQPage"','"@type":"BreadcrumbList"']) {
+    if (!html.includes(schema)) throw new Error(`Yeni blog şeması eksik (${schema}): ${route}`);
+  }
+}
 
 const sss = await readFile(join(dist,'sss','index.html'),'utf8');
 if ((sss.match(/<details/g) || []).length !== 25) throw new Error('/sss/ sayfasında 25 soru bulunmuyor.');
@@ -107,7 +139,8 @@ for (const row of indexability.scenarios) {
 const htmlFiles=[];
 async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const path=join(dir,entry.name);if(entry.isDirectory())await walk(path);else if(entry.name.endsWith('.html'))htmlFiles.push(path)}}
 await walk(dist);
-if (htmlFiles.length !== 28) throw new Error(`28 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
+const minimumExpectedHtml = 28 + coreBlogPaths.length + benefitsBlogPaths.length;
+if (htmlFiles.length < minimumExpectedHtml) throw new Error(`En az ${minimumExpectedHtml} HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
 for (const path of htmlFiles) {
   const html = await readFile(path,'utf8');
   if (!html.includes('id="CookiebotConfiguration"') || !html.includes('id="Cookiebot"') || !html.includes('data-maasim-consent-mode')) throw new Error(`Cookiebot kısıtları, CMP veya Consent Mode eksik: ${path}`);
@@ -119,4 +152,4 @@ const scenario=createGross100kScenarioData();
 for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includes(value)) throw new Error(`100.000 TL senaryosunda merkezi motor değeri yok: ${value}`);
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
-console.log('dist doğrulaması başarılı: 28 HTML, sınırlandırılmış Cookiebot TCF sağlayıcıları, Consent Mode v2, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
+console.log(`dist doğrulaması başarılı: ${htmlFiles.length} HTML, ${coreBlogPaths.length + benefitsBlogPaths.length + 1} SEO/GEO blog içeriği, sınırlandırılmış Cookiebot TCF sağlayıcıları, Consent Mode v2, sade ana sayfa, tek veri kaynağı, schema graph, güncellik ve indexability hazır.`);
