@@ -57,7 +57,7 @@ await applyFintechUi(distDir);
 await mergeCriticalCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.1.0-2027-estimate-calculator', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.2.0-2027-seo-geo-calculator', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
