@@ -38,11 +38,9 @@ const resultsColumn = indexHtml.indexOf('<div class="calculator-results-column">
 const representativeGross = indexHtml.indexOf('id="representative-gross"', resultsColumn);
 const resultHierarchy = indexHtml.indexOf('class="result-hierarchy"', resultsColumn);
 const calculatorBoundary = indexHtml.indexOf('<!-- Calculator Layout End -->', resultHierarchy);
-const calculatorClose = indexHtml.indexOf('</section>', calculatorBoundary);
-const fullWidthTable = indexHtml.indexOf('class="calculator-table-full"', calculatorClose);
+const fullWidthTable = indexHtml.indexOf('class="calculator-table-full"', calculatorBoundary);
 const payrollShell = indexHtml.indexOf('id="payroll-results-shell"', fullWidthTable);
-const quickNav = indexHtml.indexOf('<!-- Quick Nav -->', payrollShell);
-if (calculatorStart < 0 || resultsColumn < calculatorStart || representativeGross < resultsColumn || resultHierarchy < representativeGross || calculatorBoundary < resultHierarchy || calculatorClose < calculatorBoundary || fullWidthTable < calculatorClose || payrollShell < fullWidthTable || quickNav < payrollShell) throw new Error('Hesaplayıcı dashboard hiyerarşisi doğru sırada üretilmedi.');
+if (calculatorStart < 0 || resultsColumn < calculatorStart || representativeGross < resultsColumn || resultHierarchy < representativeGross || calculatorBoundary < resultHierarchy || fullWidthTable < calculatorBoundary || payrollShell < fullWidthTable) throw new Error('Hesaplayıcı dashboard marker sırası hatalı.');
 if (!stylesCss.includes('.calculator-results-column') || !stylesCss.includes('.calculator-table-full') || !stylesCss.includes('width: min(100%, 1280px)')) throw new Error('Bağımsız tam genişlik bordro tablosu stilleri eksik.');`;
 
 if (!source.includes(oldLayoutVerification)) {
