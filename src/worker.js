@@ -19,13 +19,22 @@ function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && !/[\r\n]/.test(value);
 }
 
-function rateAllowed(ip) {
+function recentSubmissions(ip) {
   const now = Date.now();
   const bucket = (rateBuckets.get(ip) || []).filter((stamp) => now - stamp < RATE_WINDOW_MS);
-  if (bucket.length >= RATE_LIMIT) return false;
-  bucket.push(now);
+  if (bucket.length) rateBuckets.set(ip, bucket);
+  else rateBuckets.delete(ip);
+  return bucket;
+}
+
+function rateAllowed(ip) {
+  return recentSubmissions(ip).length < RATE_LIMIT;
+}
+
+function recordSuccessfulSubmission(ip) {
+  const bucket = recentSubmissions(ip);
+  bucket.push(Date.now());
   rateBuckets.set(ip, bucket);
-  return true;
 }
 
 async function saveToGoogleSheets(env, payload, request) {
@@ -65,11 +74,6 @@ async function handleContact(request, env) {
     return json({ message: 'Geçersiz kaynak.' }, 403);
   }
 
-  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-  if (!rateAllowed(ip)) {
-    return json({ message: 'Çok fazla deneme yapıldı. Birkaç dakika sonra tekrar deneyin.' }, 429);
-  }
-
   let body;
   try {
     body = await request.json();
@@ -104,8 +108,14 @@ async function handleContact(request, env) {
     return json({ message: 'Lütfen zorunlu alanları geçerli biçimde doldurun.' }, 400);
   }
 
+  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  if (!rateAllowed(ip)) {
+    return json({ message: 'Çok fazla başarılı gönderim yapıldı. Birkaç dakika sonra tekrar deneyin.' }, 429);
+  }
+
   try {
     await saveToGoogleSheets(env, payload, request);
+    recordSuccessfulSubmission(ip);
     return json({ ok: true });
   } catch (error) {
     console.error('contact_sheet_save_failed', error?.message || error);
