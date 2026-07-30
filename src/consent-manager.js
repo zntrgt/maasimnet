@@ -1,18 +1,25 @@
 (() => {
   'use strict';
 
-  const CONSENT_VERSION = '2026-07-29.1';
+  const CONSENT_VERSION = '2026-07-30.1';
   const STORAGE_KEY = 'maasim.consent';
   const CONSENT_TTL_MS = 180 * 24 * 60 * 60 * 1000;
   const DEFAULT_GA_ID = 'G-988BB5B64E';
+  const DEFAULT_AD_CLIENT = 'ca-pub-8614552230353945';
   const scriptElement = document.currentScript;
   const GA_ID = scriptElement?.dataset.gaId || DEFAULT_GA_ID;
+  const AD_CLIENT = scriptElement?.dataset.adClient || DEFAULT_AD_CLIENT;
+  const PRIVACY_REGION = document.documentElement.dataset.privacyRegion || 'site-consent';
+  const USES_GOOGLE_CMP = PRIVACY_REGION === 'google-cmp';
+
   const state = {
     consent: null,
     analyticsLoaded: false,
-    marketingActivated: false,
+    analyticsGrantedByCmp: false,
+    adRequestsResumed: false,
     contextTracked: false,
-    lastFocusedElement: null
+    lastFocusedElement: null,
+    tcfListenerBound: false
   };
 
   const allowedEvents = Object.freeze({
@@ -28,6 +35,12 @@
   });
 
   window.dataLayer = window.dataLayer || [];
+  const originalDataLayerPush = window.dataLayer.push.bind(window.dataLayer);
+  window.dataLayer.push = (...items) => {
+    const result = originalDataLayerPush(...items);
+    items.forEach(handleConsentModeCommand);
+    return result;
+  };
   window.gtag = window.gtag || function gtag() {
     window.dataLayer.push(arguments);
   };
@@ -47,7 +60,7 @@
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
       if (!parsed || parsed.version !== CONSENT_VERSION) return null;
-      if (typeof parsed.analytics !== 'boolean' || typeof parsed.marketing !== 'boolean') return null;
+      if (typeof parsed.analytics !== 'boolean' || typeof parsed.ads !== 'boolean') return null;
       const updatedAt = Date.parse(parsed.updatedAt || '');
       if (!Number.isFinite(updatedAt) || Date.now() - updatedAt > CONSENT_TTL_MS) return null;
       return parsed;
@@ -65,18 +78,16 @@
     }
   }
 
-  function isCertifiedCmpReady() {
-    return window.__MAASIM_CERTIFIED_CMP_READY__ === true
-      || document.documentElement.dataset.certifiedCmp === 'ready';
+  function analyticsAllowed() {
+    return USES_GOOGLE_CMP ? state.analyticsGrantedByCmp : Boolean(state.consent?.analytics);
   }
 
   function googleConsentPayload(consent) {
-    const marketingGranted = Boolean(consent?.marketing && isCertifiedCmpReady());
     return {
       analytics_storage: consent?.analytics ? 'granted' : 'denied',
-      ad_storage: marketingGranted ? 'granted' : 'denied',
-      ad_user_data: marketingGranted ? 'granted' : 'denied',
-      ad_personalization: marketingGranted ? 'granted' : 'denied',
+      ad_storage: consent?.ads ? 'granted' : 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
       functionality_storage: 'denied',
       personalization_storage: 'denied',
       security_storage: 'granted'
@@ -84,7 +95,22 @@
   }
 
   function updateGoogleConsent(consent) {
+    if (USES_GOOGLE_CMP) return;
     window.gtag('consent', 'update', googleConsentPayload(consent));
+  }
+
+  function handleConsentModeCommand(command) {
+    if (!USES_GOOGLE_CMP || !command) return;
+    const args = Array.from(command);
+    if (args[0] !== 'consent' || args[1] !== 'update' || !args[2]) return;
+    if (args[2].analytics_storage === 'granted') {
+      state.analyticsGrantedByCmp = true;
+      loadAnalytics();
+      trackInitialContext();
+    }
+    if (args[2].analytics_storage === 'denied') {
+      state.analyticsGrantedByCmp = false;
+    }
   }
 
   function cleanPageLocation() {
@@ -104,7 +130,7 @@
   }
 
   function loadAnalytics() {
-    if (!state.consent?.analytics || state.analyticsLoaded || !GA_ID) return;
+    if (!analyticsAllowed() || state.analyticsLoaded || !GA_ID) return;
     state.analyticsLoaded = true;
 
     const analyticsScript = document.createElement('script');
@@ -132,30 +158,35 @@
     document.head.appendChild(analyticsScript);
   }
 
-  function activateMarketingScripts() {
-    if (!state.consent?.marketing || state.marketingActivated) return;
-    const certifiedCmpReady = isCertifiedCmpReady();
-    const blockedScripts = [...document.querySelectorAll('script[type="text/plain"][data-consent-category="marketing"]')];
-    const hasGoogleAdvertising = blockedScripts.some((script) => /googlesyndication|doubleclick/i.test(script.dataset.consentSrc || script.textContent));
-    if (hasGoogleAdvertising && !certifiedCmpReady) return;
-    state.marketingActivated = true;
+  function resumeAdRequests() {
+    if (state.adRequestsResumed || !AD_CLIENT) return;
+    window.adsbygoogle = window.adsbygoogle || [];
+    window.adsbygoogle.requestNonPersonalizedAds = 1;
+    window.adsbygoogle.pauseAdRequests = 0;
+    state.adRequestsResumed = true;
+  }
 
-    blockedScripts.forEach((blockedScript) => {
-      if (blockedScript.dataset.consentActivated === 'true') return;
-      const activeScript = document.createElement('script');
-      const source = blockedScript.dataset.consentSrc;
-      if (source) activeScript.src = source;
-      if (blockedScript.dataset.consentAsync === 'true') activeScript.async = true;
-      for (const attribute of blockedScript.attributes) {
-        if (attribute.name.startsWith('data-copy-')) {
-          activeScript.setAttribute(attribute.name.slice(10), attribute.value);
+  function bindGoogleCmp() {
+    if (!USES_GOOGLE_CMP || state.tcfListenerBound) return;
+
+    const subscribe = () => {
+      if (typeof window.__tcfapi !== 'function') return false;
+      state.tcfListenerBound = true;
+      window.__tcfapi('addEventListener', 2, (tcData, success) => {
+        if (!success || !tcData) return;
+        if (tcData.eventStatus === 'tcloaded' || tcData.eventStatus === 'useractioncomplete') {
+          resumeAdRequests();
         }
-      }
-      if (!source) activeScript.textContent = blockedScript.textContent;
-      activeScript.dataset.consentManaged = 'marketing';
-      blockedScript.dataset.consentActivated = 'true';
-      blockedScript.after(activeScript);
-    });
+      });
+      return true;
+    };
+
+    if (subscribe()) return;
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      attempts += 1;
+      if (subscribe() || attempts >= 40) window.clearInterval(timer);
+    }, 250);
   }
 
   function sanitizeParameters(eventName, parameters) {
@@ -181,7 +212,7 @@
   }
 
   window.maasimTrack = (eventName, parameters = {}) => {
-    if (!state.consent?.analytics || !allowedEvents[eventName]) return false;
+    if (!analyticsAllowed() || !allowedEvents[eventName]) return false;
     const safeParameters = sanitizeParameters(eventName, parameters);
     window.gtag('event', eventName, safeParameters || {});
     return true;
@@ -200,14 +231,26 @@
     state.lastFocusedElement?.focus?.();
   }
 
+  function openGooglePrivacySettings() {
+    window.googlefc = window.googlefc || {};
+    window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+    if (typeof window.googlefc.showRevocationMessage === 'function') {
+      window.googlefc.showRevocationMessage();
+      return;
+    }
+    window.googlefc.callbackQueue.push(() => window.googlefc.showRevocationMessage?.());
+  }
+
   function openPreferences() {
+    if (USES_GOOGLE_CMP) {
+      openGooglePrivacySettings();
+      return;
+    }
     const modal = document.getElementById('consent-modal');
     if (!modal) return;
     state.lastFocusedElement = document.activeElement;
-    const analytics = document.getElementById('consent-analytics');
-    const marketing = document.getElementById('consent-marketing');
-    analytics.checked = Boolean(state.consent?.analytics);
-    marketing.checked = Boolean(state.consent?.marketing);
+    document.getElementById('consent-analytics').checked = Boolean(state.consent?.analytics);
+    document.getElementById('consent-ads').checked = Boolean(state.consent?.ads);
     modal.hidden = false;
     document.documentElement.classList.add('consent-modal-open');
     modal.querySelector('.consent-modal__close')?.focus();
@@ -220,7 +263,7 @@
       version: CONSENT_VERSION,
       essential: true,
       analytics: Boolean(nextValues.analytics),
-      marketing: Boolean(nextValues.marketing),
+      ads: Boolean(nextValues.ads),
       source,
       createdAt: previous?.createdAt || now,
       updatedAt: now
@@ -234,7 +277,7 @@
 
     const revokedLoadedCategory = Boolean(
       (previous?.analytics && !next.analytics && state.analyticsLoaded)
-      || (previous?.marketing && !next.marketing && state.marketingActivated)
+      || (previous?.ads && !next.ads && state.adRequestsResumed)
     );
 
     if (revokedLoadedCategory) {
@@ -243,19 +286,19 @@
     }
 
     loadAnalytics();
-    activateMarketingScripts();
+    if (next.ads) resumeAdRequests();
     trackInitialContext();
     window.dispatchEvent(new CustomEvent('maasim:consent-changed', { detail: { ...next } }));
   }
 
   function renderUi() {
-    if (document.getElementById('consent-banner')) return;
+    if (USES_GOOGLE_CMP || document.getElementById('consent-banner')) return;
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
       <section class="consent-banner" id="consent-banner" aria-label="Çerez tercihleri" ${state.consent ? 'hidden' : ''}>
         <div class="consent-banner__copy">
           <strong>Gizlilik tercihiniz sizde</strong>
-          <p>Zorunlu teknolojiler siteyi çalıştırır. Analitik ve reklam teknolojileri yalnızca izin verirseniz etkinleşir. Maaş ve hesaplama tutarlarınızı Analytics'e göndermeyiz.</p>
+          <p>Zorunlu teknolojiler siteyi çalıştırır. Analitik yalnız hizmeti geliştirmek, reklam teknolojileri ise bağımsız yayının finansmanını sağlamak için kullanılır. Maaş ve hesaplama tutarlarınızı hiçbir ölçüm veya reklam sağlayıcısına göndermeyiz.</p>
           <a href="/cerez-politikasi/">Çerez Politikasını inceleyin</a>
         </div>
         <div class="consent-banner__actions">
@@ -270,18 +313,18 @@
           <button type="button" class="consent-modal__close" data-consent-action="close" aria-label="Çerez tercihlerini kapat">×</button>
           <p class="consent-modal__eyebrow">Gizlilik merkezi</p>
           <h2 id="consent-modal-title">Çerez tercihlerinizi yönetin</h2>
-          <p>İzin vermediğiniz kategoriler yüklenmez. Tercihinizi daha sonra sayfanın altındaki “Çerez Tercihleri” bağlantısından değiştirebilirsiniz.</p>
+          <p>İzin vermediğiniz kategoriler çalışmaz. Tercihinizi sayfanın altındaki “Çerez Tercihleri” bağlantısından daha sonra değiştirebilirsiniz.</p>
           <div class="consent-category">
             <div><strong>Zorunlu teknolojiler</strong><p>Güvenlik, tercih kaydı ve sitenin temel çalışması için gereklidir.</p></div>
             <span class="consent-category__required">Her zaman aktif</span>
           </div>
           <label class="consent-category" for="consent-analytics">
-            <div><strong>Analitik</strong><p>Sayfa ve hesaplayıcı kullanımını toplu olarak anlamamıza yardımcı olur. Maaş tutarları gönderilmez.</p></div>
+            <div><strong>Analitik</strong><p>Sayfa ve hesaplayıcı kullanımını toplu olarak anlamamıza yardımcı olur. Pazarlama, profil oluşturma veya yeniden hedefleme amacıyla kullanılmaz; maaş tutarları gönderilmez.</p></div>
             <input id="consent-analytics" type="checkbox" role="switch">
           </label>
-          <label class="consent-category" for="consent-marketing">
-            <div><strong>Reklam</strong><p>AdSense ve reklam ölçüm teknolojilerini etkinleştirir. Varsayılan olarak kapalıdır.</p></div>
-            <input id="consent-marketing" type="checkbox" role="switch">
+          <label class="consent-category" for="consent-ads">
+            <div><strong>Reklam ve site finansmanı</strong><p>Google AdSense üzerinden bağlamsal, kişiselleştirilmemiş reklamların gösterilmesini sağlar. Yeniden pazarlama ve ilgi alanı profili kullanılmaz.</p></div>
+            <input id="consent-ads" type="checkbox" role="switch">
           </label>
           <div class="consent-modal__links"><a href="/gizlilik/">Gizlilik</a><a href="/kvkk-aydinlatma-metni/">KVKK Aydınlatma</a><a href="/cerez-politikasi/">Çerez Politikası</a></div>
           <div class="consent-modal__actions">
@@ -305,7 +348,7 @@
   }
 
   function trackInitialContext() {
-    if (state.contextTracked || !state.consent?.analytics) return;
+    if (state.contextTracked || !analyticsAllowed()) return;
     if (document.getElementById('input-salary')) {
       state.contextTracked = window.maasimTrack('calculator_view', {
         calculator_type: calculatorType(),
@@ -336,14 +379,14 @@
       }
 
       const action = target.dataset.consentAction;
-      if (action === 'accept') saveConsent({ analytics: true, marketing: true }, 'accept_all');
-      if (action === 'reject') saveConsent({ analytics: false, marketing: false }, 'reject_all');
+      if (action === 'accept') saveConsent({ analytics: true, ads: true }, 'accept_all');
+      if (action === 'reject') saveConsent({ analytics: false, ads: false }, 'reject_all');
       if (action === 'manage') openPreferences();
       if (action === 'close') closePreferences();
       if (action === 'save') {
         saveConsent({
           analytics: document.getElementById('consent-analytics').checked,
-          marketing: document.getElementById('consent-marketing').checked
+          ads: document.getElementById('consent-ads').checked
         }, 'preferences');
       }
 
@@ -386,31 +429,25 @@
     });
   }
 
-  state.consent = readConsent();
+  state.consent = USES_GOOGLE_CMP ? null : readConsent();
   if (state.consent) {
     updateGoogleConsent(state.consent);
     loadAnalytics();
+    if (state.consent.ads) resumeAdRequests();
   }
-
-  function certifiedCmpReady() {
-    window.__MAASIM_CERTIFIED_CMP_READY__ = true;
-    updateGoogleConsent(state.consent);
-    activateMarketingScripts();
-  }
-
-  window.addEventListener('maasim:certified-cmp-ready', certifiedCmpReady);
 
   window.MaasimConsent = Object.freeze({
     openPreferences,
-    certifiedCmpReady,
-    getConsent: () => state.consent ? { ...state.consent } : null,
+    getConsent: () => USES_GOOGLE_CMP
+      ? { mode: 'google-cmp', analytics: state.analyticsGrantedByCmp, ads: state.adRequestsResumed }
+      : state.consent ? { ...state.consent } : null,
     version: CONSENT_VERSION
   });
 
   const initialize = () => {
     renderUi();
     bindMeasurementEvents();
-    activateMarketingScripts();
+    bindGoogleCmp();
   };
 
   if (document.readyState === 'loading') {
