@@ -22,7 +22,7 @@ const bootstrap = `<script ${BOOTSTRAP_MARKER}>
   window.gtag('consent', 'default', defaults);
   try {
     var saved = JSON.parse(window.localStorage.getItem(key) || 'null');
-    if (saved && saved.version === 1 && saved.preferences) {
+    if (saved && saved.version === 1 && saved.preferences && saved.expiresAt && new Date(saved.expiresAt).getTime() > Date.now()) {
       window.gtag('consent', 'update', {
         analytics_storage: saved.preferences.analytics ? 'granted' : 'denied',
         ad_storage: saved.preferences.marketing ? 'granted' : 'denied',
@@ -79,6 +79,7 @@ const js = `
   const STORAGE_KEY = 'maasim_consent_v1';
   const COOKIE_KEY = 'maasim_consent';
   const VERSION = 1;
+  const CONSENT_MAX_AGE_MS = 180 * 24 * 60 * 60 * 1000;
   const VALID_CATEGORIES = ['analytics', 'marketing', 'functional'];
   const initialFocus = { value: null };
 
@@ -95,7 +96,11 @@ const js = `
 
   const readConsent = () => {
     const saved = safeParse(window.localStorage.getItem(STORAGE_KEY));
-    if (!saved || saved.version !== VERSION || !saved.preferences) return null;
+    if (!saved || saved.version !== VERSION || !saved.preferences || !saved.expiresAt) return null;
+    if (new Date(saved.expiresAt).getTime() <= Date.now()) {
+      window.localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
     return { ...saved, preferences: normalize(saved.preferences) };
   };
 
@@ -130,7 +135,8 @@ const js = `
 
   const saveConsent = (preferences, source = 'preferences') => {
     const normalized = normalize(preferences);
-    const record = { version: VERSION, updatedAt: new Date().toISOString(), source, preferences: normalized };
+    const now = Date.now();
+    const record = { version: VERSION, updatedAt: new Date(now).toISOString(), expiresAt: new Date(now + CONSENT_MAX_AGE_MS).toISOString(), source, preferences: normalized };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
     writeCookie(normalized);
     window.gtag?.('consent', 'update', consentModePayload(normalized));
@@ -256,7 +262,7 @@ const policyHtml = `<!doctype html>
     <h2>1. Kategoriler</h2>
     <table><thead><tr><th>Kategori</th><th>Amaç</th><th>Varsayılan durum</th></tr></thead><tbody><tr><td>Zorunlu</td><td>Güvenlik, tercih kaydı ve temel site işlevleri.</td><td>Her zaman etkin</td></tr><tr><td>Analitik</td><td>Ziyaret ve kullanım verilerini toplu olarak ölçmek.</td><td>İzin verilene kadar kapalı</td></tr><tr><td>Pazarlama</td><td>Reklam ölçümü, yeniden pazarlama ve kişiselleştirme.</td><td>İzin verilene kadar kapalı</td></tr><tr><td>İşlevsel</td><td>Gelişmiş tercihleri ve üçüncü taraf özelliklerini hatırlamak.</td><td>İzin verilene kadar kapalı</td></tr></tbody></table>
     <h2>2. Kullanılan zorunlu kayıtlar</h2>
-    <table><thead><tr><th>Ad</th><th>Tür</th><th>Amaç</th><th>Süre</th></tr></thead><tbody><tr><td>maasim_consent</td><td>Birinci taraf çerez</td><td>İzin tercihlerinin kısa kodunu saklar.</td><td>180 gün</td></tr><tr><td>maasim_consent_v1</td><td>Yerel depolama</td><td>Seçilen kategorileri, tercih kaynağını ve güncelleme tarihini saklar.</td><td>Tercih silinene veya güncellenene kadar</td></tr></tbody></table>
+    <table><thead><tr><th>Ad</th><th>Tür</th><th>Amaç</th><th>Süre</th></tr></thead><tbody><tr><td>maasim_consent</td><td>Birinci taraf çerez</td><td>İzin tercihlerinin kısa kodunu saklar.</td><td>180 gün</td></tr><tr><td>maasim_consent_v1</td><td>Yerel depolama</td><td>Seçilen kategorileri, tercih kaynağını ve güncelleme tarihini saklar.</td><td>180 gün</td></tr></tbody></table>
     <h2>3. Analitik ve reklam araçları</h2>
     <p>Analitik veya pazarlama araçları kullanıldığında ilgili kodlar, kullanıcı açıkça izin verene kadar çalıştırılmaz. Google etiketleri için izin sinyalleri varsayılan olarak reddedilmiş durumdadır. Kullanılan sağlayıcılar ve çerez adları değişirse bu tablo güncellenir.</p>
     <h2>4. Tercihinizi değiştirme</h2>
