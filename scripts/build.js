@@ -21,6 +21,7 @@ import { applyAccessibilityPolish } from './apply-accessibility-polish.js';
 import { applyFintechUi } from './apply-fintech-ui.js';
 import { mergeCriticalCss } from './merge-critical-css.js';
 import { inlineHomeCss } from './inline-home-css.js';
+import { fixCalculatorAnalyticsInputReset } from './fix-calculator-analytics-input-reset.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -37,6 +38,10 @@ for (const file of [
   'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
   'estimate-2027.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
+
+// Lazy analitik modülü kullanıcı ilk etkileşimi sırasında yüklenir. Kaynak modüldeki
+// eski başlangıç temizliği, kullanıcının girdiği maaşı silmemesi için dist çıktısından kaldırılır.
+await fixCalculatorAnalyticsInputReset(distDir);
 
 await applyResultHierarchy(distDir);
 await applyDashboardLayout(distDir);
@@ -65,7 +70,7 @@ await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.3.1-lazy-analytics-minified-css', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.4.0-calculator-user-flow-qa', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
