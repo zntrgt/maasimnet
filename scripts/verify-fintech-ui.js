@@ -36,7 +36,7 @@ const requiredCss = [
   '/* Tam genişlik SaaS dashboard bordro yerleşimi */',
   '/* Simetrik finansal metrik kart standardı */',
   '/* Aylık gelir vergisi dilimi sütunu */',
-  '/* Birleştirilmiş ortak site shell stilleri */',
+  '/* Birleştirilmiş ortak site shell stilleri v2 */',
   '/* Legacy sayfa CSS\'lerinden ortak shell izolasyonu */',
   '--primary: #0f172a',
   '--accent: #10b981',
@@ -49,9 +49,12 @@ const requiredCss = [
   'width: min(100%, 1280px)',
   '#payroll-results-shell .payroll-table',
   '.tax-bracket-badge',
-  '.site-header',
+  '.site-header{',
+  '.site-footer{',
+  '.site-footer__grid{',
   '.site-footer{width:100%!important;max-width:none!important',
   '.site-header{width:100%!important;max-width:none!important',
+  'display:block!important',
   'overflow-x: visible !important',
   'overflow-y: visible !important',
   'table-layout: fixed',
@@ -84,4 +87,4 @@ if (!app.includes("document.getElementById('stat-low-net').innerText = formatCur
   throw new Error('En düşük net kartında ay adı değer alanına karışıyor.');
 }
 
-console.log('SaaS fintech düzeni, ortak shell izolasyonu, tek CSS ve iç scrollsuz bordro tablosu doğrulandı.');
+console.log('SaaS fintech düzeni, güncel ortak shell CSS, tek CSS ve iç scrollsuz bordro tablosu doğrulandı.');
