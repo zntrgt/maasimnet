@@ -1,13 +1,14 @@
 name: Deploy to Cloudflare
 
 on:
+  workflow_run:
+    workflows: ["Test and build"]
+    types: [completed]
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 permissions:
   contents: read
+  actions: read
   issues: write
 
 concurrency:
@@ -16,33 +17,48 @@ concurrency:
 
 jobs:
   deploy:
+    if: >-
+      ${{
+        vars.CLOUDFLARE_DEPLOY_ENABLED == 'true' &&
+        (
+          github.event_name == 'workflow_dispatch' ||
+          (
+            github.event.workflow_run.conclusion == 'success' &&
+            github.event.workflow_run.head_branch == 'main'
+          )
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
-      - name: Checkout
-        if: ${{ vars.CLOUDFLARE_DEPLOY_ENABLED == 'true' }}
+      - name: Checkout verified commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Setup Node.js
-        if: ${{ vars.CLOUDFLARE_DEPLOY_ENABLED == 'true' }}
+      - name: Download verified production artifact
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: maasimnet-dist
+          path: dist
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Setup Node.js for manual deployment
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - name: Install
-        if: ${{ vars.CLOUDFLARE_DEPLOY_ENABLED == 'true' }}
-        run: npm ci
-
-      - name: Test and build
-        id: check
-        if: ${{ vars.CLOUDFLARE_DEPLOY_ENABLED == 'true' }}
-        run: npm run check
+      - name: Build and verify manual deployment
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: npm ci && npm run check
 
       - name: Deploy Worker assets
         id: deploy
-        if: ${{ vars.CLOUDFLARE_DEPLOY_ENABLED == 'true' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -50,32 +66,41 @@ jobs:
           wranglerVersion: "4"
           command: deploy --config wrangler.jsonc
 
+      - name: Production smoke test
+        id: smoke
+        run: |
+          set -euo pipefail
+          for url in \
+            "https://maasim.net/version.json" \
+            "https://maasim.net/blog/" \
+            "https://maasim.net/sitemap.xml" \
+            "https://maasim.net/blog/2026-maas-vergi-dilimleri/" \
+            "https://maasim.net/blog/is-degisikliginde-vergi-matrahi/"
+          do
+            status=$(curl --retry 5 --retry-delay 3 --retry-all-errors -sS -o /dev/null -w "%{http_code}" "$url")
+            test "$status" = "200" || { echo "Smoke test başarısız: $url -> $status"; exit 1; }
+          done
+
       - name: Report deployment result
         if: ${{ always() }}
         uses: actions/github-script@v7
         env:
-          DEPLOY_ENABLED: ${{ vars.CLOUDFLARE_DEPLOY_ENABLED }}
-          CHECK_OUTCOME: ${{ steps.check.outcome }}
           DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
-          DEPLOY_SHA: ${{ github.sha }}
+          SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
           DEPLOY_RUN_ID: ${{ github.run_id }}
         with:
           script: |
-            const enabled = process.env.DEPLOY_ENABLED === 'true';
-            const checkOutcome = process.env.CHECK_OUTCOME || 'skipped';
             const deployOutcome = process.env.DEPLOY_OUTCOME || 'skipped';
+            const smokeOutcome = process.env.SMOKE_OUTCOME || 'skipped';
             const sha = process.env.DEPLOY_SHA;
             const runId = process.env.DEPLOY_RUN_ID;
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}`;
 
-            let status;
-            if (!enabled) {
-              status = '⏸️ Production deployment devre dışı (`CLOUDFLARE_DEPLOY_ENABLED` değeri `true` değil).';
-            } else if (checkOutcome === 'success' && deployOutcome === 'success') {
-              status = '✅ Cloudflare production deployment başarılı.';
-            } else {
-              status = `❌ Cloudflare production deployment başarısız. Test/build: **${checkOutcome}**, deploy: **${deployOutcome}**.`;
-            }
+            const success = deployOutcome === 'success' && smokeOutcome === 'success';
+            const status = success
+              ? '✅ Cloudflare production deployment ve canlı smoke test başarılı.'
+              : `❌ Production deployment başarısız. Deploy: **${deployOutcome}**, smoke: **${smokeOutcome}**.`;
 
             const body = [
               status,
