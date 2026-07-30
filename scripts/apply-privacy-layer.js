@@ -36,7 +36,7 @@ function transformScripts(html) {
 
 function injectPrivacyBootstrap(html) {
   if (html.includes(CONSENT_ASSET)) return html;
-  const bootstrap = `<script>window.adsbygoogle=window.adsbygoogle||[];window.adsbygoogle.pauseAdRequests=1;window.adsbygoogle.requestNonPersonalizedAds=1;</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}" crossorigin="anonymous" data-privacy-treatments="disablePersonalization" data-consent-managed="adsense"></script><script src="${CONSENT_ASSET}" data-ga-id="${GA_ID}" data-ad-client="${AD_CLIENT}"></script><link rel="stylesheet" href="${CONSENT_STYLES}">`;
+  const bootstrap = `<script>window.adsbygoogle=window.adsbygoogle||[];window.adsbygoogle.pauseAdRequests=1;window.adsbygoogle.requestNonPersonalizedAds=1;</script><script src="${CONSENT_ASSET}" data-ga-id="${GA_ID}" data-ad-client="${AD_CLIENT}"></script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}" crossorigin="anonymous" data-privacy-treatments="disablePersonalization" data-consent-managed="adsense"></script><link rel="stylesheet" href="${CONSENT_STYLES}">`;
   if (/<head[^>]*>/i.test(html)) return html.replace(/<head([^>]*)>/i, `<head$1>${bootstrap}`);
   return `${bootstrap}${html}`;
 }
