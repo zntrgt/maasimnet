@@ -75,7 +75,19 @@ function assertSharedShell(path, html) {
   assert.equal(count(html, /class="site-header"/g), 1, `${path}: ortak header sayısı 1 olmalı`);
   assert.equal(count(html, /class="site-footer"/g), 1, `${path}: ortak footer sayısı 1 olmalı`);
   assert.equal(count(html, /data-site-shell-css="v3"/g), 1, `${path}: ortak shell CSS bloğu 1 olmalı`);
-  assert.equal(count(html, /data-cookiebot-renew/g), 1, `${path}: Cookiebot tercih bağlantısı 1 olmalı`);
+
+  const footerMatch = html.match(/<footer\b[^>]*class="[^"]*\bsite-footer\b[^"]*"[^>]*>[\s\S]*?<\/footer>/i);
+  assert.ok(footerMatch, `${path}: ortak footer bulunmalı`);
+  assert.equal(
+    count(footerMatch[0], /data-cookiebot-renew/g),
+    1,
+    `${path}: ortak footer içinde Cookiebot tercih bağlantısı 1 olmalı`
+  );
+  assert.ok(
+    count(html, /data-cookiebot-renew/g) >= 1,
+    `${path}: sayfada en az bir Cookiebot tercih bağlantısı olmalı`
+  );
+
   assert.doesNotMatch(html, /<header\b[^>]*class="[^"]*\btop\b/i, `${path}: eski P0 header kalmamalı`);
   assert.doesNotMatch(html, /\/assets\/site-shell\.css/, `${path}: ikinci shell CSS isteği kalmamalı`);
   assert.match(html, /<main\b/i, `${path}: ana içerik alanı bulunmalı`);
