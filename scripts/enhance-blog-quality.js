@@ -21,20 +21,45 @@ function depthSection(post, cfg) {
   return `<section class="quality-depth" aria-labelledby="quality-depth-${post.slug}"><h2 id="quality-depth-${post.slug}">${esc(cfg.decisionTitle)}</h2><p>${esc(cfg.intro)}</p><div class="table-scroll"><table class="table decision-table"><thead><tr><th>Başlık</th><th>Ne anlatır?</th><th>Karar etkisi</th><th>Kontrol</th></tr></thead><tbody>${rows}</tbody></table></div><h2>Uygulama kontrol listesi</h2><ol class="action-checklist">${checklist}</ol><div class="note"><b>Sık yapılan hata:</b> ${esc(cfg.mistakes)}</div><h2>Ölçüm ve yönetişim modeli</h2><p>Uygulamanın sahibi, veri kaynağı, güncelleme sıklığı ve karar eşiği baştan tanımlanmalıdır. Bir rakamın sayfada yer alması yeterli değildir; hangi tarih için geçerli olduğu, resmî veri mi örnek senaryo mu olduğu ve hangi varsayımlarla üretildiği görünür olmalıdır. İşveren politikalarında ise kullanım oranı, çalışan erişimi, gerçek maliyet ve memnuniyet birlikte izlenmeli; tek bir gösterge başarı ilan etmek için kullanılmamalıdır.</p><p>Yıllık gözden geçirme tek başına yeterli olmayabilir. Vergi, SGK, asgari ücret, kıdem tavanı veya kurum politikası değiştiğinde ilgili hesap ve içerik aynı güncelleme zincirinden geçirilmelidir. Kullanıcıya sunulan sonuç ile kaynak sayfasındaki parametre arasında fark oluşursa yayın tarihi değil, son doğrulama tarihi esas alınmalıdır.</p><h2>Bu bilgi karar verirken nasıl kullanılmalı?</h2><p>Bu rehberdeki rakam ve çerçeveler tek bir aya veya tek bir bordro örneğine indirgenmemelidir. Ücret kararlarında başlangıç ayı, çalışan statüsü, ek ödeme, vergi matrahı ve ilgili yan hakkın gerçek kullanım değeri birlikte değerlendirilmelidir. Resmî parametre değiştiğinde yalnız sonuç değil, hesap varsayımları da yeniden kontrol edilmelidir.</p><p>Pratik karar akışı dört adımdır: önce güncel ve resmî parametreyi doğrulayın; sonra kişisel veya kurumsal senaryoyu tanımlayın; üçüncü adımda aylık sonuç yerine yıllık toplamı ve alternatif senaryoyu karşılaştırın; son olarak bordro, sözleşme veya kişisel beyan riski varsa uzman kontrolü ekleyin. Bu sıra, tek bir rakama aşırı güvenme riskini azaltır.</p><div class="content-cta"><div><strong>${esc(label)}</strong><p>${esc(copy)}</p></div><a href="${esc(href)}">Devam et</a></div><p class="context-links"><strong>Bağlantılı okumalar:</strong> ${relatedLinks(post.slug)}</p></section>`;
 }
 
+function insertDepthSection(html, post, cfg) {
+  if (html.includes(`quality-depth-${post.slug}`)) return html;
+  const depth = depthSection(post, cfg);
+  if (/<section\s+class="faq"[^>]*>/i.test(html)) {
+    return html.replace(/<section\s+class="faq"[^>]*>/i, (match) => `${depth}${match}`);
+  }
+  if (/<h2\b[^>]*id="sss"[^>]*>/i.test(html)) {
+    const wrapped = html.replace(/<h2\b[^>]*id="sss"[^>]*>/i, (match) => `${depth}<section class="faq">${match}`);
+    if (/<h2\b[^>]*id="kaynakca"[^>]*>/i.test(wrapped)) {
+      return wrapped.replace(/(<h2\b[^>]*id="kaynakca"[^>]*>)/i, '</section>$1');
+    }
+    return wrapped.replace(/<\/article>/i, '</section></article>');
+  }
+  throw new Error(`Blog kalite bölümü için SSS bağlantı noktası bulunamadı: ${post.slug}`);
+}
+
 function addVisibleFaq(html, cfg) {
   const details = cfg.extraFaq.map(([q,a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('');
-  return html.replace(/(<section class="faq">[\s\S]*?)(<\/section>)/i, `$1${details}$2`);
+  return html.replace(/(<section\s+class="faq"[^>]*>[\s\S]*?)(<\/section>)/i, `$1${details}$2`);
 }
 
 function addSources(html, cfg) {
   const items = cfg.sources.map(([href,label]) => `<li><a href="${esc(href)}" rel="noopener noreferrer">${esc(label)}</a>, son kontrol 31 Temmuz 2026.</li>`).join('');
-  return html.replace(/(<ol class="sources">[\s\S]*?)(<\/ol>)/i, `$1${items}$2`);
+  if (/<ol class="sources">/i.test(html)) {
+    return html.replace(/(<ol class="sources">[\s\S]*?)(<\/ol>)/i, `$1${items}$2`);
+  }
+  if (/<h2\b[^>]*id="kaynakca"[^>]*>[\s\S]*?<ul>/i.test(html)) {
+    return html.replace(/(<h2\b[^>]*id="kaynakca"[^>]*>[\s\S]*?<ul>)/i, `$1${items}`);
+  }
+  return html;
 }
 
 function addEditorialReview(html, cfg) {
   const box = `<aside class="editorial-review" aria-label="Editoryal inceleme bilgisi"><strong>İnceleyen: ${esc(cfg.reviewer)}</strong><span>Son içerik ve kaynak kontrolü: ${esc(cfg.reviewedAt)}</span><p>${esc(cfg.methodology)}</p></aside>`;
   if (html.includes('editorial-review')) return html;
-  return html.replace(/(<p class="policy">)/i, `${box}$1`);
+  if (/<p class="policy">/i.test(html)) return html.replace(/(<p class="policy">)/i, `${box}$1`);
+  if (/<h2\b[^>]*id="kaynakca"[^>]*>/i.test(html)) return html.replace(/(<h2\b[^>]*id="kaynakca"[^>]*>)/i, `${box}$1`);
+  if (/<\/article>/i.test(html)) return html.replace(/<\/article>/i, `${box}</article>`);
+  throw new Error('Editoryal güven bloğu için bağlantı noktası bulunamadı.');
 }
 
 function updateSchema(html, cfg) {
@@ -63,9 +88,7 @@ export async function enhanceBlogQuality(distDir = dist) {
     if (!cfg) throw new Error(`Blog kalite içeriği eksik: ${post.slug}`);
     const file = join(distDir, blogOutputPath(post));
     let html = await readFile(file, 'utf8');
-    if (!html.includes(`quality-depth-${post.slug}`)) {
-      html = html.replace(/<section class="faq">/i, `${depthSection(post, cfg)}<section class="faq">`);
-    }
+    html = insertDepthSection(html, post, cfg);
     html = addVisibleFaq(html, cfg);
     html = addSources(html, cfg);
     html = addEditorialReview(html, cfg);
