@@ -18,6 +18,9 @@ for (const token of [
   '<title>2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin | Maaşım.net</title>',
   'content="2027 maaş hesaplama aracıyla tahmini brütten nete ve netten brüte maaşınızı hesaplayın.',
   '<link rel="canonical" href="https://maasim.net/2027-maas-hesaplama/">',
+  '<link rel="modulepreload" href="/assets/estimate-2027.js">',
+  '<link rel="modulepreload" href="/assets/payroll-engine.js">',
+  '<link rel="modulepreload" href="/assets/parameters-2026.js">',
   'Tahmini parametreler · Resmî 2027 verisi değildir',
   'Bu bir tahmin aracıdır; bordro veya resmî hesaplama değildir.',
   'Son uyarı: Sonuçlar resmî değildir',
@@ -94,4 +97,4 @@ if (html.includes('/assets/site-shell.css')) {
 const warningCount = (html.match(/resmî değil|resmî değildir|resmî olmayan|tahmin aracıdır|tahminidir/gi) || []).length;
 if (warningCount < 10) throw new Error(`2027 sayfasında görünür uyarı sayısı yetersiz: ${warningCount}`);
 
-console.log('2027 tahmini maaş hesaplayıcı; çift yönlü hesaplama, SEO/GEO içeriği, SSS, performans ve güçlü iç linklerle doğrulandı.');
+console.log('2027 tahmini maaş hesaplayıcı; çift yönlü hesaplama, SEO/GEO içeriği, SSS, modulepreload, performans ve güçlü iç linklerle doğrulandı.');
