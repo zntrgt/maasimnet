@@ -1,10 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const dist = join(process.cwd(), 'dist');
+const root = process.cwd();
+const dist = join(root, 'dist');
 const html = await readFile(join(dist, 'index.html'), 'utf8');
 const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
 const app = await readFile(join(dist, 'assets', 'app.js'), 'utf8');
+const shellCss = (await readFile(join(root, 'src', 'site-shell.css'), 'utf8')).trim();
 
 const requiredHtml = [
   'data-fintech-ui="v1"',
@@ -19,8 +21,30 @@ for (const token of requiredHtml) {
   if (!html.includes(token)) throw new Error(`Fintech UI HTML işareti eksik: ${token}`);
 }
 
-if (html.includes('/assets/site-shell.css')) {
-  throw new Error('Ana sayfada ikinci render-blocking site-shell.css isteği kaldı.');
+const representativePages = [
+  'index.html',
+  join('blog', 'index.html'),
+  join('blog', '2027-maas-zammi-beklentileri', 'index.html'),
+  join('veriler', '2026', 'index.html'),
+  join('sss', 'index.html'),
+  join('2027-maas-hesaplama', 'index.html')
+];
+
+for (const relativePath of representativePages) {
+  const page = await readFile(join(dist, relativePath), 'utf8');
+  for (const token of [
+    'data-site-shell-css="v3"',
+    'class="site-header"',
+    'class="site-footer"',
+    '.site-header{',
+    '.site-footer{',
+    '.site-footer__grid{',
+    '/* Legacy sayfa CSS\'lerinden ortak shell izolasyonu */'
+  ]) {
+    if (!page.includes(token)) throw new Error(`Ortak shell eksik (${token}): ${relativePath}`);
+  }
+  if (!page.includes(shellCss)) throw new Error(`Ortak shell CSS içeriği farklı: ${relativePath}`);
+  if (page.includes('/assets/site-shell.css')) throw new Error(`Ayrı shell CSS isteği kaldı: ${relativePath}`);
 }
 
 const layoutStart = html.indexOf('class="calculator-layout');
@@ -36,8 +60,6 @@ const requiredCss = [
   '/* Tam genişlik SaaS dashboard bordro yerleşimi */',
   '/* Simetrik finansal metrik kart standardı */',
   '/* Aylık gelir vergisi dilimi sütunu */',
-  '/* Birleştirilmiş ortak site shell stilleri v2 */',
-  '/* Legacy sayfa CSS\'lerinden ortak shell izolasyonu */',
   '--primary: #0f172a',
   '--accent: #10b981',
   'font-variant-numeric: tabular-nums',
@@ -49,12 +71,6 @@ const requiredCss = [
   'width: min(100%, 1280px)',
   '#payroll-results-shell .payroll-table',
   '.tax-bracket-badge',
-  '.site-header{',
-  '.site-footer{',
-  '.site-footer__grid{',
-  '.site-footer{width:100%!important;max-width:none!important',
-  '.site-header{width:100%!important;max-width:none!important',
-  'display:block!important',
   'overflow-x: visible !important',
   'overflow-y: visible !important',
   'table-layout: fixed',
@@ -87,4 +103,4 @@ if (!app.includes("document.getElementById('stat-low-net').innerText = formatCur
   throw new Error('En düşük net kartında ay adı değer alanına karışıyor.');
 }
 
-console.log('SaaS fintech düzeni, güncel ortak shell CSS, tek CSS ve iç scrollsuz bordro tablosu doğrulandı.');
+console.log('Fintech düzeni ve tüm sayfalarda birebir aynı ortak header/footer doğrulandı.');
