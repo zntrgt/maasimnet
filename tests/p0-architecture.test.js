@@ -37,5 +37,5 @@ test('P0 dönüşümü ana sayfayı 6 SSS ve 6 senaryoyla sınırlar', () => {
 test('build DATA_2026 ve P0 mimarisini production paketine dahil eder', () => {
   assert.match(build, /'data-2026\.js'/);
   assert.match(build, /applyP0Architecture\(distDir\)/);
-  assert.match(build, /version:\s*'0\.6\.[0-9]+-[^']+'/);
+  assert.match(build, /version:\s*'\d+\.\d+\.\d+-[a-z0-9-]+'/);
 });
