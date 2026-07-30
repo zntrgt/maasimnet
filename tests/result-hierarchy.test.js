@@ -6,10 +6,11 @@ const transformJs = await readFile(new URL('../scripts/apply-result-hierarchy.js
 const stylesCss = await readFile(new URL('../src/result-hierarchy.css', import.meta.url), 'utf8');
 const buildJs = await readFile(new URL('../scripts/build.js', import.meta.url), 'utf8');
 
-test('aylık ortalama net tek hero kart olarak üretilir', () => {
+test('aylık ortalama net tek hero kart ve açık detaylı özet olarak üretilir', () => {
   assert.match(transformJs, /class="metric-hero"/);
   assert.match(transformJs, /id="stat-avg-net-context"/);
-  assert.match(transformJs, /<details class="secondary-metrics">/);
+  assert.match(transformJs, /<details class="secondary-metrics" open>/);
+  assert.match(transformJs, /Detaylı maaş özeti/);
 });
 
 test('işveren maliyeti opsiyonel alana taşınır', () => {
@@ -40,6 +41,13 @@ test('sonuçlar bağımsız sağ kolonda, bordro genişliği korunarak gruplanı
   assert.match(stylesCss, /\.calculator-results-column\s*\{/);
   assert.match(stylesCss, /\.calculator-results-column > #payroll-results-shell/);
   assert.match(stylesCss, /min-width:\s*0/);
+});
+
+test('detaylı metrik ve bordro okunabilirlik stilleri korunur', () => {
+  assert.match(stylesCss, /\.secondary-metrics > summary/);
+  assert.match(stylesCss, /font-size:\s*1rem/);
+  assert.match(stylesCss, /#payroll-results-shell table/);
+  assert.match(stylesCss, /#payroll-results-shell tbody td/);
 });
 
 test('build sonucu hiyerarşi dönüşümünü sürümden bağımsız uygular', () => {
