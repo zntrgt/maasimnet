@@ -16,7 +16,7 @@ export const blogPosts = [
   { slug: 'ev-ofis-destegi-vergi', generator: 'benefits', indexable: true },
   { slug: 'mental-saglik-yan-haklari-burnout', generator: 'benefits', indexable: true },
   { slug: 'sirket-destekli-spor-wellness', generator: 'benefits', indexable: true },
-  { slug: 'yasam-evresine-gore-yan-hak', generator: 'benefits', indexable: true }
+  { slug: 'yasam-evresine-gore-yan-haklar', generator: 'benefits', indexable: true }
 ];
 
 export const indexableBlogPosts = blogPosts.filter((post) => post.indexable);
