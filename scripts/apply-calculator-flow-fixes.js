@@ -10,9 +10,8 @@ function replaceRequired(source, searchValue, replacement, label) {
 
 export async function applyCalculatorFlowFixes(distDir) {
   const appPath = join(distDir, 'assets', 'app.js');
-  const analyticsPath = join(distDir, 'assets', 'calculator-analytics.js');
-
   let app = await readFile(appPath, 'utf8');
+
   app = replaceRequired(
     app,
     "let monthlyExtraGrossKurus = Array(12).fill(0);\nconst openPayrollDetails = new Set();",
@@ -76,9 +75,7 @@ export async function applyCalculatorFlowFixes(distDir) {
   netButton.setAttribute('aria-pressed', String(mode === 'net'));
 
   if (mode === 'net') {
-    if (lastNetInputKurus === null) {
-      lastNetInputKurus = payrollRowsKurus[0]?.netKurus ?? 0;
-    }
+    if (lastNetInputKurus === null) lastNetInputKurus = payrollRowsKurus[0]?.netKurus ?? 0;
     salaryLabel.textContent = 'Hedef Aylık Net Maaş (₺)';
     salaryInput.setAttribute('aria-label', 'Her ay hedeflenen net maaş');
     salaryInput.title = 'Ocak–Aralık döneminde her ay elinize geçmesini istediğiniz net maaşı girin.';
@@ -139,21 +136,5 @@ export async function applyCalculatorFlowFixes(distDir) {
   );
 
   await writeFile(appPath, app, 'utf8');
-
-  let analytics = await readFile(analyticsPath, 'utf8');
-  analytics = replaceRequired(
-    analytics,
-    `
-  globalThis.setTimeout(() => {
-    input.value = '';
-    input.dataset.rawValue = '';
-    globalThis.handleMainSalaryInput?.({ currentTarget: input });
-  }, 0);
-`,
-    '\n',
-    'analitiğin kullanıcı girdisini temizlemesi'
-  );
-  await writeFile(analyticsPath, analytics, 'utf8');
-
-  console.log('2026 hesaplayıcı mod durumu ve geç analitik kullanıcı akışı düzeltildi.');
+  console.log('2026 hesaplayıcı brüt/net mod giriş durumu ayrıştırıldı.');
 }
