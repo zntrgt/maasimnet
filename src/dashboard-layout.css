@@ -14,7 +14,7 @@
   width: 100%;
 }
 
-/* Tablo artık üst iki sütunlu grid'in dışında bağımsız bloktur. */
+/* Tablo üst iki sütunlu grid'in dışında bağımsız bloktur. */
 .calculator-table-full {
   width: min(100%, 1280px);
   min-width: 0;
@@ -24,30 +24,106 @@
 .calculator-table-full > #payroll-results-shell {
   width: 100%;
   min-width: 0;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 .calculator-table-full #payroll-results-shell > div,
 .calculator-table-full #payroll-results-shell .overflow-x-auto {
   width: 100%;
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-inline: contain;
+  max-height: none !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  overscroll-behavior: auto;
 }
 
 .calculator-table-full .payroll-table {
   width: 100% !important;
-  min-width: 960px;
+  min-width: 0 !important;
+  table-layout: fixed;
   font-variant-numeric: tabular-nums lining-nums;
+}
+
+.calculator-table-full .payroll-table th,
+.calculator-table-full .payroll-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .calculator-table-full .payroll-table th:first-child,
 .calculator-table-full .payroll-table td:first-child {
+  width: 7%;
   text-align: left !important;
+}
+
+.calculator-table-full .payroll-table th:nth-child(2),
+.calculator-table-full .payroll-table td:nth-child(2),
+.calculator-table-full .payroll-table th:nth-child(3),
+.calculator-table-full .payroll-table td:nth-child(3) {
+  width: 13%;
+}
+
+.calculator-table-full .payroll-table th:nth-child(4),
+.calculator-table-full .payroll-table td:nth-child(4),
+.calculator-table-full .payroll-table th:nth-child(5),
+.calculator-table-full .payroll-table td:nth-child(5),
+.calculator-table-full .payroll-table th:nth-child(6),
+.calculator-table-full .payroll-table td:nth-child(6),
+.calculator-table-full .payroll-table th:nth-child(7),
+.calculator-table-full .payroll-table td:nth-child(7) {
+  width: 13%;
+}
+
+.calculator-table-full .payroll-table th:nth-child(8),
+.calculator-table-full .payroll-table td:nth-child(8) {
+  width: 10%;
+}
+
+.calculator-table-full .payroll-table th:last-child,
+.calculator-table-full .payroll-table td:last-child {
+  width: 7%;
 }
 
 .calculator-table-full .payroll-table th:not(:first-child),
 .calculator-table-full .payroll-table td:not(:first-child) {
   text-align: right !important;
+}
+
+@media (min-width: 1024px) {
+  .calculator-table-full .payroll-table {
+    font-size: 12px !important;
+  }
+
+  .calculator-table-full .payroll-table th {
+    position: static !important;
+    padding: 11px 8px !important;
+    white-space: normal !important;
+    line-height: 1.25;
+  }
+
+  .calculator-table-full .payroll-table td {
+    padding: 10px 8px !important;
+    white-space: nowrap;
+  }
+
+  .calculator-table-full .payroll-table input {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 36px !important;
+    padding-inline: 7px !important;
+    font-size: 12px !important;
+  }
+
+  .calculator-table-full .tax-bracket-badge {
+    min-width: 0;
+    padding: 0.3rem 0.42rem;
+    font-size: 0.68rem;
+  }
+
+  .calculator-table-full .payroll-table button {
+    padding-inline: 7px !important;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 1023px) {
