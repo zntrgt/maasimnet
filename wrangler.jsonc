@@ -3,14 +3,9 @@
   "name": "maasim-net",
   "main": "src/worker.js",
   "compatibility_date": "2026-07-29",
+  "keep_vars": true,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS"
-  },
-  "vars": {
-    "SMTP_HOST": "mail.privateemail.com",
-    "SMTP_PORT": "465",
-    "SMTP_USERNAME": "iletisim@maasim.net",
-    "CONTACT_RECIPIENT": "iletisim@maasim.net"
   }
 }
