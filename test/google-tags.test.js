@@ -19,7 +19,7 @@ const legacy = `<script async src="https://www.googletagmanager.com/gtag/js?id=$
 <script>gtag('config', '${GA_ID}');</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`;
 
-test('GA4 and AdSense Auto Ads are injected once after Consent Mode on every page', async () => {
+test('GA4 and AdSense are blocked until Cookiebot consent and injected idempotently', async () => {
   const dist = await mkdtemp(join(tmpdir(), 'maasim-google-tags-'));
   try {
     await mkdir(join(dist, 'blog'), { recursive: true });
@@ -34,12 +34,22 @@ test('GA4 and AdSense Auto Ads are injected once after Consent Mode on every pag
 
     for (const html of [home, blog]) {
       const consentPosition = html.indexOf('data-maasim-consent-mode');
-      const gaPosition = html.indexOf('data-maasim-google-tag');
-      const adsensePosition = html.indexOf('data-maasim-adsense-auto');
-      assert.ok(consentPosition > -1 && gaPosition > consentPosition && adsensePosition > gaPosition);
-      assert.equal(count(html, `gtag/js?id=${GA_ID}`), 1);
-      assert.equal(count(html, `gtag('config', '${GA_ID}'`), 1);
-      assert.equal(count(html, `adsbygoogle.js?client=${ADSENSE_CLIENT}`), 1);
+      const loaderPosition = html.indexOf('data-maasim-google-tag');
+
+      assert.ok(consentPosition > -1 && loaderPosition > consentPosition);
+      assert.equal(count(html, 'data-maasim-google-tag'), 1);
+      assert.equal(count(html, "'maasim-ga4-script'"), 1);
+      assert.equal(count(html, "'maasim-adsense-script'"), 1);
+      assert.equal(count(html, `gtag/js?id=${GA_ID}`), 0);
+      assert.equal(count(html, `gtag('config', '${GA_ID}'`), 0);
+      assert.equal(count(html, `adsbygoogle.js?client=${ADSENSE_CLIENT}`), 0);
+      assert.match(html, /Cookiebot\?\.consent\?\.statistics/);
+      assert.match(html, /Cookiebot\?\.consent\?\.marketing/);
+      assert.match(html, /CookiebotOnConsentReady/);
+      assert.match(html, /CookiebotOnDecline/);
+      assert.match(html, /window\.location\.reload\(\)/);
+      assert.doesNotMatch(html, /<script async src="https:\/\/www\.googletagmanager\.com\/gtag\/js/);
+      assert.doesNotMatch(html, /<script async src="https:\/\/pagead2\.googlesyndication\.com\/pagead\/js/);
       assert.doesNotMatch(html, /<ins[^>]+adsbygoogle/i);
     }
 
