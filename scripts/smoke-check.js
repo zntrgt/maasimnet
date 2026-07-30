@@ -67,27 +67,77 @@ async function fetchText(path) {
   return { response, text: await response.text() };
 }
 
+function count(text, pattern) {
+  return (text.match(pattern) || []).length;
+}
+
+function assertSharedShell(path, html) {
+  assert.equal(count(html, /class="site-header"/g), 1, `${path}: ortak header sayısı 1 olmalı`);
+  assert.equal(count(html, /class="site-footer"/g), 1, `${path}: ortak footer sayısı 1 olmalı`);
+  assert.equal(count(html, /data-site-shell-css="v3"/g), 1, `${path}: ortak shell CSS bloğu 1 olmalı`);
+  assert.equal(count(html, /data-cookiebot-renew/g), 1, `${path}: Cookiebot tercih bağlantısı 1 olmalı`);
+  assert.doesNotMatch(html, /<header\b[^>]*class="[^"]*\btop\b/i, `${path}: eski P0 header kalmamalı`);
+  assert.doesNotMatch(html, /\/assets\/site-shell\.css/, `${path}: ikinci shell CSS isteği kalmamalı`);
+  assert.match(html, /<main\b/i, `${path}: ana içerik alanı bulunmalı`);
+}
+
 try {
   const home = await fetchText('/');
   assert.equal(home.response.status, 200);
+  assertSharedShell('/', home.text);
   assert.match(home.text, /<script type="module" src="\/assets\/app\.js"><\/script>/);
   assert.match(home.text, /class="mobile-payroll-table"/);
   assert.match(home.text, /calculateAndShowPayroll\(\)/);
+  assert.match(home.text, />Vergi Dilimi<\/th>/);
+  assert.match(home.text, /2027’de alabileceğin tahmini ücreti karşılaştır/i);
+
+  const shellPages = [
+    '/blog/',
+    '/blog/2027-maas-zammi-beklentileri/',
+    '/sozluk/',
+    '/sss/',
+    '/veriler/2026/',
+    '/hesaplama-metodolojisi/',
+    '/2027-maas-hesaplama/',
+    '/cerez-politikasi/',
+    '/gizlilik/'
+  ];
+
+  for (const path of shellPages) {
+    const page = await fetchText(path);
+    assert.equal(page.response.status, 200, `${path}: HTTP 200 dönmeli`);
+    assertSharedShell(path, page.text);
+  }
+
+  const estimate = await fetchText('/2027-maas-hesaplama/');
+  assert.match(estimate.text, /2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin/i);
+  assert.match(estimate.text, /data-estimate-mode="gross-to-net"/);
+  assert.match(estimate.text, /data-estimate-mode="net-to-gross"/);
+  assert.match(estimate.text, /Bu bir tahmin aracıdır/i);
+  assert.match(estimate.text, /FAQPage/);
 
   const app = await fetchText('/assets/app.js');
   assert.equal(app.response.status, 200);
   assert.match(app.text, /calculatePayrollYear/);
   assert.match(app.text, /solveMonthlyGrossForFixedNet/);
+  assert.match(app.text, /formatIncomeTaxRates/);
+
+  const estimateApp = await fetchText('/assets/estimate-2027.js');
+  assert.equal(estimateApp.response.status, 200);
+  assert.match(estimateApp.text, /calculatePayrollYear/);
+  assert.match(estimateApp.text, /solveMonthlyGrossForFixedNet/);
 
   const engine = await fetchText('/assets/payroll-engine.js');
   assert.equal(engine.response.status, 200);
   assert.match(engine.text, /export function calculatePayrollYear/);
+  assert.match(engine.text, /export function solveMonthlyGrossForFixedNet/);
 
   const styles = await fetchText('/assets/styles.css');
   assert.equal(styles.response.status, 200);
   assert.match(styles.text, /\.mobile-payroll-table/);
   assert.match(styles.text, /\.cta-button--calculate/);
   assert.match(styles.text, /\.cta-button--download/);
+  assert.match(styles.text, /\.tax-bracket-badge/);
 
   const versionResponse = await fetch(`${baseUrl}/version.json`);
   assert.equal(versionResponse.status, 200);
@@ -96,14 +146,10 @@ try {
   assert.ok(version.version);
   assert.ok(version.builtAt);
 
-  const privacy = await fetchText('/gizlilik/');
-  assert.equal(privacy.response.status, 200);
-  assert.match(privacy.text, /Gizlilik/i);
-
   const missing = await fetch(`${baseUrl}/olmayan-sayfa/`);
   assert.equal(missing.status, 404);
 
-  console.log('Smoke test başarılı: ana sayfa, motor, CSS, version ve alt sayfa doğrulandı.');
+  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, ortak shell, 2026/2027 hesaplayıcılar ve statik assetler doğrulandı.`);
 } finally {
   await new Promise((resolvePromise, rejectPromise) => {
     server.close((error) => error ? rejectPromise(error) : resolvePromise());
