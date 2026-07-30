@@ -4,8 +4,14 @@ const startedAt = document.querySelector('#contact-started-at');
 
 if (startedAt) startedAt.value = String(Date.now());
 
+function hasStatisticsConsent() {
+  return window.Cookiebot?.consent?.statistics === true;
+}
+
 function track(name, params = {}) {
-  if (typeof window.gtag === 'function') window.gtag('event', name, params);
+  if (!hasStatisticsConsent() || typeof window.gtag !== 'function') return false;
+  window.gtag('event', name, params);
+  return true;
 }
 
 function setStatus(message, state = '') {
