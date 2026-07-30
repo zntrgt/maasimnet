@@ -27,6 +27,9 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Verify workflow scripts
+        run: npm run verify:workflow
+
       - name: Unit and integration tests
         run: npm test
 
@@ -34,10 +37,13 @@ jobs:
         run: npm run build
 
       - name: Verify distribution
-        run: npm run verify
+        run: npm run verify:dist
 
       - name: Verify blog manifest
         run: npm run verify:manifest
+
+      - name: Verify SEO GEO blog quality
+        run: npm run verify:quality
 
       - name: Smoke test generated output
         run: npm run smoke
