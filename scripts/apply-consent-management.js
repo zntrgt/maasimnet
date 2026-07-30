@@ -2,12 +2,26 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const COOKIEBOT_ID = 'fc0797fc-6cb3-4086-98c8-c276a7024462';
+const COOKIEBOT_CONFIGURATION_MARKER = 'id="CookiebotConfiguration"';
 const COOKIEBOT_MARKER = 'id="Cookiebot"';
 const CONSENT_MODE_MARKER = 'data-maasim-consent-mode';
 
-const cookiebotScript = `<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="${COOKIEBOT_ID}" data-blockingmode="auto" data-framework="TCFv2.2" type="text/javascript"></script>`;
+const cookiebotConfiguration = `<script id="CookiebotConfiguration" type="application/json" data-cookieconsent="ignore">
+{
+  "Frameworks": {
+    "IABTCF2": {
+      "AllowedVendors": [755],
+      "AllowedGoogleACVendors": [],
+      "AllowedSpecialFeatures": []
+    }
+  }
+}
+</script>`;
+
+const cookiebotScript = `<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="${COOKIEBOT_ID}" data-blockingmode="auto" data-framework="TCFv2.2" data-culture="TR" type="text/javascript"></script>`;
 
 const consentModeScript = `<script data-cookieconsent="ignore" ${CONSENT_MODE_MARKER}>
+window['gtag_enable_tcf_support'] = true;
 window.dataLayer = window.dataLayer || [];
 function gtag() { dataLayer.push(arguments); }
 gtag('consent', 'default', {
@@ -24,7 +38,7 @@ gtag('set', 'ads_data_redaction', true);
 gtag('set', 'url_passthrough', false);
 </script>`;
 
-const cookieDeclarationScript = `<script id="CookieDeclaration" src="https://consent.cookiebot.com/${COOKIEBOT_ID}/cd.js" type="text/javascript" async></script>`;
+const cookieDeclarationScript = `<script id="CookieDeclaration" src="https://consent.cookiebot.com/${COOKIEBOT_ID}/cd.js" data-culture="TR" type="text/javascript" async></script>`;
 
 const policyHtml = `<!doctype html>
 <html lang="tr">
@@ -56,8 +70,9 @@ const policyHtml = `<!doctype html>
     <p>Sayfanın sol altındaki gizlilik düğmesini veya aşağıdaki bağlantıyı kullanarak izin tercihlerinizi istediğiniz zaman değiştirebilir ya da geri çekebilirsiniz.</p>
     <div class="policy-actions"><a class="policy-button" href="#cookie-declaration" data-cookiebot-renew>Çerez tercihlerini aç</a></div>
 
-    <h2>4. Google izin sinyalleri</h2>
+    <h2>4. Google ve IAB izin sinyalleri</h2>
     <p>Google Consent Mode v2 izinleri başlangıçta reddedilmiş olarak ayarlanır. Analitik ve reklam etiketleri, Cookiebot üzerinden yaptığınız tercihlere göre çalışır. Güvenlik amaçlı depolama her zaman etkin kalır.</p>
+    <p>IAB TCF 2.3 kapsamında yalnızca sitede fiilen kullanılması planlanan Google Advertising Products sağlayıcısı kullanıcıya bildirilir. Google Additional Consent sağlayıcıları ve hassas konum ya da aktif cihaz taraması gibi özel özellikler etkin değildir. Maaşım.net, yayıncı olarak IAB TCF politikalarındaki yükümlülüklerini kabul eder.</p>
 
     <h2>5. Politika güncellemeleri</h2>
     <p>Kullanılan araçlar, sağlayıcılar veya hukuki gereklilikler değiştiğinde bu politika güncellenebilir. Güncel tarih sayfanın üst kısmında gösterilir.</p>
@@ -76,8 +91,8 @@ async function walkHtml(dir, output = []) {
 }
 
 function injectCookiebot(html) {
-  if (html.includes(COOKIEBOT_MARKER) && html.includes(CONSENT_MODE_MARKER)) return html;
-  return html.replace(/<head([^>]*)>/i, `<head$1>${cookiebotScript}${consentModeScript}`);
+  if (html.includes(COOKIEBOT_CONFIGURATION_MARKER) && html.includes(COOKIEBOT_MARKER) && html.includes(CONSENT_MODE_MARKER)) return html;
+  return html.replace(/<head([^>]*)>/i, `<head$1>${cookiebotConfiguration}${cookiebotScript}${consentModeScript}`);
 }
 
 function injectFooterControls(html) {
