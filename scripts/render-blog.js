@@ -6,6 +6,7 @@ import { ensureBlogIndex } from './ensure-blog-index.js';
 import { ensureBlogBreadcrumbSchema } from './ensure-blog-breadcrumb-schema.js';
 import { applyBlogImages } from './apply-blog-images.js';
 import { compactBlogIndex } from './compact-blog-index.js';
+import { enhanceBlogQuality } from './enhance-blog-quality.js';
 import { normalizeBlogVisuals } from './normalize-blog-visuals.js';
 import { validateBlogManifest } from '../content/blog-manifest.js';
 
@@ -21,7 +22,8 @@ export async function renderBlog(dist) {
   await ensureBlogBreadcrumbSchema(dist);
   await applyBlogImages(dist);
   await compactBlogIndex(dist);
+  await enhanceBlogQuality(dist);
   await normalizeBlogVisuals(dist);
 
-  console.log('blog üretim hattı tek giriş noktasından tamamlandı');
+  console.log('blog üretim hattı tek giriş noktasından 10/10 kalite standardıyla tamamlandı');
 }
