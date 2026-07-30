@@ -13,6 +13,7 @@ import { applyGoogleTags } from './apply-google-tags.js';
 import { removeInternalCopy } from './remove-internal-copy.js';
 import { normalizeSitemap } from './normalize-sitemap.js';
 import { applyLighthouseFixes } from './apply-lighthouse-fixes.js';
+import { applyAccessibilityPolish } from './apply-accessibility-polish.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -40,9 +41,10 @@ await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
 await removeInternalCopy(distDir);
 await applyLighthouseFixes(distDir);
+await applyAccessibilityPolish(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '0.9.1-lighthouse-accessibility', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.9.2-accessibility-security', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
