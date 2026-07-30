@@ -1,17 +1,31 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { buildCalculatorEvent, getSalaryRange } from '../src/calculator-analytics.js';
+import {
+  buildCalculatorEvent,
+  getEffectiveDeductionRange,
+  getSalaryRange
+} from '../src/calculator-analytics.js';
 
 test('salary amounts are converted to stable 2026 analytics ranges', () => {
-  assert.equal(getSalaryRange(0), '0_29k');
-  assert.equal(getSalaryRange(29999), '0_29k');
-  assert.equal(getSalaryRange(30000), '30k_39k');
+  assert.equal(getSalaryRange(0), 'under_30k');
+  assert.equal(getSalaryRange(29999), 'under_30k');
+  assert.equal(getSalaryRange(30000), '30k_49k');
   assert.equal(getSalaryRange(100000), '100k_124k');
   assert.equal(getSalaryRange(124999), '100k_124k');
+  assert.equal(getSalaryRange(225000), '200k_249k');
+  assert.equal(getSalaryRange(349999), '250k_349k');
   assert.equal(getSalaryRange(500000), '500k_plus');
   assert.equal(getSalaryRange(-1), undefined);
   assert.equal(getSalaryRange(Number.NaN), undefined);
+});
+
+test('effective deduction percentages are converted to stable ranges', () => {
+  assert.equal(getEffectiveDeductionRange(19.9), 'under_20');
+  assert.equal(getEffectiveDeductionRange(20), '20_24');
+  assert.equal(getEffectiveDeductionRange(29.9), '25_29');
+  assert.equal(getEffectiveDeductionRange(40), '40_plus');
+  assert.equal(getEffectiveDeductionRange(-1), undefined);
 });
 
 test('calculator analytics keeps only allowlisted non-raw parameters', () => {
@@ -20,8 +34,14 @@ test('calculator analytics keeps only allowlisted non-raw parameters', () => {
       calculation_direction: 'gross',
       calculation_year: 2026,
       salary_range: '100k_124k',
-      scenario_type: 'standard',
+      scenario_type: 'salary_change',
       input_method: 'typed',
+      salary_change_count: '1',
+      has_salary_change: true,
+      has_employer_change: false,
+      start_month: 'july',
+      result_tax_bracket: '27',
+      effective_deduction_range: '25_29',
       salary: 100000,
       annual_income: 1200000,
       retired: true
@@ -30,11 +50,17 @@ test('calculator analytics keeps only allowlisted non-raw parameters', () => {
       eventName: 'salary_calculation_completed',
       parameters: {
         calculation_direction: 'gross',
-        scenario_type: 'standard',
+        scenario_type: 'salary_change',
         input_method: 'typed',
         salary_range: '100k_124k',
-        range_version: '2026_v1',
-        calculation_year: 2026
+        range_version: '2026_v2',
+        calculation_year: 2026,
+        salary_change_count: '1',
+        has_salary_change: true,
+        has_employer_change: false,
+        start_month: 'july',
+        result_tax_bracket: '27',
+        effective_deduction_range: '25_29'
       }
     }
   );
