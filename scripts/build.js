@@ -65,7 +65,7 @@ await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.5.0-offer-comparison', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.6.0-salary-negotiation-blog', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
