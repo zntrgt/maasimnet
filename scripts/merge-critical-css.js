@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 const SHELL_STYLE_MARKER = 'data-site-shell-css="v3"';
 const SHELL_LINK_PATTERN = /\s*<link\b[^>]*href=["']\/assets\/site-shell\.css["'][^>]*>/gi;
+const SHELL_STYLE_PATTERN = /<style\s+data-site-shell-css=["']v3["'][^>]*>([\s\S]*?)<\/style>/i;
 
 async function walkHtml(dir, output = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -13,10 +14,20 @@ async function walkHtml(dir, output = []) {
   return output;
 }
 
+function normalizeCss(css) {
+  return css
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\s+/g, '')
+    .replace(/;}/g, '}')
+    .trim();
+}
+
 export async function mergeCriticalCss(distDir) {
   const shellPath = join(distDir, 'assets', 'site-shell.css');
-  const shellCss = (await readFile(shellPath, 'utf8')).trim();
+  const sourceShellCss = (await readFile(shellPath, 'utf8')).trim();
+  const normalizedSource = normalizeCss(sourceShellCss);
   const htmlFiles = await walkHtml(distDir);
+  let canonicalEmbeddedCss = null;
 
   for (const path of htmlFiles) {
     const html = await readFile(path, 'utf8');
@@ -36,9 +47,21 @@ export async function mergeCriticalCss(distDir) {
       }
     }
 
-    if (!optimized.includes(shellCss)) {
-      throw new Error(`Ortak shell CSS kaynağının tam içeriği sayfaya gömülmedi: ${path}`);
+    const styleMatch = optimized.match(SHELL_STYLE_PATTERN);
+    if (!styleMatch) {
+      throw new Error(`İşaretli ortak shell stil bloğu bulunamadı: ${path}`);
     }
+
+    const normalizedEmbedded = normalizeCss(styleMatch[1]);
+    if (!normalizedEmbedded || normalizedEmbedded !== normalizedSource) {
+      throw new Error(`Ortak shell CSS içeriği kaynakla eşleşmiyor: ${path}`);
+    }
+
+    if (canonicalEmbeddedCss === null) canonicalEmbeddedCss = normalizedEmbedded;
+    if (normalizedEmbedded !== canonicalEmbeddedCss) {
+      throw new Error(`Ortak shell CSS sayfalar arasında farklı üretildi: ${path}`);
+    }
+
     if (optimized.includes('/assets/site-shell.css')) {
       throw new Error(`Ayrı site-shell.css isteği kaldı: ${path}`);
     }
