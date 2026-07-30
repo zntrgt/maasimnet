@@ -27,8 +27,20 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Test, build, verify and smoke test
-        run: npm run check
+      - name: Unit and integration tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+
+      - name: Verify distribution
+        run: npm run verify
+
+      - name: Verify blog manifest
+        run: npm run verify:manifest
+
+      - name: Smoke test generated output
+        run: npm run smoke
 
       - name: Upload production artifact
         uses: actions/upload-artifact@v4
