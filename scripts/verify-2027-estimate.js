@@ -11,27 +11,51 @@ const html = await readFile(pagePath, 'utf8');
 const app = await readFile(assetPath, 'utf8');
 const sitemap = await readFile(join(dist, 'sitemap.xml'), 'utf8');
 const blog = await readFile(join(dist, 'blog', '2027-maas-zammi-beklentileri', 'index.html'), 'utf8');
+const home = await readFile(join(dist, 'index.html'), 'utf8');
 const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
 
 for (const token of [
+  '<title>2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin | Maaşım.net</title>',
+  'content="2027 maaş hesaplama aracıyla tahmini brütten nete ve netten brüte maaşınızı hesaplayın.',
   '<link rel="canonical" href="https://maasim.net/2027-maas-hesaplama/">',
   'Tahmini parametreler · Resmî 2027 verisi değildir',
   'Bu bir tahmin aracıdır; bordro veya resmî hesaplama değildir.',
   'Son uyarı: Sonuçlar resmî değildir',
+  'id="estimate-mode-gross"',
+  'id="estimate-mode-net"',
+  'id="estimate-salary"',
   'id="estimate-minimum-gross"',
   'id="estimate-sgk-ceiling"',
   'id="estimate-bracket-1"',
   'id="estimate-bracket-4"',
   'id="estimate-table-body"',
+  '2027 brütten nete maaş nasıl hesaplanır?',
+  '2027 netten brüte maaş nasıl hesaplanır?',
+  'Temkinli, orta ve yüksek 2027 senaryoları',
+  'İlk yayın: 30 Temmuz 2026',
+  'Durum: Resmî 2027 parametreleri bekleniyor',
+  'href="/hesaplama-metodolojisi/"',
+  'href="/veriler/2026-gelir-vergisi-dilimleri/"',
   'type="module" src="/assets/estimate-2027.js"',
-  '"@type":"WebApplication"'
+  '"@type":"WebApplication"',
+  '"@type":"FAQPage"'
 ]) {
   if (!html.includes(token)) throw new Error(`2027 tahmin sayfası eksik: ${token}`);
 }
 
+if ((html.match(/<details>/g) || []).length !== 8) {
+  throw new Error('2027 tahmin sayfasında görünür 8 SSS bulunmalı.');
+}
+if ((html.match(/"@type":"Question"/g) || []).length !== 8) {
+  throw new Error('2027 tahmin sayfasında 8 soruluk FAQ schema bulunmalı.');
+}
+
 for (const token of [
   'calculatePayrollYear',
+  'solveMonthlyGrossForFixedNet',
   'summarizePayroll',
+  "currentMode = 'gross'",
+  "setMode('net')",
   'incomeTaxBrackets',
   'formatRates(row.incomeTaxRatesPpm)',
   "applyPreset('middle')"
@@ -45,11 +69,29 @@ if (!sitemap.includes('<loc>https://maasim.net/2027-maas-hesaplama/</loc>')) {
 if (!blog.includes('href="/2027-maas-hesaplama/"')) {
   throw new Error('2027 beklenti yazısı tahmin hesaplayıcıya bağlanmıyor.');
 }
-if (!css.includes('/* 2027 tahmini maaş hesaplama sayfası */')) {
-  throw new Error('2027 tahmin sayfası stilleri ana CSS içinde değil.');
+for (const token of [
+  'class="home-2027-estimate-cta"',
+  '2027’de alabileceğin tahmini ücreti karşılaştır',
+  'href="/2027-maas-hesaplama/"',
+  'Bu araç resmî 2027 hesaplaması değildir'
+]) {
+  if (!home.includes(token)) throw new Error(`2026 ana sayfa 2027 yönlendirmesi eksik: ${token}`);
 }
 
-const warningCount = (html.match(/resmî değil|resmî değildir|resmî olmayan|tahmin aracıdır/gi) || []).length;
-if (warningCount < 6) throw new Error(`2027 sayfasında görünür uyarı sayısı yetersiz: ${warningCount}`);
+for (const token of [
+  '/* 2027 tahmini maaş hesaplama sayfası */',
+  'content-visibility:auto',
+  'contain-intrinsic-size:600px',
+  '.home-2027-estimate-cta',
+  '.estimate-mode button[aria-pressed=true]'
+]) {
+  if (!css.includes(token)) throw new Error(`2027 tahmin performans veya görünüm kuralı eksik: ${token}`);
+}
+if (html.includes('/assets/site-shell.css')) {
+  throw new Error('2027 sayfasında ikinci render-blocking site-shell.css isteği kaldı.');
+}
 
-console.log('2027 tahmini maaş hesaplayıcı; görünür uyarılar, sitemap, iç link ve interaktif parametrelerle doğrulandı.');
+const warningCount = (html.match(/resmî değil|resmî değildir|resmî olmayan|tahmin aracıdır|tahminidir/gi) || []).length;
+if (warningCount < 10) throw new Error(`2027 sayfasında görünür uyarı sayısı yetersiz: ${warningCount}`);
+
+console.log('2027 tahmini maaş hesaplayıcı; çift yönlü hesaplama, SEO/GEO içeriği, SSS, performans ve güçlü iç linklerle doğrulandı.');
