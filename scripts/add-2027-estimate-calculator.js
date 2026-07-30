@@ -42,7 +42,7 @@ const html = `<!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin | Maaşım.net</title>
 <meta name="description" content="2027 maaş hesaplama aracıyla tahmini brütten nete ve netten brüte maaşınızı hesaplayın. Asgari ücret, SGK tavanı ve vergi dilimlerini değiştirip senaryoları karşılaştırın.">
-<link rel="canonical" href="https://maasim.net${ROUTE}"><link rel="stylesheet" href="/assets/styles.css">
+<link rel="canonical" href="https://maasim.net${ROUTE}"><link rel="stylesheet" href="/assets/styles.css"><link rel="modulepreload" href="/assets/estimate-2027.js"><link rel="modulepreload" href="/assets/payroll-engine.js"><link rel="modulepreload" href="/assets/parameters-2026.js">
 <script type="application/ld+json">${JSON.stringify(graph)}</script></head><body>
 <main class="estimate-2027-page">
 <header class="estimate-2027-hero"><span class="estimate-status-badge">⚠ Tahmini parametreler · Resmî 2027 verisi değildir</span><h1>2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin</h1><p>2027 asgari ücreti, SGK tavanı ve gelir vergisi dilimi eşikleri henüz açıklanmadı. Kendi varsayımlarınızı girerek 2027 maaş senaryolarını karşılaştırın.</p><div class="estimate-freshness"><span>İlk yayın: 30 Temmuz 2026</span><span>Son kontrol: 30 Temmuz 2026</span><span>Durum: Resmî 2027 parametreleri bekleniyor</span></div></header>
