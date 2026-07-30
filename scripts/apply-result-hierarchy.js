@@ -93,11 +93,15 @@ function placeResultsColumn(html, hierarchy) {
   const calculatorEnd = html.indexOf('</section>', payrollStart);
   if (calculatorEnd < 0) throw new Error('Hesaplayıcı bölümü kapanışı bulunamadı.');
 
+  const calculatorEndTag = '</section>';
+  const payrollHtml = html.slice(payrollStart, calculatorEnd);
+
   return html.slice(0, payrollStart)
-    + `<div class="calculator-results-column">\n${REPRESENTATIVE_GROSS}\n${hierarchy}\n`
-    + html.slice(payrollStart, calculatorEnd)
-    + '</div>\n'
-    + html.slice(calculatorEnd);
+    + `<div class="calculator-results-column">\n${REPRESENTATIVE_GROSS}\n${hierarchy}\n</div>\n`
+    + '<!-- Calculator Layout End -->\n'
+    + calculatorEndTag
+    + `\n<div class="calculator-table-full" data-dashboard-table="full-width">\n${payrollHtml}\n</div>\n`
+    + html.slice(calculatorEnd + calculatorEndTag.length);
 }
 
 function patchApp(appSource) {
