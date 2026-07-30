@@ -1,0 +1,397 @@
+/* Maaşım.net SaaS fintech arayüz sistemi */
+:root {
+  --primary: #0f172a;
+  --accent: #10b981;
+  --accent-dark: #047857;
+  --neutral-dark: #1e293b;
+  --neutral-muted: #64748b;
+  --neutral-light: #f8fafc;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-card: 0 14px 36px rgba(15, 23, 42, 0.07);
+  --shadow-panel: 0 24px 60px rgba(15, 23, 42, 0.15);
+  --radius-card: 18px;
+  --radius-panel: 24px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--neutral-light) !important;
+  color: var(--neutral-dark) !important;
+  font-family: Inter, "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+body,
+input,
+select,
+button,
+table,
+.metric-card,
+.metric-hero,
+.representative-gross {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.tabular-nums,
+[id^="stat-"],
+[id$="-value"],
+.payroll-table td,
+.payroll-table input,
+.metric-card strong,
+.metric-card h3,
+.metric-card p[id^="stat-"] {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Header */
+.site-header {
+  border-bottom-color: rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 1px 12px rgba(15, 23, 42, 0.035);
+}
+.site-header__inner {
+  max-width: 1320px !important;
+  height: 68px !important;
+  padding-inline: 24px !important;
+  gap: 28px !important;
+}
+.site-brand { gap: 10px !important; }
+.site-nav { gap: 24px !important; }
+.site-nav a {
+  font-size: 11px !important;
+  letter-spacing: 0.065em !important;
+}
+.site-header__cta {
+  padding: 11px 19px !important;
+  background: var(--primary) !important;
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+.site-header__cta:hover {
+  background: var(--accent-dark) !important;
+  box-shadow: 0 8px 18px rgba(4, 120, 87, 0.22);
+  transform: translateY(-1px);
+}
+
+/* Ana içerik ve hero */
+main {
+  width: min(100%, 1320px);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+main > section:first-of-type,
+main > header:first-child {
+  margin-top: 28px !important;
+}
+main h1 {
+  max-width: 1050px;
+  margin-inline: auto;
+  font-size: clamp(2rem, 3.7vw, 3.45rem) !important;
+  line-height: 1.06 !important;
+  letter-spacing: -0.045em !important;
+  text-wrap: balance;
+}
+main h1 + p {
+  max-width: 760px;
+  margin-top: 10px !important;
+  margin-inline: auto;
+  font-size: clamp(0.95rem, 1.5vw, 1.08rem) !important;
+  line-height: 1.6 !important;
+  color: var(--neutral-muted) !important;
+}
+
+/* Split-screen hesaplayıcı */
+.calculator-layout {
+  max-width: 1280px !important;
+  margin: 28px auto 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(300px, 350px) minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: 28px !important;
+}
+
+.calculator-layout > :first-child {
+  position: sticky;
+  top: 92px;
+  padding: 24px !important;
+  border-radius: var(--radius-panel) !important;
+  background: var(--primary) !important;
+  box-shadow: var(--shadow-panel) !important;
+}
+
+.calculator-layout > :first-child > * + * {
+  margin-top: 18px !important;
+}
+
+.calculator-layout label {
+  margin-bottom: 8px !important;
+  color: rgba(255,255,255,.68) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: .09em !important;
+}
+
+.calculator-layout input,
+.calculator-layout select {
+  min-height: 48px;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 13px !important;
+  background: rgba(255,255,255,.09) !important;
+  color: #fff !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+.calculator-layout input:focus,
+.calculator-layout select:focus {
+  outline: none !important;
+  border-color: var(--accent) !important;
+  background: rgba(255,255,255,.12) !important;
+  box-shadow: 0 0 0 3px rgba(16,185,129,.24) !important;
+}
+#input-salary {
+  min-height: 64px !important;
+  padding-inline: 20px !important;
+  font-size: clamp(1.8rem, 3vw, 2.25rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* Mod sekmeleri */
+#btn-mode-gross,
+#btn-mode-net {
+  min-height: 44px;
+  border-radius: 11px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+/* CTA */
+.cta-button--calculate {
+  width: 100% !important;
+  min-height: 52px !important;
+  border: 0 !important;
+  border-radius: 13px !important;
+  background: var(--accent) !important;
+  color: #052e26 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  letter-spacing: .08em !important;
+  box-shadow: 0 12px 26px rgba(16,185,129,.22) !important;
+  transition: background-color 170ms ease, transform 170ms ease, box-shadow 170ms ease !important;
+}
+.cta-button--calculate:hover {
+  background: #34d399 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(16,185,129,.28) !important;
+}
+.cta-button--calculate:active { transform: translateY(0); }
+.cta-button--download { width: 100% !important; min-height: 48px !important; }
+
+/* Sonuç sütunu */
+.calculator-results-column { gap: 16px !important; }
+.result-hierarchy { gap: 16px !important; }
+.metric-hero {
+  min-height: 190px !important;
+  padding: 28px 30px !important;
+  border-radius: var(--radius-panel) !important;
+  background: linear-gradient(135deg, #047857 0%, #0f9f86 100%) !important;
+  box-shadow: 0 18px 42px rgba(4,120,87,.17) !important;
+}
+.metric-hero .metric-title {
+  font-size: 11px !important;
+  letter-spacing: .12em !important;
+  opacity: .86 !important;
+}
+.metric-hero h3,
+.metric-hero p[id="stat-avg-net"] {
+  margin-top: 10px !important;
+  font-size: clamp(2.6rem, 5.3vw, 4.5rem) !important;
+  line-height: .98 !important;
+  letter-spacing: -.045em !important;
+  font-weight: 850 !important;
+}
+.metric-hero > p {
+  margin-top: 16px !important;
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.secondary-metrics {
+  border-color: var(--border-color) !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+.secondary-metrics > summary {
+  min-height: 74px;
+  padding: 16px 20px !important;
+  background: #fff !important;
+}
+.secondary-metrics-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  padding: 14px !important;
+}
+.metric-card--compact {
+  min-height: 132px;
+  padding: 18px !important;
+  border-color: var(--border-color) !important;
+  border-radius: 14px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+}
+.metric-card--compact .metric-title,
+.metric-card--compact > p:first-child {
+  color: #64748b !important;
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+  letter-spacing: .105em !important;
+}
+.metric-card--compact h3,
+.metric-card--compact p[id^="stat-"],
+.metric-card--compact strong {
+  color: var(--primary) !important;
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -.02em !important;
+  font-weight: 800 !important;
+  overflow-wrap: anywhere;
+}
+.metric-card-note {
+  color: var(--neutral-muted) !important;
+  font-size: 12px !important;
+}
+
+/* Tablo */
+#payroll-results-shell {
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+#payroll-results-shell > div,
+#payroll-results-shell .overflow-x-auto {
+  overflow-x: auto !important;
+  overscroll-behavior-inline: contain;
+}
+#payroll-results-shell .payroll-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px !important;
+}
+#payroll-results-shell .payroll-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 14px 12px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  background: #f8fafc !important;
+  color: #475569 !important;
+  text-align: right;
+  white-space: nowrap;
+}
+#payroll-results-shell .payroll-table th:first-child,
+#payroll-results-shell .payroll-table td:first-child { text-align: left !important; }
+#payroll-results-shell .payroll-table td {
+  padding: 13px 12px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--neutral-dark);
+  text-align: right;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+#payroll-results-shell .payroll-table tbody tr:last-child td { border-bottom: 0 !important; }
+#payroll-results-shell .payroll-table tbody tr:hover td { background: #f8fafc; }
+#payroll-results-shell .payroll-table td:nth-child(5) {
+  background: rgba(16,185,129,.055);
+  color: var(--accent-dark);
+  font-weight: 800;
+}
+#payroll-results-shell .payroll-table input {
+  min-width: 96px;
+  min-height: 40px !important;
+  padding-inline: 10px !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  color: var(--primary) !important;
+  text-align: right;
+}
+#payroll-results-shell .payroll-table input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(16,185,129,.16) !important;
+}
+
+/* Alt içerik kartları */
+#senaryolar .grid,
+#sss .grid,
+.home-guide-grid,
+.home-info-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+#senaryolar a,
+#sss details,
+#metodoloji,
+.site-freshness {
+  border-color: var(--border-color) !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: 0 8px 24px rgba(15,23,42,.045) !important;
+}
+
+/* Genel bileşen ritmi */
+main section { scroll-margin-top: 92px; }
+main section.mb-24 { margin-bottom: 64px !important; }
+main h2 {
+  font-size: clamp(1.45rem, 2.5vw, 2rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -.025em !important;
+}
+
+@media (max-width: 1100px) {
+  .secondary-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 900px) {
+  main { padding-inline: 18px; }
+  .calculator-layout {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+  .calculator-layout > :first-child {
+    position: static;
+    padding: 22px !important;
+  }
+  .metric-hero { min-height: 170px !important; }
+}
+
+@media (max-width: 640px) {
+  .site-header__inner { padding-inline: 16px !important; }
+  main { padding-inline: 14px; }
+  main > section:first-of-type,
+  main > header:first-child { margin-top: 18px !important; }
+  main h1 {
+    font-size: clamp(1.85rem, 9vw, 2.55rem) !important;
+    line-height: 1.08 !important;
+  }
+  .calculator-layout { margin-top: 20px !important; }
+  .calculator-layout > :first-child { border-radius: 20px !important; }
+  .metric-hero {
+    min-height: 160px !important;
+    padding: 22px !important;
+    border-radius: 20px !important;
+  }
+  .metric-hero h3,
+  .metric-hero p[id="stat-avg-net"] { font-size: clamp(2.35rem, 12vw, 3.3rem) !important; }
+  .secondary-metrics-grid { grid-template-columns: 1fr !important; padding: 12px !important; }
+  .metric-card--compact { min-height: 112px; }
+  #senaryolar .grid,
+  #sss .grid,
+  .home-guide-grid,
+  .home-info-grid { grid-template-columns: 1fr !important; }
+  main section.mb-24 { margin-bottom: 44px !important; }
+}
