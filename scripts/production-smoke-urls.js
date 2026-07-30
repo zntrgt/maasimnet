@@ -10,6 +10,8 @@ const preferred = [
 const urls = [
   'https://maasim.net/version.json',
   'https://maasim.net/blog/',
+  'https://maasim.net/iletisim/',
+  'https://maasim.net/cerez-politikasi/',
   'https://maasim.net/sitemap.xml',
   ...preferred.map((post) => `https://maasim.net${blogRoute(post)}`)
 ];
