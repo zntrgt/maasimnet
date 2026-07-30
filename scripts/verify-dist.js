@@ -87,18 +87,28 @@ for (const path of htmlFiles) {
   if (!html.includes('Güncellik') && !html.includes('site-freshness') && !html.includes('class="freshness"') && !html.includes('class="legal-meta"')) throw new Error(`Güncellik bloğu eksik: ${path}`);
   if (!html.includes('/assets/consent-manager.js') || !html.includes('/assets/consent-manager.css')) throw new Error(`Rıza yöneticisi eksik: ${path}`);
   if (/<script[^>]+src=["'][^"']*(?:googletagmanager\.com\/(?:gtag\/js|gtm\.js)|google-analytics\.com)/i.test(html)) throw new Error(`Rıza öncesi Analytics etiketi aktif kaldı: ${path}`);
-  if (/<script(?![^>]+type=["']text\/plain["'])[^>]+src=["'][^"']*pagead2\.googlesyndication\.com/i.test(html)) throw new Error(`Rıza öncesi AdSense etiketi aktif kaldı: ${path}`);
+  const adTagIndex = html.indexOf('pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8614552230353945');
+  const consentIndex = html.indexOf('/assets/consent-manager.js');
+  const pauseIndex = html.indexOf('pauseAdRequests=1');
+  if (adTagIndex < 0 || consentIndex < 0 || pauseIndex < 0 || pauseIndex > consentIndex || consentIndex > adTagIndex) throw new Error(`AdSense etiketi doğru sırada, duraklatılmış ve doğru yayıncı kimliğiyle yüklenmiyor: ${path}`);
+  if (!html.includes('requestNonPersonalizedAds=1') || !html.includes('data-privacy-treatments="disablePersonalization"')) throw new Error(`Kişiselleştirilmemiş reklam ayarı eksik: ${path}`);
+  const publisherIds = [...html.matchAll(/ca-pub-\d+/g)].map((match) => match[0]);
+  if (publisherIds.some((id) => id !== 'ca-pub-8614552230353945')) throw new Error(`Farklı AdSense yayıncı kimliği bulundu: ${path}`);
 }
 
 const consentManager = await readFile(join(dist,'assets','consent-manager.js'),'utf8');
-if (!consentManager.includes("analytics_storage: 'denied'") || !consentManager.includes('isCertifiedCmpReady')) throw new Error('Consent Mode varsayılan ret veya sertifikalı CMP kilidi eksik.');
+for (const token of ["analytics_storage: 'denied'","ad_user_data: 'denied'","ad_personalization: 'denied'",'requestNonPersonalizedAds','USES_GOOGLE_CMP','consent-ads']) {
+  if (!consentManager.includes(token)) throw new Error(`Gizlilik yöneticisi beklenen kontrolü içermiyor: ${token}`);
+}
 for (const forbidden of ['baseGross','extraGross','incomeTaxBase','cumulativeTaxBase','employerCost','salaryValue']) {
   if (consentManager.includes(`'${forbidden}'`) || consentManager.includes(`"${forbidden}"`)) throw new Error(`Hassas finansal alan analitik izin listesine girdi: ${forbidden}`);
 }
+const worker = await readFile(join(root,'src','worker.js'),'utf8');
+if (!worker.includes('data-privacy-region') || !worker.includes('google-cmp') || !worker.includes('site-consent')) throw new Error('Bölgesel CMP yönlendirmesi eksik.');
 
 const scenarioHtml=await readFile(join(dist,'100000-brut-maas-hesaplama','index.html'),'utf8');
 const scenario=createGross100kScenarioData();
 for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includes(value)) throw new Error(`100.000 TL senaryosunda merkezi motor değeri yok: ${value}`);
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
-console.log('dist doğrulaması başarılı: 29 HTML, gizlilik katmanı, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
+console.log('dist doğrulaması başarılı: 29 HTML, bölgesel CMP, duraklatılmış bağlamsal AdSense, gizlilik katmanı, veri merkezi, schema graph, güncellik ve indexability hazır.');
