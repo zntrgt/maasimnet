@@ -87,6 +87,9 @@ try {
   const home = await fetchText('/');
   assert.equal(home.response.status, 200);
   assertSharedShell('/', home.text);
+  assert.match(home.text, /data-home-critical-css="v1"/);
+  assert.doesNotMatch(home.text, /<link\b[^>]*href=["']\/assets\/styles\.css["']/i);
+  assert.match(home.text, /\.calculator-layout/);
   assert.match(home.text, /<script type="module" src="\/assets\/app\.js"><\/script>/);
   assert.match(home.text, /class="mobile-payroll-table"/);
   assert.match(home.text, /calculateAndShowPayroll\(\)/);
@@ -153,7 +156,7 @@ try {
   const missing = await fetch(`${baseUrl}/olmayan-sayfa/`);
   assert.equal(missing.status, 404);
 
-  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, ortak shell, 2026/2027 hesaplayıcılar ve statik assetler doğrulandı.`);
+  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, inline ana sayfa CSS'i, ortak shell, 2026/2027 hesaplayıcılar ve statik assetler doğrulandı.`);
 } finally {
   await new Promise((resolvePromise, rejectPromise) => {
     server.close((error) => error ? rejectPromise(error) : resolvePromise());
