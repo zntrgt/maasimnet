@@ -85,7 +85,7 @@ export async function applyTaxBracketColumn(distDir) {
   }
 
   if (!styles.includes(CSS_MARKER)) {
-    styles += `\n${CSS_MARKER}\n.tax-bracket-badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 64px;\n  padding: 0.35rem 0.55rem;\n  border: 1px solid #a7f3d0;\n  border-radius: 999px;\n  background: #ecfdf5;\n  color: #047857;\n  font-size: 0.75rem;\n  font-weight: 800;\n  line-height: 1;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.calculator-table-full .payroll-table { min-width: 1080px; }\n`;
+    styles += `\n${CSS_MARKER}\n.tax-bracket-badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 64px;\n  padding: 0.35rem 0.55rem;\n  border: 1px solid #a7f3d0;\n  border-radius: 999px;\n  background: #ecfdf5;\n  color: #047857;\n  font-size: 0.75rem;\n  font-weight: 800;\n  line-height: 1;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n`;
   }
 
   for (const token of [
