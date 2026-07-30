@@ -68,8 +68,39 @@ jobs:
 
       - name: Production smoke test
         id: smoke
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
+
+          wait_for_200() {
+            local url="$1"
+            local attempts=18
+            local delay=5
+            local status="000"
+
+            for attempt in $(seq 1 "$attempts"); do
+              status=$(curl \
+                --connect-timeout 10 \
+                --max-time 20 \
+                -H 'Cache-Control: no-cache' \
+                -H 'Pragma: no-cache' \
+                -sS -o /dev/null -w "%{http_code}" \
+                "${url}?deploy_check=${DEPLOY_SHA}-${attempt}" || true)
+
+              if [ "$status" = "200" ]; then
+                echo "Smoke test başarılı: $url -> 200 (deneme $attempt/$attempts)"
+                return 0
+              fi
+
+              echo "Henüz hazır değil: $url -> $status (deneme $attempt/$attempts)"
+              sleep "$delay"
+            done
+
+            echo "Smoke test başarısız: $url son durum $status"
+            return 1
+          }
+
           for url in \
             "https://maasim.net/version.json" \
             "https://maasim.net/blog/" \
@@ -77,8 +108,7 @@ jobs:
             "https://maasim.net/blog/2026-maas-vergi-dilimleri/" \
             "https://maasim.net/blog/is-degisikliginde-vergi-matrahi/"
           do
-            status=$(curl --retry 5 --retry-delay 3 --retry-all-errors -sS -o /dev/null -w "%{http_code}" "$url")
-            test "$status" = "200" || { echo "Smoke test başarısız: $url -> $status"; exit 1; }
+            wait_for_200 "$url"
           done
 
       - name: Report deployment result
