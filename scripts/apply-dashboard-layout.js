@@ -24,18 +24,16 @@ export async function applyDashboardLayout(distDir) {
     }
 
     const payrollEnd = payrollSectionEnd + payrollSectionEndTag.length;
-    const payrollHtml = html.slice(payrollStart, payrollEnd);
-    const withoutPayroll = html.slice(0, payrollStart) + html.slice(payrollEnd);
+    let payrollHtml = html.slice(payrollStart, payrollEnd);
 
-    const resultsClose = withoutPayroll.indexOf('</div>', payrollStart);
-    if (resultsClose < 0) {
-      throw new Error('Dashboard yerleşimi uygulanamadı: sonuç sütunu kapanışı bulunamadı.');
-    }
+    // Eski sonuç-hiyerarşisi çıktısında sonuç sütununun kapanış div'i,
+    // bordro section kapanışından hemen önce kalabiliyor. Bu kapanışı tablo
+    // parçasından çıkarıp sonuç sütununu açıkça burada kapatıyoruz.
+    payrollHtml = payrollHtml.replace(/\s*<\/div>\s*(<\/section>)\s*$/i, '\n$1');
 
-    const insertionPoint = resultsClose + '</div>'.length;
-    html = withoutPayroll.slice(0, insertionPoint)
-      + `\n<div class="calculator-table-full" data-dashboard-table="full-width">\n${payrollHtml}\n</div>`
-      + withoutPayroll.slice(insertionPoint);
+    html = html.slice(0, payrollStart)
+      + `</div>\n<div class="calculator-table-full" data-dashboard-table="full-width">\n${payrollHtml}\n</div>`
+      + html.slice(payrollEnd);
   }
 
   if (!styles.includes(CSS_MARKER)) {
