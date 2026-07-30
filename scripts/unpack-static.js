@@ -43,8 +43,17 @@ function replaceRequired(source, searchValue, replacement, label) {
 indexHtml = replaceRequired(
   indexHtml,
   '<input class="w-full bg-white/10 border border-white/10 rounded-2xl h-16 px-6 text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all" id="input-salary" oninput="handleMainSalaryInput()" step="1000" type="number" value="100000"/>',
-  '<input class="w-full bg-white/10 border border-white/10 rounded-2xl h-16 px-6 text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all" id="input-salary" inputmode="decimal" data-money-input="true" data-raw-value="100000" oninput="handleMainSalaryInput(event)" autocomplete="off" type="text" value="100.000"/>',
+  '<input class="w-full bg-white/10 border border-white/10 rounded-2xl h-16 px-6 text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all" id="input-salary" inputmode="decimal" data-money-input="true" data-raw-value="" oninput="handleMainSalaryInput(event)" autocomplete="off" type="text" value="" placeholder="Örn. 100.000 TL"/>',
   'ana maaş input formatı'
+);
+
+const calculateButtonPattern = /(<button\b[^>]*onclick="calculateAndShowPayroll\(\)"[^>]*>)[\s\S]*?(<\/button>)/i;
+if (!calculateButtonPattern.test(indexHtml)) {
+  throw new Error('Statik şablon güncellemesi uygulanamadı: ayrıntılı sonuç butonu');
+}
+indexHtml = indexHtml.replace(
+  calculateButtonPattern,
+  '$1Ayrıntılı Sonuçları Gör$2'
 );
 
 indexHtml = replaceRequired(
@@ -73,6 +82,11 @@ const uxStyles = `
   color: #64748b;
   font-size: 0.72rem;
   line-height: 1.35;
+}
+
+#input-salary::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.72em;
 }
 
 .payroll-table .text-red-500,
