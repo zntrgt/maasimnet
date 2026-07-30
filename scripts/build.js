@@ -36,7 +36,7 @@ await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.7.2-blog-layout-and-pipeline-hardening', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.8.0-seo-geo-blog-quality', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
