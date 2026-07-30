@@ -4,6 +4,7 @@ import { join } from 'node:path';
 const CONSENT_ASSET = '/assets/consent-manager.js';
 const CONSENT_STYLES = '/assets/consent-manager.css';
 const GA_ID = 'G-988BB5B64E';
+const AD_CLIENT = 'ca-pub-8614552230353945';
 
 async function walkHtml(directory, output = []) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -19,63 +20,31 @@ function attributeValue(attributes, name) {
   return match?.[2] || '';
 }
 
-function hasBooleanAttribute(attributes, name) {
-  return new RegExp(`(?:^|\\s)${name}(?:\\s|=|$)`, 'i').test(attributes);
-}
-
-function escapeAttribute(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function blockMarketingExternalScript(attributes) {
-  const src = attributeValue(attributes, 'src');
-  const copied = [];
-  for (const name of ['crossorigin', 'referrerpolicy', 'data-ad-client', 'data-ad-slot']) {
-    const value = attributeValue(attributes, name);
-    if (value) copied.push(`data-copy-${name}="${escapeAttribute(value)}"`);
-  }
-  return `<script type="text/plain" data-consent-category="marketing" data-consent-src="${escapeAttribute(src)}"${hasBooleanAttribute(attributes, 'async') ? ' data-consent-async="true"' : ''}${copied.length ? ` ${copied.join(' ')}` : ''}></script>`;
-}
-
 function transformScripts(html) {
   return html.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi, (full, attributes, body) => {
     const type = attributeValue(attributes, 'type').toLowerCase();
-    if (type === 'application/ld+json' || attributes.includes('data-consent-category')) return full;
+    if (type === 'application/ld+json') return full;
 
     const src = attributeValue(attributes, 'src');
-    if (/googletagmanager\.com\/(?:gtag\/js|gtm\.js)|google-analytics\.com/i.test(src)) {
-      return '';
-    }
-    if (/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/i.test(src)) {
-      return blockMarketingExternalScript(attributes);
-    }
-    if (/adsbygoogle/i.test(body)) {
-      return `<script type="text/plain" data-consent-category="marketing">${body}</script>`;
-    }
-    if (/\bgtag\s*\(|GoogleAnalyticsObject|googletagmanager\.com|google-analytics\.com/i.test(body)) {
-      return '';
-    }
+    if (/googletagmanager\.com\/(?:gtag\/js|gtm\.js)|google-analytics\.com/i.test(src)) return '';
+    if (/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/i.test(src)) return '';
+    if (/\bgtag\s*\(|GoogleAnalyticsObject|googletagmanager\.com|google-analytics\.com/i.test(body)) return '';
+    if (/adsbygoogle/i.test(body)) return '';
     return full;
   });
 }
 
-function injectConsentManager(html) {
+function injectPrivacyBootstrap(html) {
   if (html.includes(CONSENT_ASSET)) return html;
-  const consentScript = `<script src="${CONSENT_ASSET}" data-ga-id="${GA_ID}"></script><link rel="stylesheet" href="${CONSENT_STYLES}">`;
-  if (/<head[^>]*>/i.test(html)) {
-    return html.replace(/<head([^>]*)>/i, `<head$1>${consentScript}`);
-  }
-  return `${consentScript}${html}`;
+  const bootstrap = `<script>window.adsbygoogle=window.adsbygoogle||[];window.adsbygoogle.pauseAdRequests=1;window.adsbygoogle.requestNonPersonalizedAds=1;</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}" crossorigin="anonymous" data-privacy-treatments="disablePersonalization" data-consent-managed="adsense"></script><script src="${CONSENT_ASSET}" data-ga-id="${GA_ID}" data-ad-client="${AD_CLIENT}"></script><link rel="stylesheet" href="${CONSENT_STYLES}">`;
+  if (/<head[^>]*>/i.test(html)) return html.replace(/<head([^>]*)>/i, `<head$1>${bootstrap}`);
+  return `${bootstrap}${html}`;
 }
 
 export function applyPrivacyToHtml(html) {
   let output = transformScripts(html);
   output = output.replace(/<noscript\b[^>]*>[\s\S]*?googletagmanager\.com[\s\S]*?<\/noscript>/gi, '');
-  output = injectConsentManager(output);
+  output = injectPrivacyBootstrap(output);
   return output;
 }
 
@@ -85,5 +54,5 @@ export async function applyPrivacyLayer(dist) {
     const html = await readFile(path, 'utf8');
     await writeFile(path, applyPrivacyToHtml(html));
   }
-  console.log(`rıza öncesi etiket engelleme uygulandı: ${files.length} sayfa`);
+  console.log(`rıza ve reklam isteği kontrolü uygulandı: ${files.length} sayfa`);
 }
