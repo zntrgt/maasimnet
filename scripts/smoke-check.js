@@ -127,12 +127,19 @@ try {
   assert.match(app.text, /solveMonthlyGrossForFixedNet/);
   assert.match(app.text, /formatIncomeTaxRates/);
 
+  const analytics = await fetchText('/assets/calculator-analytics.js');
+  assert.equal(analytics.response.status, 200);
+  assert.doesNotMatch(analytics.text, /input\.value = ''/);
+  assert.doesNotMatch(analytics.text, /input\.dataset\.rawValue = ''/);
+
   const estimateApp = await fetchText('/assets/estimate-2027.js');
   assert.equal(estimateApp.response.status, 200);
   assert.match(estimateApp.text, /calculatePayrollYear/);
   assert.match(estimateApp.text, /solveMonthlyGrossForFixedNet/);
   assert.match(estimateApp.text, /estimate-mode-gross/);
   assert.match(estimateApp.text, /estimate-mode-net/);
+  assert.match(estimateApp.text, /salaryByMode/);
+  assert.doesNotMatch(estimateApp.text, /salaryInput\.value = isNet \? '100000' : '150000'/);
 
   const engine = await fetchText('/assets/payroll-engine.js');
   assert.equal(engine.response.status, 200);
@@ -156,7 +163,7 @@ try {
   const missing = await fetch(`${baseUrl}/olmayan-sayfa/`);
   assert.equal(missing.status, 404);
 
-  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, inline ana sayfa CSS'i, ortak shell, 2026/2027 hesaplayıcılar ve statik assetler doğrulandı.`);
+  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, kullanıcı girdisi koruması, ortak shell, 2026/2027 hesaplayıcılar ve statik assetler doğrulandı.`);
 } finally {
   await new Promise((resolvePromise, rejectPromise) => {
     server.close((error) => error ? rejectPromise(error) : resolvePromise());
