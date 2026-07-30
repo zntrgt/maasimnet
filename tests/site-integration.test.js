@@ -34,23 +34,25 @@ test('arayüz hesaplama için yalnız merkezi bordro motorunu kullanır', () => 
   assert.doesNotMatch(appJs, /function tariffTax\(/);
 });
 
-test('mobil bordro dört kolonlu tablo ve hesapla butonu olarak korunur', () => {
+test('mobil bordro dört kolonlu tablo ve ayrıntılı sonuç butonu olarak korunur', () => {
   assert.match(indexHtml, /<th scope="col">Ay<\/th>/);
   assert.match(indexHtml, /<th scope="col">Brüt<\/th>/);
   assert.match(indexHtml, /<th scope="col">Net Maaş<\/th>/);
   assert.match(indexHtml, /<th scope="col">Detay<\/th>/);
   assert.match(indexHtml, /onclick="calculateAndShowPayroll\(\)"/);
+  assert.match(indexHtml, /Ayrıntılı Sonuçları Gör/);
   assert.match(stylesCss, /\.cta-button--calculate/);
   assert.match(stylesCss, /\.cta-button--download/);
 });
 
-test('para inputları tr-TR canlı binlik ayraç ve decimal klavye kullanır', () => {
+test('ana maaş inputu boş başlar, tr-TR formatını ve decimal klavyeyi kullanır', () => {
   assert.match(indexHtml, /id="input-salary" inputmode="decimal"/);
   assert.match(indexHtml, /data-money-input="true"/);
-  assert.match(indexHtml, /data-raw-value="100000"/);
+  assert.match(indexHtml, /data-raw-value=""/);
   assert.match(indexHtml, /oninput="handleMainSalaryInput\(event\)"/);
-  assert.match(indexHtml, /type="text" value="100\.000"/);
+  assert.match(indexHtml, /type="text" value="" placeholder="Örn\. 100\.000 TL"/);
   assert.doesNotMatch(indexHtml, /type="number" value="100000"/);
+  assert.doesNotMatch(indexHtml, /data-raw-value="100000"/);
   assert.match(appJs, /oninput="formatMoneyInputElement\(this\)"/);
 });
 
