@@ -1,0 +1,66 @@
+/* Tam genişlik SaaS dashboard bordro yerleşimi */
+.calculator-layout {
+  align-items: start !important;
+}
+
+.calculator-layout > :first-child,
+.calculator-results-column {
+  align-self: start;
+}
+
+.calculator-results-column {
+  min-width: 0;
+  width: 100%;
+}
+
+.calculator-table-full {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  margin-top: 0;
+}
+
+.calculator-table-full > #payroll-results-shell {
+  width: 100%;
+  min-width: 0;
+}
+
+.calculator-table-full #payroll-results-shell > div,
+.calculator-table-full #payroll-results-shell .overflow-x-auto {
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+}
+
+.calculator-table-full .payroll-table {
+  width: 100% !important;
+  min-width: 960px;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.calculator-table-full .payroll-table th:first-child,
+.calculator-table-full .payroll-table td:first-child {
+  text-align: left !important;
+}
+
+.calculator-table-full .payroll-table th:not(:first-child),
+.calculator-table-full .payroll-table td:not(:first-child) {
+  text-align: right !important;
+}
+
+@media (max-width: 1023px) {
+  .calculator-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .calculator-layout > :first-child,
+  .calculator-results-column,
+  .calculator-table-full {
+    grid-column: 1;
+  }
+
+  .calculator-layout > :first-child {
+    position: static !important;
+  }
+}
