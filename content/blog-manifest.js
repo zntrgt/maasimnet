@@ -1,6 +1,7 @@
 export const blogPosts = [
   { slug: '2027-maas-zammi-beklentileri', generator: 'legacy', indexable: true },
   { slug: 'is-yerinde-finansal-saglik', generator: 'legacy', indexable: true },
+  { slug: 'maas-zam-gorusmesi-nasil-yapilir', generator: 'career', indexable: true },
   { slug: '2026-yemek-karti-istisnasi', generator: 'core', indexable: true },
   { slug: '2026-maas-vergi-dilimleri', generator: 'core', indexable: true },
   { slug: 'is-degisikliginde-vergi-matrahi', generator: 'core', indexable: true },
