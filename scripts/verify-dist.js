@@ -8,7 +8,7 @@ const dist = join(root, 'dist');
 const required = [
   'index.html','assets/styles.css','assets/app.js','assets/payroll-engine.js',
   'assets/data-2026.js','assets/parameters-2026.js','assets/mobile-payroll-view.js','assets/calculator-actions.js',
-  'assets/blog.css','assets/p0-content.css','assets/consent-manager.css','assets/consent-manager.js',
+  'assets/blog.css','assets/p0-content.css','assets/site-shell.js',
   'assets/2027-maas-zammi-veri-ozeti.svg','assets/2027-maas-takvimi.svg','assets/is-yerinde-finansal-saglik.svg',
   'blog/index.html','blog/2027-maas-zammi-beklentileri/index.html','blog/is-yerinde-finansal-saglik/index.html','sss/index.html','sozluk/index.html',
   'cerez-politikasi/index.html','veriler/2026/index.html','veriler/2026-asgari-ucret/index.html','veriler/2026-gelir-vergisi-dilimleri/index.html',
@@ -20,15 +20,30 @@ for (const path of required) await access(join(dist, path));
 const indexHtml = await readFile(join(dist, 'index.html'), 'utf8');
 const stylesCss = await readFile(join(dist, 'assets/styles.css'), 'utf8');
 const appJs = await readFile(join(dist, 'assets/app.js'), 'utf8');
-const consentManagerJs = await readFile(join(dist, 'assets/consent-manager.js'), 'utf8');
-const consentManagerCss = await readFile(join(dist, 'assets/consent-manager.css'), 'utf8');
+const siteShellJs = await readFile(join(dist, 'assets/site-shell.js'), 'utf8');
 const cookiePolicy = await readFile(join(dist, 'cerez-politikasi', 'index.html'), 'utf8');
 if (!indexHtml.includes('<script type="module" src="/assets/app.js"></script>')) throw new Error('index.html merkezi app modülünü yüklemiyor.');
 if (indexHtml.includes('function runPayroll(') || indexHtml.includes('const PARAMS =')) throw new Error('Eski inline hesap motoru index içinde kaldı.');
-if (!indexHtml.includes('data-maasim-consent-bootstrap') || !indexHtml.includes('/assets/consent-manager.js') || !indexHtml.includes('data-open-consent-preferences')) throw new Error('Ana sayfada izin yönetimi bootstrap, asset veya tercih bağlantısı eksik.');
-if (!consentManagerJs.includes('Tümünü Reddet') || !consentManagerJs.includes('Tümünü Kabul Et') || !consentManagerJs.includes('data-consent-category') || !consentManagerJs.includes("analytics_storage: preferences.analytics ? 'granted' : 'denied'")) throw new Error('İzin yöneticisi kategori veya Consent Mode davranışı eksik.');
-if (!consentManagerCss.includes('grid-template-columns:repeat(3,minmax(0,1fr))')) throw new Error('Banner eylemleri eşit görünürlükte üç kolon değil.');
-if (!cookiePolicy.includes('Çerez Politikası') || !cookiePolicy.includes('maasim_consent_v1') || !cookiePolicy.includes('İzin verilene kadar kapalı')) throw new Error('Çerez politikası kategori, saklama veya varsayılan ret bilgisini içermiyor.');
+
+const cookiebotPosition = indexHtml.indexOf('id="Cookiebot"');
+const consentModePosition = indexHtml.indexOf('data-maasim-consent-mode');
+const appPosition = indexHtml.indexOf('<script type="module" src="/assets/app.js"></script>');
+if (cookiebotPosition < 0 || consentModePosition < cookiebotPosition || appPosition < consentModePosition) throw new Error('Cookiebot, Consent Mode ve uygulama script sırası hatalı.');
+for (const token of [
+  'data-cbid="fc0797fc-6cb3-4086-98c8-c276a7024462"',
+  'data-blockingmode="auto"',
+  'data-framework="TCFv2.2"',
+  'data-cookieconsent="ignore"',
+  "analytics_storage: 'denied'",
+  "ad_storage: 'denied'",
+  "ad_user_data: 'denied'",
+  "ad_personalization: 'denied'",
+  "gtag('set', 'ads_data_redaction', true)",
+  'data-cookiebot-renew>Çerez Tercihleri'
+]) if (!indexHtml.includes(token)) throw new Error(`Cookiebot veya Consent Mode production çıktısı eksik: ${token}`);
+if (indexHtml.includes('consent-manager.js') || indexHtml.includes('consent-manager.css') || indexHtml.includes('data-maasim-consent-bootstrap')) throw new Error('Eski özel izin yöneticisi production çıktısında kaldı.');
+if (!siteShellJs.includes('Cookiebot?.renew') || !siteShellJs.includes("localStorage.removeItem('maasim_consent_v1')")) throw new Error('Cookiebot tercih bağlantısı veya eski izin kaydı temizliği eksik.');
+if (!cookiePolicy.includes('Çerez Politikası') || !cookiePolicy.includes('id="CookieDeclaration"') || !cookiePolicy.includes('/cd.js') || !cookiePolicy.includes('Reklamlar') || !cookiePolicy.includes('İzin verilene kadar kapalı')) throw new Error('Çerez politikası Cookiebot bildirimi veya kategori bilgilerini içermiyor.');
 
 const calculatorStart = indexHtml.indexOf('<section class="calculator-layout');
 const resultsColumn = indexHtml.indexOf('<div class="calculator-results-column">', calculatorStart);
@@ -89,6 +104,7 @@ await walk(dist);
 if (htmlFiles.length !== 28) throw new Error(`28 HTML sayfası bekleniyordu, ${htmlFiles.length} bulundu.`);
 for (const path of htmlFiles) {
   const html = await readFile(path,'utf8');
+  if (!html.includes('id="Cookiebot"') || !html.includes('data-maasim-consent-mode')) throw new Error(`Cookiebot veya Consent Mode eksik: ${path}`);
   if (!html.includes('Güncellik') && !html.includes('site-freshness') && !html.includes('class="freshness"') && !html.includes('Son güncelleme:')) throw new Error(`Güncellik bloğu eksik: ${path}`);
 }
 
@@ -97,4 +113,4 @@ const scenario=createGross100kScenarioData();
 for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includes(value)) throw new Error(`100.000 TL senaryosunda merkezi motor değeri yok: ${value}`);
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
-console.log('dist doğrulaması başarılı: 28 HTML, izin yönetimi, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
+console.log('dist doğrulaması başarılı: 28 HTML, Cookiebot CMP, Consent Mode v2, iki kaynaklı blog yazısı, sade ana sayfa, tek veri kaynağı, veri merkezi, schema graph, güncellik ve indexability hazır.');
