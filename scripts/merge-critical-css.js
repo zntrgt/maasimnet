@@ -45,6 +45,13 @@ export async function mergeCriticalCss(distDir) {
       }
     }
 
+    const headerCount = (optimized.match(/class="site-header"/g) || []).length;
+    const footerCount = (optimized.match(/class="site-footer"/g) || []).length;
+    const legacyTopCount = (optimized.match(/<header\b[^>]*class=["'][^"']*\btop\b/gi) || []).length;
+    if (headerCount !== 1 || footerCount !== 1 || legacyTopCount !== 0) {
+      throw new Error(`Sayfada tek ortak shell yok: ${path} (header=${headerCount}, footer=${footerCount}, legacyTop=${legacyTopCount})`);
+    }
+
     const styleMatch = optimized.match(SHELL_STYLE_PATTERN);
     if (!styleMatch) {
       throw new Error(`İşaretli ortak shell stil bloğu bulunamadı: ${path}`);
@@ -71,5 +78,5 @@ export async function mergeCriticalCss(distDir) {
   }
 
   await rm(shellPath, { force: true });
-  console.log(`Ortak shell tek kaynaktan inline teslim edildi: ${htmlFiles.length} HTML sayfası doğrulandı.`);
+  console.log(`Tek ortak header/footer ve aynı inline shell CSS doğrulandı: ${htmlFiles.length} HTML sayfası.`);
 }
