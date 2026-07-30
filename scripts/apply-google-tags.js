@@ -8,15 +8,72 @@ const GOOGLE_TAG_MARKER = 'data-maasim-google-tag';
 const ADSENSE_AUTO_MARKER = 'data-maasim-adsense-auto';
 const CALCULATOR_ANALYTICS_MARKER = 'data-maasim-calculator-analytics';
 
-const googleTagScripts = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}" ${GOOGLE_TAG_MARKER}></script>
-<script ${GOOGLE_TAG_MARKER}>
-window.dataLayer = window.dataLayer || [];
-function gtag() { dataLayer.push(arguments); }
-gtag('js', new Date());
-gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: true });
+const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER}>
+(() => {
+  const measurementId = '${GA_MEASUREMENT_ID}';
+  const adsenseClient = '${ADSENSE_CLIENT}';
+  let analyticsLoaded = false;
+  let adsLoaded = false;
+
+  const loadExternalScript = (id, src, attributes = {}) => {
+    if (document.getElementById(id)) return document.getElementById(id);
+    const script = document.createElement('script');
+    script.id = id;
+    script.async = true;
+    script.src = src;
+    Object.entries(attributes).forEach(([name, value]) => script.setAttribute(name, value));
+    document.head.appendChild(script);
+    return script;
+  };
+
+  const enableAnalytics = () => {
+    if (analyticsLoaded || window.Cookiebot?.consent?.statistics !== true) return;
+    analyticsLoaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('consent', 'update', { analytics_storage: 'granted' });
+    window.gtag('js', new Date());
+    window.gtag('config', measurementId, { send_page_view: true });
+    loadExternalScript('maasim-ga4-script', `https://www.googletagmanager.com/gtag/js?id=${measurementId}`);
+  };
+
+  const enableAds = () => {
+    if (adsLoaded || window.Cookiebot?.consent?.marketing !== true) return;
+    adsLoaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('consent', 'update', {
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted'
+    });
+    loadExternalScript(
+      'maasim-adsense-script',
+      `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`,
+      { crossorigin: 'anonymous' }
+    );
+  };
+
+  const applyConsent = () => {
+    enableAnalytics();
+    enableAds();
+  };
+
+  const enforceRevocation = () => {
+    const statisticsDenied = window.Cookiebot?.consent?.statistics !== true;
+    const marketingDenied = window.Cookiebot?.consent?.marketing !== true;
+    if ((analyticsLoaded && statisticsDenied) || (adsLoaded && marketingDenied)) {
+      window.location.reload();
+    }
+  };
+
+  window.addEventListener('CookiebotOnConsentReady', applyConsent);
+  window.addEventListener('CookiebotOnAccept', applyConsent);
+  window.addEventListener('CookiebotOnDecline', enforceRevocation);
+  applyConsent();
+})();
 </script>`;
 
-const adsenseAutoAdsScript = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous" ${ADSENSE_AUTO_MARKER}></script>`;
 const calculatorAnalyticsScript = `<script type="module" src="/assets/calculator-analytics.js" ${CALCULATOR_ANALYTICS_MARKER}></script>`;
 
 async function walkHtml(dir, output = []) {
@@ -32,14 +89,15 @@ function stripExistingGoogleTags(html) {
   const gaExternal = new RegExp(`<script\\b(?=[^>]*${GA_MEASUREMENT_ID})[^>]*><\\/script>\\s*`, 'gi');
   const gaInline = new RegExp(`<script\\b[^>]*>(?:(?!<\\/script>)[\\s\\S])*?${GA_MEASUREMENT_ID}(?:(?!<\\/script>)[\\s\\S])*?<\\/script>\\s*`, 'gi');
   const adsense = new RegExp(`<script\\b(?=[^>]*adsbygoogle\\.js\\?client=${ADSENSE_CLIENT})[^>]*><\\/script>\\s*`, 'gi');
-  return html.replace(gaExternal, '').replace(gaInline, '').replace(adsense, '');
+  const markedLoader = new RegExp(`<script\\b[^>]*${GOOGLE_TAG_MARKER}[^>]*>[\\s\\S]*?<\\/script>\\s*`, 'gi');
+  return html.replace(markedLoader, '').replace(gaExternal, '').replace(gaInline, '').replace(adsense, '');
 }
 
 function injectGoogleTags(html) {
   const cleaned = stripExistingGoogleTags(html);
   const consentModeBlock = new RegExp(`<script\\b[^>]*${CONSENT_MODE_MARKER}[^>]*>[\\s\\S]*?<\\/script>`, 'i');
   if (!consentModeBlock.test(cleaned)) throw new Error('Consent Mode bloğu bulunamadı; Google etiketleri güvenli sırada eklenemedi.');
-  return cleaned.replace(consentModeBlock, (block) => `${block}${googleTagScripts}${adsenseAutoAdsScript}`);
+  return cleaned.replace(consentModeBlock, (block) => `${block}${googleTagLoader}`);
 }
 
 function injectCalculatorAnalytics(html) {
@@ -55,5 +113,5 @@ export async function applyGoogleTags(dist) {
     html = injectCalculatorAnalytics(html);
     await writeFile(path, html);
   }
-  console.log(`GA4 ve AdSense Auto Ads merkezi olarak uygulandı: ${files.length} sayfa`);
+  console.log(`GA4 ve AdSense Basic Consent Mode ile uygulandı: ${files.length} sayfa`);
 }
