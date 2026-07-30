@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const PAYROLL_MARKER = '<!-- Bordro Özeti: masaüstünde 8 kolon, mobilde 4 kolonlu tablo -->';
+const CALCULATOR_END_MARKER = '<!-- Calculator Layout End -->';
 const CSS_MARKER = '/* Tam genişlik SaaS dashboard bordro yerleşimi */';
 
 export async function applyDashboardLayout(distDir) {
@@ -31,7 +32,7 @@ export async function applyDashboardLayout(distDir) {
     // Bu kapanışı bordro parçasından çıkarıp sonuç sütununu açıkça kapatıyoruz.
     payrollHtml = payrollHtml.replace(/\s*<\/div>\s*(?=<\/section>\s*$)/, '');
 
-    let withoutPayroll = html.slice(0, payrollStart) + html.slice(payrollEnd);
+    const withoutPayroll = html.slice(0, payrollStart) + html.slice(payrollEnd);
     const calculatorSectionEnd = withoutPayroll.indexOf('</section>', resultsStart);
     if (calculatorSectionEnd < 0) {
       throw new Error('Dashboard yerleşimi uygulanamadı: ana hesaplayıcı section kapanışı bulunamadı.');
@@ -42,7 +43,7 @@ export async function applyDashboardLayout(distDir) {
     const afterCalculatorClose = withoutPayroll.slice(calculatorClose);
 
     html = beforeCalculatorClose
-      + '\n</div>\n</section>'
+      + `\n</div>\n${CALCULATOR_END_MARKER}\n</section>`
       + `\n<div class="calculator-table-full" data-dashboard-table="full-width">\n${payrollHtml}\n</div>`
       + afterCalculatorClose;
   }
