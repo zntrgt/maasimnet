@@ -47,17 +47,20 @@ await add2027EstimateCalculator(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
-await applySharedShell(distDir);
 await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
 await removeInternalCopy(distDir);
 await applyLighthouseFixes(distDir);
 await applyAccessibilityPolish(distDir);
 await applyFintechUi(distDir);
+
+// Ortak header/footer en son uygulanır. Böylece çerez politikası veya diğer
+// sonraki adımların yeniden yazdığı HTML sayfalarında shell kaybolmaz.
+await applySharedShell(distDir);
 await mergeCriticalCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.2.1-unified-shared-shell', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.2.2-shared-shell-final-pass', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
