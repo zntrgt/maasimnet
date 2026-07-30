@@ -16,6 +16,16 @@ Türkiye için 2026 brütten nete ve netten brüte maaş hesaplama uygulaması.
 - Production kaynakları `site-bundle/` içinden doğrulanabilir biçimde `static/` klasörüne açılır.
 - Build çıktısı yalnızca `dist/` klasöründe oluşturulur.
 
+## Gizlilik ve reklam modeli
+
+- Maaş, vergi, SGK, kesinti ve işveren maliyeti değerleri Analytics veya AdSense'e gönderilmez.
+- GA4 yalnız analitik izninden sonra yüklenir; Google Signals, User-ID ve reklam kişiselleştirme sinyalleri kapalıdır.
+- Google AdSense yayıncı kimliği `ca-pub-8614552230353945` olarak tekilleştirilmiştir.
+- AdSense etiketi CMP mesajının çalışabilmesi için yüklenir; reklam istekleri tercih sonucu oluşana kadar `pauseAdRequests=1` ile duraklatılır.
+- Reklam istekleri kişiselleştirilmemiş/bağlamsal olarak gönderilir.
+- EEA, Birleşik Krallık ve İsviçre'de Google Privacy & Messaging CMP; diğer bölgelerde Maaşım.net tercih merkezi kullanılır.
+- Analitik veriler yeniden pazarlama, profil oluşturma, veri satışı veya üçüncü taraf pazarlama amacıyla kullanılmaz.
+
 ## Yerel geliştirme
 
 Node.js 22 veya üzeri gerekir.
@@ -30,7 +40,7 @@ npm run check
 1. Statik production kaynaklarını hazırlar.
 2. Otomatik regresyon ve entegrasyon testlerini çalıştırır.
 3. `dist/` klasörünü oluşturur.
-4. HTML, hesap motoru ve senaryo sonuçlarını doğrular.
+4. HTML, hesap motoru, gizlilik katmanı ve senaryo sonuçlarını doğrular.
 5. Yerel HTTP smoke testi çalıştırır.
 
 Ayrı komutlar:
