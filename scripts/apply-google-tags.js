@@ -73,7 +73,29 @@ const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER
 })();
 </script>`;
 
-const calculatorAnalyticsScript = `<script type="module" src="/assets/calculator-analytics.js" ${CALCULATOR_ANALYTICS_MARKER}></script>`;
+const calculatorAnalyticsLoader = `<script data-cookieconsent="ignore" ${CALCULATOR_ANALYTICS_MARKER}>
+(() => {
+  let loaded = false;
+  let interacted = false;
+
+  const canLoad = () => window.Cookiebot?.consent?.statistics === true;
+  const load = () => {
+    if (loaded || !interacted || !canLoad()) return;
+    loaded = true;
+    import('/assets/calculator-analytics.js');
+  };
+  const markInteraction = () => {
+    interacted = true;
+    load();
+  };
+
+  for (const eventName of ['pointerdown', 'keydown', 'input', 'change']) {
+    document.addEventListener(eventName, markInteraction, { once: true, passive: eventName !== 'keydown', capture: true });
+  }
+  window.addEventListener('CookiebotOnConsentReady', load);
+  window.addEventListener('CookiebotOnAccept', load);
+})();
+</script>`;
 
 async function walkHtml(dir, output = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -101,7 +123,7 @@ function injectGoogleTags(html) {
 
 function injectCalculatorAnalytics(html) {
   if (!html.includes('id="input-salary"') || html.includes(CALCULATOR_ANALYTICS_MARKER)) return html;
-  return html.replace(/<\/body>/i, `${calculatorAnalyticsScript}</body>`);
+  return html.replace(/<\/body>/i, `${calculatorAnalyticsLoader}</body>`);
 }
 
 export async function applyGoogleTags(dist) {
