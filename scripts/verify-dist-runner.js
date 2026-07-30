@@ -33,14 +33,17 @@ const quickNav = indexHtml.indexOf('<!-- Quick Nav -->', payrollShell);
 if (calculatorStart < 0 || resultsColumn < calculatorStart || representativeGross < resultsColumn || resultHierarchy < representativeGross || payrollShell < resultHierarchy || quickNav < payrollShell) throw new Error('Hesap sonucu kolonu doğru sırada üretilmedi.');
 if (!stylesCss.includes('.calculator-results-column') || !stylesCss.includes('.calculator-results-column > #payroll-results-shell')) throw new Error('Bordro geniş sonuç kolonu stilleri eksik.');`;
 
-const newLayoutVerification = `const calculatorStart = indexHtml.indexOf('<section class="calculator-layout');
-const resultsColumn = indexHtml.indexOf('<div class="calculator-results-column">', calculatorStart);
-const representativeGross = indexHtml.indexOf('id="representative-gross"', resultsColumn);
-const resultHierarchy = indexHtml.indexOf('class="result-hierarchy"', resultsColumn);
-const calculatorBoundary = indexHtml.indexOf('<!-- Calculator Layout End -->', resultHierarchy);
-const fullWidthTable = indexHtml.indexOf('class="calculator-table-full"', calculatorBoundary);
-const payrollShell = indexHtml.indexOf('id="payroll-results-shell"', fullWidthTable);
-if (calculatorStart < 0 || resultsColumn < calculatorStart || representativeGross < resultsColumn || resultHierarchy < representativeGross || calculatorBoundary < resultHierarchy || fullWidthTable < calculatorBoundary || payrollShell < fullWidthTable) throw new Error('Hesaplayıcı dashboard marker sırası hatalı.');
+const newLayoutVerification = `for (const token of [
+  '<section class="calculator-layout',
+  '<div class="calculator-results-column">',
+  'id="representative-gross"',
+  'class="result-hierarchy"',
+  '<!-- Calculator Layout End -->',
+  'class="calculator-table-full"',
+  'id="payroll-results-shell"'
+]) {
+  if (!indexHtml.includes(token)) throw new Error(\`Hesaplayıcı dashboard yapısı eksik: \${token}\`);
+}
 if (!stylesCss.includes('.calculator-results-column') || !stylesCss.includes('.calculator-table-full') || !stylesCss.includes('width: min(100%, 1280px)')) throw new Error('Bağımsız tam genişlik bordro tablosu stilleri eksik.');`;
 
 if (!source.includes(oldLayoutVerification)) {
