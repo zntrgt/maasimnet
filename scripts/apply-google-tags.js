@@ -5,7 +5,6 @@ const GA_MEASUREMENT_ID = 'G-988BB5B64E';
 const ADSENSE_CLIENT = 'ca-pub-8614552230353945';
 const CONSENT_MODE_MARKER = 'data-maasim-consent-mode';
 const GOOGLE_TAG_MARKER = 'data-maasim-google-tag';
-const ADSENSE_AUTO_MARKER = 'data-maasim-adsense-auto';
 const CALCULATOR_ANALYTICS_MARKER = 'data-maasim-calculator-analytics';
 
 const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER}>
@@ -34,7 +33,7 @@ const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER
     window.gtag('consent', 'update', { analytics_storage: 'granted' });
     window.gtag('js', new Date());
     window.gtag('config', measurementId, { send_page_view: true });
-    loadExternalScript('maasim-ga4-script', `https://www.googletagmanager.com/gtag/js?id=${measurementId}`);
+    loadExternalScript('maasim-ga4-script', 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId));
   };
 
   const enableAds = () => {
@@ -49,7 +48,7 @@ const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER
     });
     loadExternalScript(
       'maasim-adsense-script',
-      `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`,
+      'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(adsenseClient),
       { crossorigin: 'anonymous' }
     );
   };
