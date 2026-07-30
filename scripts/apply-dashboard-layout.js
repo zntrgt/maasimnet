@@ -11,10 +11,11 @@ export async function applyDashboardLayout(distDir) {
   let styles = await readFile(stylesPath, 'utf8');
 
   if (!html.includes('class="calculator-table-full"')) {
-    const resultsStart = html.indexOf('<div class="calculator-results-column">');
+    const calculatorStart = html.indexOf('<section class="calculator-layout');
+    const resultsStart = html.indexOf('<div class="calculator-results-column">', calculatorStart);
     const payrollStart = html.indexOf(PAYROLL_MARKER, resultsStart);
-    if (resultsStart < 0 || payrollStart < 0) {
-      throw new Error('Dashboard yerleşimi uygulanamadı: sonuç sütunu veya bordro tablosu bulunamadı.');
+    if (calculatorStart < 0 || resultsStart < 0 || payrollStart < 0) {
+      throw new Error('Dashboard yerleşimi uygulanamadı: hesaplayıcı, sonuç sütunu veya bordro tablosu bulunamadı.');
     }
 
     const payrollSectionEndTag = '</section>';
@@ -26,14 +27,24 @@ export async function applyDashboardLayout(distDir) {
     const payrollEnd = payrollSectionEnd + payrollSectionEndTag.length;
     let payrollHtml = html.slice(payrollStart, payrollEnd);
 
-    // Eski sonuç-hiyerarşisi çıktısında sonuç sütununun kapanış div'i,
-    // bordro section kapanışından hemen önce kalabiliyor. Bu kapanışı tablo
-    // parçasından çıkarıp sonuç sütununu açıkça burada kapatıyoruz.
-    payrollHtml = payrollHtml.replace(/\s*<\/div>\s*(<\/section>)\s*$/i, '\n$1');
+    // Eski üretimde sonuç sütununun kapanışı bordro section'ından hemen önce kalabiliyor.
+    // Bu kapanışı bordro parçasından çıkarıp sonuç sütununu açıkça kapatıyoruz.
+    payrollHtml = payrollHtml.replace(/\s*<\/div>\s*(?=<\/section>\s*$)/, '');
 
-    html = html.slice(0, payrollStart)
-      + `</div>\n<div class="calculator-table-full" data-dashboard-table="full-width">\n${payrollHtml}\n</div>`
-      + html.slice(payrollEnd);
+    let withoutPayroll = html.slice(0, payrollStart) + html.slice(payrollEnd);
+    const calculatorSectionEnd = withoutPayroll.indexOf('</section>', resultsStart);
+    if (calculatorSectionEnd < 0) {
+      throw new Error('Dashboard yerleşimi uygulanamadı: ana hesaplayıcı section kapanışı bulunamadı.');
+    }
+
+    const calculatorClose = calculatorSectionEnd + '</section>'.length;
+    const beforeCalculatorClose = withoutPayroll.slice(0, calculatorSectionEnd);
+    const afterCalculatorClose = withoutPayroll.slice(calculatorClose);
+
+    html = beforeCalculatorClose
+      + '\n</div>\n</section>'
+      + `\n<div class="calculator-table-full" data-dashboard-table="full-width">\n${payrollHtml}\n</div>`
+      + afterCalculatorClose;
   }
 
   if (!styles.includes(CSS_MARKER)) {
@@ -43,5 +54,5 @@ export async function applyDashboardLayout(distDir) {
 
   await writeFile(indexPath, html);
   await writeFile(stylesPath, styles);
-  console.log('Dashboard yerleşimi uygulandı: üstte iki sütun, altta tam genişlik bordro tablosu.');
+  console.log('Dashboard yerleşimi uygulandı: üstte bağımsız iki sütun, altında tam genişlik bordro tablosu.');
 }
