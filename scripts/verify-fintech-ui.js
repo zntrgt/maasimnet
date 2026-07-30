@@ -12,25 +12,31 @@ const requiredHtml = [
   'class="calculator-results-column"',
   'class="calculator-table-full"',
   'data-dashboard-table="full-width"',
-  'id="payroll-results-shell"'
+  'id="payroll-results-shell"',
+  '>Vergi Dilimi</th>'
 ];
 for (const token of requiredHtml) {
   if (!html.includes(token)) throw new Error(`Fintech UI HTML işareti eksik: ${token}`);
 }
 
+if (html.includes('/assets/site-shell.css')) {
+  throw new Error('Ana sayfada ikinci render-blocking site-shell.css isteği kaldı.');
+}
+
 const layoutStart = html.indexOf('class="calculator-layout');
 const resultsStart = html.indexOf('class="calculator-results-column"', layoutStart);
-const layoutClose = html.indexOf('</section>', resultsStart);
-const fullTableStart = html.indexOf('class="calculator-table-full"', layoutClose);
+const fullTableStart = html.indexOf('class="calculator-table-full"', resultsStart);
 const payrollStart = html.indexOf('id="payroll-results-shell"', fullTableStart);
-if (!(layoutStart >= 0 && resultsStart > layoutStart && layoutClose > resultsStart && fullTableStart > layoutClose && payrollStart > fullTableStart)) {
-  throw new Error('Dashboard hiyerarşisi hatalı: üst iki sütun kapanmadan veya tablo bağımsız blok olarak başlamadan üretildi.');
+if (!(layoutStart >= 0 && resultsStart > layoutStart && fullTableStart > resultsStart && payrollStart > fullTableStart)) {
+  throw new Error('Dashboard hiyerarşisi hatalı: üst iki sütun ve bağımsız tablo yapısı üretilemedi.');
 }
 
 const requiredCss = [
   '/* Maaşım.net SaaS fintech arayüz sistemi */',
   '/* Tam genişlik SaaS dashboard bordro yerleşimi */',
   '/* Simetrik finansal metrik kart standardı */',
+  '/* Aylık gelir vergisi dilimi sütunu */',
+  '/* Birleştirilmiş ortak site shell stilleri */',
   '--primary: #0f172a',
   '--accent: #10b981',
   'font-variant-numeric: tabular-nums',
@@ -41,6 +47,8 @@ const requiredCss = [
   '.calculator-table-full',
   'width: min(100%, 1280px)',
   '#payroll-results-shell .payroll-table',
+  '.tax-bracket-badge',
+  '.site-header',
   'overflow-x: auto',
   '.cta-button--calculate',
   '#senaryolar .grid'
@@ -53,6 +61,16 @@ if (!css.includes('grid-template-columns: 1fr !important')) {
   throw new Error('Fintech UI mobil tek sütun düzeni eksik.');
 }
 
+for (const token of [
+  'function formatIncomeTaxRates(',
+  'incomeTaxRatesPpm: row.incomeTaxRatesPpm',
+  "detailPair('Uygulanan Vergi Dilimi'",
+  'class="tax-bracket-badge"',
+  "'İşveren Maliyeti', 'Vergi Dilimi'"
+]) {
+  if (!app.includes(token)) throw new Error(`Vergi dilimi uygulama çıktısı eksik: ${token}`);
+}
+
 if (!app.includes("document.getElementById('stat-high-net').innerText = formatCurrency(highestNet);")) {
   throw new Error('En yüksek net kartında ay adı değer alanına karışıyor.');
 }
@@ -60,4 +78,4 @@ if (!app.includes("document.getElementById('stat-low-net').innerText = formatCur
   throw new Error('En düşük net kartında ay adı değer alanına karışıyor.');
 }
 
-console.log('SaaS fintech dashboard düzeni doğrulandı: üstte bağımsız iki sütun, altında tam genişlik tablo.');
+console.log('SaaS fintech düzeni, aylık vergi dilimleri ve tek CSS teslimi doğrulandı.');
