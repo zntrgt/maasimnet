@@ -7,6 +7,7 @@ import { applyDashboardLayout } from './apply-dashboard-layout.js';
 import { applyMetricCardStandard } from './apply-metric-card-standard.js';
 import { applyTaxBracketColumn } from './apply-tax-bracket-column.js';
 import { renderBlog } from './render-blog.js';
+import { add2027EstimateCalculator } from './add-2027-estimate-calculator.js';
 import { addContactPage } from './add-contact-page.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
@@ -32,7 +33,8 @@ await mkdir(assetsDir, { recursive: true });
 
 for (const file of [
   'app.js','data-2026.js','parameters-2026.js','payroll-engine.js','mobile-payroll-view.js',
-  'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js','site-shell.css','site-shell.js'
+  'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
+  'estimate-2027.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await applyResultHierarchy(distDir);
@@ -41,6 +43,7 @@ await applyMetricCardStandard(distDir);
 await applyTaxBracketColumn(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await renderBlog(distDir);
+await add2027EstimateCalculator(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
@@ -54,7 +57,7 @@ await applyFintechUi(distDir);
 await mergeCriticalCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.0.4-tax-brackets-single-css', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.1.0-2027-estimate-calculator', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
