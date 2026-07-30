@@ -49,5 +49,11 @@ assert(contact.includes('/assets/contact-form.js'), 'İletişim formu istemci ko
 const contactClient = await readFile(join(dist, 'assets', 'contact-form.js'), 'utf8');
 assert(contactClient.includes("fetch('/api/contact'"), 'İletişim API bağlantısı eksik.');
 assert(contactClient.includes('generate_lead'), 'İletişim formu GA4 başarı olayı eksik.');
+assert(contactClient.includes('Cookiebot?.consent?.statistics'), 'İletişim event izin kontrolü eksik.');
 
-console.log(`İzin, ortak kabuk ve iletişim doğrulaması başarılı: ${files.length} HTML sayfası.`);
+const siteShell = await readFile(join(dist, 'assets', 'site-shell.js'), 'utf8');
+assert(siteShell.includes('blog_cta_clicked'), 'Blog CTA ölçümü eksik.');
+assert(siteShell.includes('CookiebotOnAccept'), 'İzin sonrası ölçüm yenilemesi eksik.');
+assert(siteShell.includes('Cookiebot?.consent?.statistics'), 'Ortak analitik izin kontrolü eksik.');
+
+console.log(`İzin, ortak kabuk, iletişim ve analitik doğrulaması başarılı: ${files.length} HTML sayfası.`);
