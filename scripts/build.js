@@ -60,13 +60,12 @@ await applyFintechUi(distDir);
 await applySharedShell(distDir);
 await mergeCriticalCss(distDir);
 
-// Ana sayfanın son styles.css çıktısı HTML içine alınır. Böylece ilk render
-// için ayrı ve render-blocking bir CSS isteği gerekmez; diğer sayfalar ortak
-// styles.css dosyasını kullanmaya devam eder.
+// Ana sayfanın son styles.css çıktısı küçültülerek HTML içine alınır. Böylece
+// ilk render için ayrı ve render-blocking bir CSS isteği gerekmez.
 await inlineHomeCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.3.0-home-inline-css', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.3.1-lazy-analytics-minified-css', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
