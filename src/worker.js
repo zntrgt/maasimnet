@@ -2,14 +2,32 @@ const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT = 5;
 const rateBuckets = new Map();
 
-const json = (body, status = 200) => new Response(JSON.stringify(body), {
+const SECURITY_HEADERS = Object.freeze({
+  'strict-transport-security': 'max-age=2592000; includeSubDomains',
+  'x-frame-options': 'DENY',
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+  'cross-origin-opener-policy': 'same-origin'
+});
+
+function withSecurityHeaders(response) {
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) headers.set(name, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+
+const json = (body, status = 200) => withSecurityHeaders(new Response(JSON.stringify(body), {
   status,
   headers: {
     'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'no-store',
-    'x-content-type-options': 'nosniff'
+    'cache-control': 'no-store'
   }
-});
+}));
 
 function clean(value, max) {
   return String(value || '').trim().replace(/\r/g, '').slice(0, max);
@@ -127,6 +145,6 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/contact') return handleContact(request, env);
-    return env.ASSETS.fetch(request);
+    return withSecurityHeaders(await env.ASSETS.fetch(request));
   }
 };
