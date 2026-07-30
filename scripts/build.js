@@ -11,6 +11,7 @@ import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { applySharedShell } from './apply-shared-shell.js';
 import { applyConsentManagement } from './apply-consent-management.js';
+import { applyGoogleTags } from './apply-google-tags.js';
 import { removeInternalCopy } from './remove-internal-copy.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -25,7 +26,7 @@ await mkdir(assetsDir, { recursive: true });
 
 for (const file of [
   'app.js','data-2026.js','parameters-2026.js','payroll-engine.js','mobile-payroll-view.js',
-  'calculator-actions.js','money-input.js','payroll-change-reasons.js','site-shell.css','site-shell.js'
+  'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await applyResultHierarchy(distDir);
@@ -38,9 +39,10 @@ await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
 await applySharedShell(distDir);
 await applyConsentManagement(distDir);
+await applyGoogleTags(distDir);
 await removeInternalCopy(distDir);
 
-const version = { version: '0.6.9-cookiebot-vendor-restrictions', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '0.7.0-central-google-tags', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
