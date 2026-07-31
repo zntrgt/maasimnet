@@ -1,9 +1,9 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gunzipSync } from 'node:zlib';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const sourceDir = join(root, 'assets-source', 'direct');
 
 const posts = [
   {
@@ -58,20 +58,6 @@ const posts = [
   }
 ];
 
-const bundleParts = [
-  'blog-editorial-images.part01.prefix.b64',
-  'blog-editorial-images.part01.b64',
-  'blog-editorial-images.part02.prefix.b64',
-  'blog-editorial-images.part02.b64',
-  'blog-editorial-images.part03.prefix01.b64',
-  'blog-editorial-images.part03.prefix02.b64',
-  'blog-editorial-images.part03.b64',
-  'blog-editorial-images.part04.prefix01.b64',
-  'blog-editorial-images.part04.prefix02.b64',
-  'blog-editorial-images.part04.b64',
-  'blog-editorial-images.part05.b64'
-];
-
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -97,8 +83,8 @@ function updateHero(html, post) {
   let attributes = match[2];
   attributes = replaceAttribute(attributes, 'src', relative);
   attributes = replaceAttribute(attributes, 'alt', post.alt);
-  attributes = replaceAttribute(attributes, 'width', '640');
-  attributes = replaceAttribute(attributes, 'height', '360');
+  attributes = replaceAttribute(attributes, 'width', '480');
+  attributes = replaceAttribute(attributes, 'height', '270');
 
   html = html.replace(figureImage, `$1${attributes}$3`);
   html = html.replaceAll(currentSrc, relative);
@@ -125,41 +111,18 @@ function updateIndexCard(html, post) {
 
   let attributes = match[2];
   attributes = replaceAttribute(attributes, 'src', `/assets/${post.asset}`);
-  attributes = replaceAttribute(attributes, 'width', '640');
-  attributes = replaceAttribute(attributes, 'height', '360');
+  attributes = replaceAttribute(attributes, 'width', '480');
+  attributes = replaceAttribute(attributes, 'height', '270');
 
   return html.replace(anchorPattern, `$1${attributes}$3`);
 }
 
-async function readImageBundle() {
-  const encoded = (await Promise.all(
-    bundleParts.map((name) => readFile(join(root, 'assets-source', name), 'utf8'))
-  ))
-    .join('')
-    .replace(/[^A-Za-z0-9+/=]/g, '');
-
-  const compressed = Buffer.from(encoded, 'base64');
-  if (compressed[0] !== 0x1f || compressed[1] !== 0x8b) {
-    throw new Error('Editorial image bundle is incomplete or corrupted');
-  }
-
-  try {
-    return JSON.parse(gunzipSync(compressed).toString('utf8'));
-  } catch (error) {
-    throw new Error(`Editorial image bundle could not be decoded: ${error.message}`);
-  }
-}
-
 export async function applyBlogImages(dist) {
-  const images = await readImageBundle();
   const assetDir = join(dist, 'assets');
   await mkdir(assetDir, { recursive: true });
 
   for (const post of posts) {
-    const payload = images[post.asset];
-    if (!payload) throw new Error(`Missing bundled image ${post.asset}`);
-
-    await writeFile(join(assetDir, post.asset), Buffer.from(payload, 'base64'));
+    await cp(join(sourceDir, post.asset), join(assetDir, post.asset));
 
     const articlePath = join(dist, 'blog', post.slug, 'index.html');
     const articleHtml = await readFile(articlePath, 'utf8');
