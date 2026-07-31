@@ -1,41 +1,58 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+function replaceRequired(source, searchValue, replacement, label) {
+  if (!source.includes(searchValue)) {
+    throw new Error(`Hesaplayıcı boş başlangıç durumu uygulanamadı: ${label}`);
+  }
+  return source.replace(searchValue, replacement);
+}
+
 export async function applyEmptyInitialCalculatorState(distDir) {
   const appPath = join(distDir, 'assets', 'app.js');
   let source = await readFile(appPath, 'utf8');
 
-  const defaultState = "let monthlyBaseGrossKurus = Array(12).fill(tlToKurus(100000));";
-  if (!source.includes(defaultState)) {
-    throw new Error('Başlangıç brüt maaş varsayılanı bulunamadı.');
-  }
-  source = source.replace(
-    defaultState,
-    "let monthlyBaseGrossKurus = Array(12).fill(0);"
+  source = replaceRequired(
+    source,
+    "let monthlyBaseGrossKurus = Array(12).fill(tlToKurus(100000));",
+    "let monthlyBaseGrossKurus = Array(12).fill(0);",
+    'varsayılan brüt maaş'
   );
 
-  const oldInitializer = `function initializeMaasimApp() {
+  source = replaceRequired(
+    source,
+    "let lastGrossInputKurus = tlToKurus(100000);",
+    "let lastGrossInputKurus = 0;",
+    'son brüt giriş varsayılanı'
+  );
+
+  const initializerAfterFlowFixes = `function initializeMaasimApp() {
   const salaryInput = document.getElementById('input-salary');
   const initialSalary = formatMoneyInputElement(salaryInput) || 100000;
-  monthlyBaseGrossKurus = Array(12).fill(tlToKurus(initialSalary));
+  lastGrossInputKurus = tlToKurus(initialSalary);
+  monthlyBaseGrossKurus = Array(12).fill(lastGrossInputKurus);
   monthlyExtraGrossKurus = Array(12).fill(0);
   calculate();
 }`;
 
-  const newInitializer = `function initializeMaasimApp() {
+  const emptyInitializer = `function initializeMaasimApp() {
   const salaryInput = document.getElementById('input-salary');
   salaryInput.value = '';
   salaryInput.dataset.rawValue = '';
+  lastGrossInputKurus = 0;
+  lastNetInputKurus = null;
   monthlyBaseGrossKurus = Array(12).fill(0);
   monthlyExtraGrossKurus = Array(12).fill(0);
   payrollRowsKurus = [];
   payrolls = [];
 }`;
 
-  if (!source.includes(oldInitializer)) {
-    throw new Error('Hesaplayıcı başlangıç fonksiyonu beklenen yapıda bulunamadı.');
-  }
-  source = source.replace(oldInitializer, newInitializer);
+  source = replaceRequired(
+    source,
+    initializerAfterFlowFixes,
+    emptyInitializer,
+    'flow düzeltmeleri sonrası başlangıç fonksiyonu'
+  );
 
   await writeFile(appPath, source, 'utf8');
   console.log('Hesaplayıcı ilk yüklemede boş başlangıç durumuna alındı.');
