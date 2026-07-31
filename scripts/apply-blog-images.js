@@ -59,9 +59,15 @@ const posts = [
 ];
 
 const bundleParts = [
+  'blog-editorial-images.part01.prefix.b64',
   'blog-editorial-images.part01.b64',
+  'blog-editorial-images.part02.prefix.b64',
   'blog-editorial-images.part02.b64',
+  'blog-editorial-images.part03.prefix01.b64',
+  'blog-editorial-images.part03.prefix02.b64',
   'blog-editorial-images.part03.b64',
+  'blog-editorial-images.part04.prefix01.b64',
+  'blog-editorial-images.part04.prefix02.b64',
   'blog-editorial-images.part04.b64',
   'blog-editorial-images.part05.b64'
 ];
@@ -132,7 +138,16 @@ async function readImageBundle() {
     .join('')
     .replace(/[^A-Za-z0-9+/=]/g, '');
 
-  return JSON.parse(gunzipSync(Buffer.from(encoded, 'base64')).toString('utf8'));
+  const compressed = Buffer.from(encoded, 'base64');
+  if (compressed[0] !== 0x1f || compressed[1] !== 0x8b) {
+    throw new Error('Editorial image bundle is incomplete or corrupted');
+  }
+
+  try {
+    return JSON.parse(gunzipSync(compressed).toString('utf8'));
+  } catch (error) {
+    throw new Error(`Editorial image bundle could not be decoded: ${error.message}`);
+  }
 }
 
 export async function applyBlogImages(dist) {
