@@ -56,6 +56,26 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: npm ci && npm run check
 
+      - name: Prepare IndexNow verification file
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${INDEXNOW_KEY:-}" ]; then
+            echo "::warning::INDEXNOW_KEY tanımlı değil; IndexNow doğrulama dosyası oluşturulmadı."
+            exit 0
+          fi
+
+          if ! [[ "$INDEXNOW_KEY" =~ ^[A-Za-z0-9-]{8,128}$ ]]; then
+            echo "::error::INDEXNOW_KEY biçimi geçersiz."
+            exit 1
+          fi
+
+          printf '%s' "$INDEXNOW_KEY" > "dist/${INDEXNOW_KEY}.txt"
+          test "$(cat "dist/${INDEXNOW_KEY}.txt")" = "$INDEXNOW_KEY"
+          echo "IndexNow doğrulama dosyası deploy çıktısına eklendi."
+
       - name: Deploy Worker assets
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -107,18 +127,27 @@ jobs:
             wait_for_200 "$url"
           done
 
+      - name: Submit sitemap URLs to IndexNow
+        id: indexnow
+        continue-on-error: true
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: node scripts/submit-indexnow.js
+
       - name: Report deployment result
         if: ${{ always() }}
         uses: actions/github-script@v7
         env:
           DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
           SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          INDEXNOW_OUTCOME: ${{ steps.indexnow.outcome }}
           DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
           DEPLOY_RUN_ID: ${{ github.run_id }}
         with:
           script: |
             const deployOutcome = process.env.DEPLOY_OUTCOME || 'skipped';
             const smokeOutcome = process.env.SMOKE_OUTCOME || 'skipped';
+            const indexNowOutcome = process.env.INDEXNOW_OUTCOME || 'skipped';
             const sha = process.env.DEPLOY_SHA;
             const runId = process.env.DEPLOY_RUN_ID;
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}`;
@@ -132,6 +161,7 @@ jobs:
               status,
               '',
               `- Commit: \`${sha}\``,
+              `- IndexNow: **${indexNowOutcome}**`,
               `- Workflow: ${runUrl}`,
               `- UTC zamanı: ${new Date().toISOString()}`
             ].join('\n');
