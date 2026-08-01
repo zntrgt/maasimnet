@@ -35,6 +35,7 @@ const assetsDir = join(distDir, 'assets');
 
 await rm(distDir, { recursive: true, force: true });
 await cp(staticDir, distDir, { recursive: true });
+await cp(join(root, 'content', 'robots.txt'), join(distDir, 'robots.txt'));
 await mkdir(assetsDir, { recursive: true });
 
 for (const file of [
@@ -69,7 +70,7 @@ await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.6.2-blog-editorial-images', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = { version: '1.6.3-ai-discovery-robots', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
