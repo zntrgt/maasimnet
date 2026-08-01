@@ -1,6 +1,6 @@
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
-import { formatSiteDateTr, getPageMetadata } from '../content/site-metadata.js';
+import { formatSiteDateTr, getPageMetadata, SITE_METADATA } from '../content/site-metadata.js';
 
 async function walkHtml(dir, output = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -78,6 +78,7 @@ function upsertMeta(html, selectorPattern, tag) {
 function updateVisibleFreshness(html, metadata) {
   const reviewedAt = metadata.reviewedAt || metadata.modifiedAt;
   const reviewedAtTr = formatSiteDateTr(reviewedAt);
+  const footerReviewedAtTr = formatSiteDateTr(SITE_METADATA.payrollDataReviewedAt);
 
   return html
     .replace(/(<dt>\s*Son güncelleme\s*<\/dt>\s*<dd>)[^<]*(<\/dd>)/gi, `$1${metadata.modifiedAt}$2`)
@@ -85,6 +86,7 @@ function updateVisibleFreshness(html, metadata) {
     .replace(/(<strong>\s*Rapor güncellemesi:\s*<\/strong>\s*)\d{4}-\d{2}-\d{2}/gi, `$1${metadata.modifiedAt}`)
     .replace(/(<strong>\s*Mevzuat kontrolü:\s*<\/strong>\s*)\d{4}-\d{2}-\d{2}/gi, `$1${reviewedAt}`)
     .replace(/(Son içerik ve kaynak kontrolü:\s*)[^<]*(<\/span>)/gi, `$1${reviewedAt}$2`)
+    .replace(/(Son içerik ve mevzuat kontrolü:\s*)[^<]*(<\/p>)/gi, `$1${footerReviewedAtTr}$2`)
     .replace(/son kontrol\s+\d{1,2}\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4}\./g, `son kontrol ${reviewedAtTr}.`);
 }
 
