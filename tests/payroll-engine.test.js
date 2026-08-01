@@ -23,10 +23,17 @@ function runFixedGross(grossTl, options = {}) {
 test('100.000 TL sabit brüt kabul benchmarkını tam üretir', () => {
   const rows = runFixedGross(100_000);
   const summary = summarizePayroll(rows);
-  assert.equal(rows[0].netKurus, 7_595_302);
+  assert.equal(rows[0].netKurus, 7_595_303);
   assert.equal(rows[11].netKurus, 6_715_680);
-  assert.equal(summary.annualNetKurus, 83_388_157);
-  assert.equal(summary.averageNetKurus, 6_949_013);
+  assert.equal(summary.annualNetKurus, 83_388_163);
+  assert.equal(summary.averageNetKurus, 6_949_014);
+});
+
+test('2026 asgari ücret neti 12 ay boyunca resmî referansla tam eşleşir', () => {
+  const rows = runFixedGross(33_030);
+  assert.ok(rows.every((row) => row.netKurus === 2_807_550));
+  assert.ok(rows.every((row) => row.payableIncomeTaxKurus === 0));
+  assert.ok(rows.every((row) => row.payableStampTaxKurus === 0));
 });
 
 test('aylık netler önce kuruşa yuvarlanır, yıllık toplam aylıkların toplamıdır', () => {

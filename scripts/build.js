@@ -1,6 +1,7 @@
 import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SITE_METADATA } from '../content/site-metadata.js';
 import { renderScenarioPages } from './render-scenarios.js';
 import { applyResultHierarchy } from './apply-result-hierarchy.js';
 import { applyDashboardLayout } from './apply-dashboard-layout.js';
@@ -13,11 +14,13 @@ import { addOfferComparison } from './add-offer-comparison.js';
 import { addContactPage } from './add-contact-page.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
+import { addPayrollTestReport } from './add-payroll-test-report.js';
 import { applySharedShell } from './apply-shared-shell.js';
 import { applyConsentManagement } from './apply-consent-management.js';
 import { applyGoogleTags } from './apply-google-tags.js';
 import { removeInternalCopy } from './remove-internal-copy.js';
 import { normalizeSitemap } from './normalize-sitemap.js';
+import { applyContentDates } from './apply-content-dates.js';
 import { applyLighthouseFixes } from './apply-lighthouse-fixes.js';
 import { applyAccessibilityPolish } from './apply-accessibility-polish.js';
 import { applyFintechUi } from './apply-fintech-ui.js';
@@ -59,6 +62,7 @@ await addOfferComparison(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 await addHomeFreshness(distDir);
+const payrollAudit = await addPayrollTestReport(distDir);
 await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
 await removeInternalCopy(distDir);
@@ -68,10 +72,19 @@ await applyFintechUi(distDir);
 await applySharedShell(distDir);
 await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
+await applyContentDates(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
-const version = { version: '1.6.3-ai-discovery-robots', builtAt: new Date().toISOString(), calculationEngine: 'central-kurus-engine' };
+const version = {
+  version: SITE_METADATA.releaseVersion,
+  builtAt: new Date().toISOString(),
+  contentModifiedAt: SITE_METADATA.releaseModifiedAt,
+  payrollDataReviewedAt: SITE_METADATA.payrollDataReviewedAt,
+  calculationEngine: payrollAudit.engineVersion,
+  payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`
+};
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
+console.log(`bordro sınır testleri: ${payrollAudit.passed}/${payrollAudit.total}`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);

@@ -157,7 +157,7 @@ export function calculatePayrollYear({
     const minimumWageIncomeTaxExemptionKurus = calculateProgressiveTaxKurus(
       cumulativeMinimumWageTaxBaseKurus,
       minimumWageIncomeTaxBaseKurus,
-      { rounding: 'floor', parameters }
+      { parameters }
     );
     const payableIncomeTaxKurus = Math.max(
       0,

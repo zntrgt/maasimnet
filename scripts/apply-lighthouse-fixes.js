@@ -45,7 +45,7 @@ export async function applyLighthouseFixes(distDir) {
     if (updated !== original) await writeFile(file, updated);
   }
 
-  const llms = `# Maaşım.net\n\nMaaşım.net, Türkiye için 2026 brütten nete ve netten brüte maaş hesaplama, vergi dilimi, SGK ve işveren maliyeti bilgileri sunar.\n\n## Temel sayfalar\n\n- [Maaş hesaplayıcı](https://maasim.net/)\n- [Hesaplama metodolojisi](https://maasim.net/hesaplama-metodolojisi/)\n- [2026 veri merkezi](https://maasim.net/veriler/2026/)\n- [Sık sorulan sorular](https://maasim.net/sss/)\n- [Maaş ve çalışma hayatı rehberleri](https://maasim.net/blog/)\n- [İletişim](https://maasim.net/iletisim/)\n\n## Kullanım notu\n\nİçerikler bilgilendirme amaçlıdır; resmî bordro, mali müşavirlik veya hukuk danışmanlığı yerine geçmez.\n`;
+  const llms = `# Maaşım.net\n\nMaaşım.net, Türkiye için 2026 brütten nete ve netten brüte maaş hesaplama, vergi dilimi, SGK ve işveren maliyeti bilgileri sunar.\n\n## Temel sayfalar\n\n- [Maaş hesaplayıcı](https://maasim.net/)\n- [Hesaplama metodolojisi](https://maasim.net/hesaplama-metodolojisi/)\n- [Açık hesaplama test raporu](https://maasim.net/test-raporu/)\n- [2026 veri merkezi](https://maasim.net/veriler/2026/)\n- [Sık sorulan sorular](https://maasim.net/sss/)\n- [Maaş ve çalışma hayatı rehberleri](https://maasim.net/blog/)\n- [İletişim](https://maasim.net/iletisim/)\n\n## Kullanım notu\n\nİçerikler bilgilendirme amaçlıdır; resmî bordro, mali müşavirlik veya hukuk danışmanlığı yerine geçmez.\n`;
   await writeFile(join(distDir, 'llms.txt'), llms);
 
   console.log(`Lighthouse erişilebilirlik ve llms.txt düzeltmeleri uygulandı: ${htmlFiles.length} HTML`);

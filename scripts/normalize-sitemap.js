@@ -1,20 +1,29 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { indexableBlogPosts, blogRoute } from '../content/blog-manifest.js';
+import { getPageMetadata, INDEXABLE_STATIC_PATHS } from '../content/site-metadata.js';
 
 const EXPECTED_HOST = 'maasim.net';
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const SITE_ORIGIN = `https://${EXPECTED_HOST}`;
 
-function addMissingManifestUrls(xml) {
+function entryForPath(path) {
+  const url = `${SITE_ORIGIN}${path}`;
+  const lastmod = getPageMetadata(path).modifiedAt;
+  return `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
+}
+
+function addMissingUrls(xml) {
   const existing = new Set(
     [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1].trim())
   );
-  const lastmod = new Date().toISOString().slice(0, 10);
-  const missingEntries = indexableBlogPosts
-    .map((post) => `${SITE_ORIGIN}${blogRoute(post)}`)
-    .filter((url) => !existing.has(url))
-    .map((url) => `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`);
+  const requiredPaths = [
+    ...indexableBlogPosts.map(blogRoute),
+    ...INDEXABLE_STATIC_PATHS
+  ];
+  const missingEntries = requiredPaths
+    .filter((path) => !existing.has(`${SITE_ORIGIN}${path}`))
+    .map(entryForPath);
 
   if (!missingEntries.length) return xml;
   if (!/<\/urlset>\s*$/i.test(xml)) {
@@ -24,16 +33,29 @@ function addMissingManifestUrls(xml) {
   return xml.replace(/\s*<\/urlset>\s*$/i, `\n${missingEntries.join('\n')}\n</urlset>`);
 }
 
+function normalizeUrlDates(xml) {
+  return xml.replace(/<url>([\s\S]*?)<\/url>/gi, (block) => {
+    const locMatch = block.match(/<loc>([^<]+)<\/loc>/i);
+    if (!locMatch) throw new Error('Sitemap URL bloğunda loc bulunamadı.');
+    const url = new URL(locMatch[1].trim());
+    const lastmod = getPageMetadata(url.pathname).modifiedAt;
+
+    if (/<lastmod>[^<]*<\/lastmod>/i.test(block)) {
+      return block.replace(/<lastmod>[^<]*<\/lastmod>/i, `<lastmod>${lastmod}</lastmod>`);
+    }
+    return block.replace(/<\/loc>/i, `</loc>\n    <lastmod>${lastmod}</lastmod>`);
+  });
+}
+
 export async function normalizeSitemap(distDir) {
   const sitemapPath = join(distDir, 'sitemap.xml');
   let xml = await readFile(sitemapPath, 'utf8');
 
-  // Blog manifesti tek kaynak olarak kullanılır. Yeni bir indexlenebilir blog
-  // eklendiğinde statik sitemap güncellenmemiş olsa bile build çıktısına girer.
-  xml = addMissingManifestUrls(xml);
+  xml = addMissingUrls(xml);
+  xml = normalizeUrlDates(xml);
 
-  // Google ignores changefreq and priority. Keep the sitemap focused on
-  // canonical URLs and truthful last modification dates.
+  // Google ignores changefreq and priority. Keep only canonical URLs and
+  // centrally managed, truthful modification dates.
   xml = xml
     .replace(/\s*<changefreq>[^<]*<\/changefreq>/g, '')
     .replace(/\s*<priority>[^<]*<\/priority>/g, '');
@@ -59,10 +81,10 @@ export async function normalizeSitemap(distDir) {
     seen.add(loc);
   }
 
-  for (const post of indexableBlogPosts) {
-    const expectedUrl = `${SITE_ORIGIN}${blogRoute(post)}`;
+  for (const path of [...indexableBlogPosts.map(blogRoute), ...INDEXABLE_STATIC_PATHS]) {
+    const expectedUrl = `${SITE_ORIGIN}${path}`;
     if (!seen.has(expectedUrl)) {
-      throw new Error(`Sitemap manifest blog URL'sini içermiyor: ${expectedUrl}`);
+      throw new Error(`Sitemap zorunlu URL'yi içermiyor: ${expectedUrl}`);
     }
   }
 

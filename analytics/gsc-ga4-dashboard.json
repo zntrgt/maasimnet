@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "title": "Maaşım.net Organik Arama ve Hesaplama Funnel Dashboard",
+  "owner": "Growth / SEO",
+  "timezone": "Europe/Istanbul",
+  "sources": {
+    "google_search_console": {
+      "property": "sc-domain:maasim.net",
+      "dimensions": ["date", "query", "page", "device", "country"],
+      "metrics": ["impressions", "clicks", "ctr", "position"]
+    },
+    "google_analytics_4": {
+      "measurement_id": "G-988BB5B64E",
+      "property_id": "REQUIRED_AT_CONNECTION_TIME",
+      "dimensions": [
+        "date",
+        "landingPagePlusQueryString",
+        "sessionDefaultChannelGroup",
+        "deviceCategory",
+        "eventName"
+      ],
+      "metrics": ["sessions", "activeUsers", "eventCount", "keyEvents"]
+    }
+  },
+  "attribution_guardrail": {
+    "rule": "GSC query data and GA4 behavior data may only be joined at date + normalized landing page path grain.",
+    "reason": "Google does not expose a user- or session-level key connecting an organic query to a GA4 conversion.",
+    "prohibited_metric": "Exact calculation completions by search query",
+    "allowed_outputs": [
+      "Exact GSC query, page, click, impression, CTR and position metrics",
+      "Exact GA4 landing page sessions and calculator event metrics",
+      "Landing-page-level organic funnel rates",
+      "Query drill-through to its landing page funnel without assigning the page conversion count to every query"
+    ]
+  },
+  "ga4_events": [
+    "calculator_view",
+    "salary_input_started",
+    "salary_calculation_completed",
+    "salary_results_viewed",
+    "scenario_modified",
+    "methodology_opened",
+    "related_content_clicked",
+    "calculator_mode_change",
+    "payroll_detail_toggle",
+    "calculator_csv_download"
+  ],
+  "registered_custom_dimensions": [
+    "calculation_direction",
+    "calculator_mode",
+    "scenario_type",
+    "salary_range",
+    "range_version",
+    "salary_change_count",
+    "has_salary_change",
+    "has_employer_change",
+    "start_month",
+    "result_tax_bracket",
+    "effective_deduction_range",
+    "month_number",
+    "override_type",
+    "detail_action",
+    "input_method"
+  ],
+  "normalized_fields": {
+    "gsc_landing_page_path": "REGEXP_REPLACE(Page, '^https?://[^/]+', '')",
+    "ga4_landing_page_path": "REGEXP_REPLACE(Landing page + query string, '\\?.*$', '')",
+    "join_key": "CONCAT(Date, '|', normalized_landing_page_path)"
+  },
+  "calculated_metrics": {
+    "gsc_ctr": "Clicks / Impressions",
+    "organic_calculator_start_rate": "salary_input_started / organic_landing_sessions",
+    "calculation_completion_rate": "salary_calculation_completed / salary_input_started",
+    "results_view_rate": "salary_results_viewed / salary_calculation_completed",
+    "organic_session_to_completion_rate": "salary_calculation_completed / organic_landing_sessions",
+    "detail_engagement_rate": "payroll_detail_toggle_open / salary_results_viewed",
+    "csv_download_rate": "calculator_csv_download / salary_results_viewed"
+  },
+  "pages": [
+    {
+      "name": "Yönetici Özeti",
+      "scorecards": [
+        "GSC impressions",
+        "GSC clicks",
+        "GSC CTR",
+        "Average position",
+        "Organic landing sessions",
+        "Salary calculations completed",
+        "Organic session to completion rate"
+      ],
+      "charts": [
+        "Daily clicks and organic calculation completions",
+        "Landing page funnel",
+        "Device split",
+        "Top landing pages by completed calculation"
+      ]
+    },
+    {
+      "name": "Sorgu ve Landing Page",
+      "tables": [
+        "Query > landing page: impressions, clicks, CTR, position",
+        "Landing page: organic sessions, input starts, completed calculations, completion rate"
+      ],
+      "interaction": "Selecting a query filters the landing page table through its page path; conversion counts remain at landing-page grain."
+    },
+    {
+      "name": "Hesaplayıcı Funnel",
+      "funnel": [
+        "calculator_view",
+        "salary_input_started",
+        "salary_calculation_completed",
+        "salary_results_viewed",
+        "payroll_detail_toggle open",
+        "calculator_csv_download"
+      ],
+      "breakdowns": [
+        "calculation_direction",
+        "salary_range",
+        "scenario_type",
+        "deviceCategory",
+        "landing page"
+      ]
+    },
+    {
+      "name": "İçerik ve AI Trafiği",
+      "filters": [
+        "session source contains chatgpt.com",
+        "session source contains perplexity",
+        "session source contains gemini",
+        "organic search"
+      ],
+      "tables": [
+        "Content landing pages by sessions and calculator transitions",
+        "AI referral source by sessions and completed calculations"
+      ]
+    },
+    {
+      "name": "Veri Kalitesi",
+      "checks": [
+        "salary_input_started must not exceed calculator_view by implausible multiples",
+        "salary_results_viewed must not exceed salary_calculation_completed",
+        "No exact salary amount may be collected",
+        "salary_range must include range_version",
+        "GSC and GA4 dates use Europe/Istanbul reporting context"
+      ]
+    }
+  ]
+}

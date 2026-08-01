@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DATA_2026 } from '../src/data-2026.js';
 import { PAYROLL_PARAMETERS_2026 } from '../src/parameters-2026.js';
+import { SITE_METADATA } from '../content/site-metadata.js';
 import { readFile } from 'node:fs/promises';
 
 const transform = await readFile(new URL('../scripts/apply-p0-architecture.js', import.meta.url), 'utf8');
@@ -37,5 +38,6 @@ test('P0 dönüşümü ana sayfayı 6 SSS ve 6 senaryoyla sınırlar', () => {
 test('build DATA_2026 ve P0 mimarisini production paketine dahil eder', () => {
   assert.match(build, /'data-2026\.js'/);
   assert.match(build, /applyP0Architecture\(distDir\)/);
-  assert.match(build, /version:\s*'\d+\.\d+\.\d+-[a-z0-9-]+'/);
+  assert.match(build, /version:\s*SITE_METADATA\.releaseVersion/);
+  assert.match(SITE_METADATA.releaseVersion, /^\d+\.\d+\.\d+-[a-z0-9-]+$/);
 });

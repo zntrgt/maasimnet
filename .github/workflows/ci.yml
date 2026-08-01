@@ -39,6 +39,12 @@ jobs:
       - name: Verify distribution
         run: npm run verify:dist
 
+      - name: Verify centralized content dates
+        run: npm run verify:content-dates
+
+      - name: Verify GSC and GA4 dashboard contract
+        run: npm run verify:growth-dashboard
+
       - name: Verify blog manifest
         run: npm run verify:manifest
 
