@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { SITE_METADATA } from '../content/site-metadata.js';
 
 const transformJs = await readFile(new URL('../scripts/apply-result-hierarchy.js', import.meta.url), 'utf8');
 const stylesCss = await readFile(new URL('../src/result-hierarchy.css', import.meta.url), 'utf8');
@@ -53,5 +54,6 @@ test('detaylı metrik ve bordro okunabilirlik stilleri korunur', () => {
 
 test('build sonucu hiyerarşi dönüşümünü sürümden bağımsız uygular', () => {
   assert.match(buildJs, /applyResultHierarchy\(distDir\)/);
-  assert.match(buildJs, /version:\s*'\d+\.\d+\.\d+-[a-z0-9-]+'/);
+  assert.match(buildJs, /version:\s*SITE_METADATA\.releaseVersion/);
+  assert.match(SITE_METADATA.releaseVersion, /^\d+\.\d+\.\d+-[a-z0-9-]+$/);
 });
