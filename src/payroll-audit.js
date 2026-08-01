@@ -108,7 +108,7 @@ const AUDIT_CASES = Object.freeze([
 
       return [
         `2026 aylık SGK tavanı ${formatTl(ceiling)} olarak uygulandı.`,
-        `Tavan üzerindeki brüt artışı SGK ve işsizlik primi matrahını büyütmedi.`
+        'Tavan üzerindeki brüt artışı SGK ve işsizlik primi matrahını büyütmedi.'
       ];
     }
   }),
@@ -133,8 +133,8 @@ const AUDIT_CASES = Object.freeze([
       assertAudit(above.netKurus >= expectedNet, 'Asgari ücretin bir kuruş üzerindeki net referans netin altına düşmemeli.');
 
       return [
-        `Brüt ${formatTl(gross)} için 12 ayın her birinde net ${formatTl(expectedNet)} üretildi.`,
-        'Gelir ve damga vergisi istisnaları hiçbir ayda negatif vergi oluşturmadı.'
+        `Brüt ${formatTl(gross)} için 12 ayın her birinde resmî net ${formatTl(expectedNet)} üretildi.`,
+        'Gelir ve damga vergisi istisnaları her ay ödenecek vergiyi sıfırladı.'
       ];
     }
   }),
@@ -168,7 +168,7 @@ const AUDIT_CASES = Object.freeze([
   Object.freeze({
     id: 'rounding-half-kurus-boundaries',
     category: 'Yuvarlama',
-    title: 'Yarım kuruş ve istisna vergisi yuvarlama sınırları',
+    title: 'Yarım kuruş ve vergi hesaplama yuvarlama sınırları',
     run() {
       assertAudit(multiplyRateRoundedKurus(1, 499_999) === 0, 'Yarım kuruşun altı aşağı yuvarlanmalı.');
       assertAudit(multiplyRateRoundedKurus(1, 500_000) === 1, 'Tam yarım kuruş yukarı yuvarlanmalı.');
@@ -176,11 +176,11 @@ const AUDIT_CASES = Object.freeze([
       const rounded = calculateProgressiveTaxKurus(10, 10, { rounding: 'round' });
       const floored = calculateProgressiveTaxKurus(10, 10, { rounding: 'floor' });
       assertAudit(rounded === 2, '1,5 kuruş standart vergide 2 kuruşa yuvarlanmalı.');
-      assertAudit(floored === 1, '1,5 kuruş istisna hesabında 1 kuruşa aşağı yuvarlanmalı.');
+      assertAudit(floored === 1, '1,5 kuruş aşağı yuvarlama modunda 1 kuruş olmalı.');
 
       return [
         '0,499999 kuruş aşağı; 0,5 kuruş yukarı yuvarlandı.',
-        'Asgari ücret istisnasında kullanılan aşağı yuvarlama ile standart vergi yuvarlaması ayrı test edildi.'
+        'Standart en yakın kuruşa yuvarlama ile açıkça seçilen aşağı yuvarlama modu ayrı ayrı doğrulandı.'
       ];
     }
   }),
