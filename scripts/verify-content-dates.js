@@ -1,6 +1,8 @@
 import { access, readFile, readdir } from 'node:fs/promises';
-import { join, relative, sep } from 'node:path';
+import { dirname, join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { getPageMetadata } from '../content/site-metadata.js';
+import { runPayrollAudit } from '../src/payroll-audit.js';
 
 async function walkHtml(dir, output = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -42,6 +44,10 @@ function validateStructuredDates(node, metadata, page, failures) {
     if (node.dateModified !== expected) failures.push(`${page}: JSON-LD dateModified ${node.dateModified} yerine ${expected} olmalı.`);
   }
 
+  if (metadata.reviewedAt && (hasType(node, ['Article', 'BlogPosting', 'TechArticle', 'Report']) || Object.hasOwn(node, 'lastReviewed'))) {
+    if (node.lastReviewed !== metadata.reviewedAt) failures.push(`${page}: JSON-LD lastReviewed ${node.lastReviewed} yerine ${metadata.reviewedAt} olmalı.`);
+  }
+
   Object.values(node).forEach((value) => validateStructuredDates(value, metadata, page, failures));
 }
 
@@ -73,14 +79,18 @@ export async function verifyContentDates(distDir) {
     }
   }
 
+  const audit = runPayrollAudit();
   const reportPath = join(distDir, 'test-raporu', 'index.html');
   await access(reportPath);
   const report = await readFile(reportPath, 'utf8');
-  if (!report.includes('Tümü geçti') || !report.includes('7/7')) {
+  if (!report.includes('Tümü geçti') || !report.includes(`${audit.passed}/${audit.total}`)) {
     failures.push('/test-raporu/: başarılı test özeti bulunamadı.');
   }
 
   const sitemap = await readFile(join(distDir, 'sitemap.xml'), 'utf8');
+  if (!sitemap.includes('<loc>https://maasim.net/test-raporu/</loc>')) {
+    failures.push('/test-raporu/: sitemap kaydı bulunamadı.');
+  }
   for (const match of sitemap.matchAll(/<url>[\s\S]*?<loc>([^<]+)<\/loc>[\s\S]*?<lastmod>([^<]+)<\/lastmod>[\s\S]*?<\/url>/gi)) {
     const url = new URL(match[1]);
     const expected = getPageMetadata(url.pathname).modifiedAt;
@@ -92,8 +102,8 @@ export async function verifyContentDates(distDir) {
   return true;
 }
 
-const invokedDirectly = process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href;
-if (invokedDirectly) {
-  const distDir = new URL('../dist', import.meta.url).pathname;
-  await verifyContentDates(distDir);
+const currentFile = fileURLToPath(import.meta.url);
+if (process.argv[1] === currentFile) {
+  const root = dirname(dirname(currentFile));
+  await verifyContentDates(join(root, 'dist'));
 }
