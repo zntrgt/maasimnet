@@ -1,6 +1,6 @@
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
-import { getPageMetadata } from '../content/site-metadata.js';
+import { formatSiteDateTr, getPageMetadata } from '../content/site-metadata.js';
 
 async function walkHtml(dir, output = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -51,6 +51,10 @@ function updateStructuredDates(node, metadata) {
     node.datePublished = metadata.publishedAt;
   }
 
+  if (metadata.reviewedAt && (hasType(node, ['Article', 'BlogPosting', 'TechArticle', 'Report']) || Object.hasOwn(node, 'lastReviewed'))) {
+    node.lastReviewed = metadata.reviewedAt;
+  }
+
   Object.values(node).forEach((value) => updateStructuredDates(value, metadata));
 }
 
@@ -72,11 +76,16 @@ function upsertMeta(html, selectorPattern, tag) {
 }
 
 function updateVisibleFreshness(html, metadata) {
+  const reviewedAt = metadata.reviewedAt || metadata.modifiedAt;
+  const reviewedAtTr = formatSiteDateTr(reviewedAt);
+
   return html
     .replace(/(<dt>\s*Son güncelleme\s*<\/dt>\s*<dd>)[^<]*(<\/dd>)/gi, `$1${metadata.modifiedAt}$2`)
-    .replace(/(<dt>\s*Son mevzuat kontrolü\s*<\/dt>\s*<dd>)[^<]*(<\/dd>)/gi, `$1${metadata.reviewedAt || metadata.modifiedAt}$2`)
+    .replace(/(<dt>\s*Son mevzuat kontrolü\s*<\/dt>\s*<dd>)[^<]*(<\/dd>)/gi, `$1${reviewedAt}$2`)
     .replace(/(<strong>\s*Rapor güncellemesi:\s*<\/strong>\s*)\d{4}-\d{2}-\d{2}/gi, `$1${metadata.modifiedAt}`)
-    .replace(/(<strong>\s*Mevzuat kontrolü:\s*<\/strong>\s*)\d{4}-\d{2}-\d{2}/gi, `$1${metadata.reviewedAt || metadata.modifiedAt}`);
+    .replace(/(<strong>\s*Mevzuat kontrolü:\s*<\/strong>\s*)\d{4}-\d{2}-\d{2}/gi, `$1${reviewedAt}`)
+    .replace(/(Son içerik ve kaynak kontrolü:\s*)[^<]*(<\/span>)/gi, `$1${reviewedAt}$2`)
+    .replace(/son kontrol\s+\d{1,2}\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4}\./g, `son kontrol ${reviewedAtTr}.`);
 }
 
 function applyPageDates(html, metadata, pagePath) {
