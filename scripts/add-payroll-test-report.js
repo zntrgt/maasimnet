@@ -97,7 +97,7 @@ function renderReport(audit) {
       <div class="passed"><span>Durum</span><strong>${audit.status === 'passed' ? 'Tümü geçti' : 'Başarısız'}</strong></div>
       <div><span>Geçen test</span><strong>${audit.passed}/${audit.total}</strong></div>
       <div><span>Hesaplama yılı</span><strong>${audit.calculationYear}</strong></div>
-      <div><span>Motor</span><strong>${escapeHtml(audit.engineVersion)}</strong></div>
+      <div><span>Hesaplama hassasiyeti</span><strong>Kuruş düzeyi</strong></div>
     </section>
 
     <p><strong>Rapor güncellemesi:</strong> ${metadata.modifiedAt} · <strong>Mevzuat kontrolü:</strong> ${metadata.reviewedAt} · <strong>Veri dönemi:</strong> ${DATA_2026.validity.from}–${DATA_2026.validity.to}</p>
