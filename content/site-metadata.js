@@ -5,7 +5,9 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 export const SITE_METADATA = Object.freeze({
   origin: 'https://maasim.net',
   defaultPublishedAt: '2026-07-29',
+  defaultModifiedAt: '2026-07-29',
   releaseModifiedAt: '2026-08-01',
+  blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
   releaseVersion: '1.7.0-payroll-audit-dates-dashboard'
 });
@@ -14,6 +16,8 @@ const PAGE_OVERRIDES = Object.freeze({
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-08-01' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-08-01' }),
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),
+  '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
+  '/cerez-politikasi/': Object.freeze({ modifiedAt: '2026-07-30' }),
   '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
@@ -28,20 +32,37 @@ export function normalizeSitePath(pathname = '/') {
   return `/${clean.replace(/^\/+|\/+$/g, '')}/`;
 }
 
+export function formatSiteDateTr(isoDate) {
+  if (!ISO_DATE.test(String(isoDate))) throw new Error(`Geçersiz tarih: ${isoDate}`);
+  return new Intl.DateTimeFormat('tr-TR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC'
+  }).format(new Date(`${isoDate}T00:00:00Z`));
+}
+
 export function getPageMetadata(pathname = '/') {
   const path = normalizeSitePath(pathname);
   const override = PAGE_OVERRIDES[path] || {};
-  const isPayrollDataPage = path.startsWith('/veriler/2026/');
+  const isPayrollDataPage = path === '/veriler/2026/' || path.startsWith('/veriler/2026/');
+  const isBlogPage = path === '/blog/' || path.startsWith('/blog/');
+
+  const familyModifiedAt = isPayrollDataPage
+    ? SITE_METADATA.payrollDataReviewedAt
+    : isBlogPage
+      ? SITE_METADATA.blogReviewedAt
+      : SITE_METADATA.defaultModifiedAt;
 
   const metadata = {
     path,
     publishedAt: override.publishedAt || SITE_METADATA.defaultPublishedAt,
-    modifiedAt: override.modifiedAt || (isPayrollDataPage
-      ? SITE_METADATA.payrollDataReviewedAt
-      : SITE_METADATA.releaseModifiedAt),
+    modifiedAt: override.modifiedAt || familyModifiedAt,
     reviewedAt: isPayrollDataPage || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
       ? SITE_METADATA.payrollDataReviewedAt
-      : undefined
+      : isBlogPage
+        ? SITE_METADATA.blogReviewedAt
+        : undefined
   };
 
   for (const [name, value] of Object.entries(metadata)) {
