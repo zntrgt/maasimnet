@@ -76,16 +76,13 @@ await applyContentDates(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
 const version = {
-  version: '1.7.0-payroll-audit-dates-dashboard',
+  version: SITE_METADATA.releaseVersion,
   builtAt: new Date().toISOString(),
   contentModifiedAt: SITE_METADATA.releaseModifiedAt,
   payrollDataReviewedAt: SITE_METADATA.payrollDataReviewedAt,
   calculationEngine: payrollAudit.engineVersion,
   payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`
 };
-if (version.version !== SITE_METADATA.releaseVersion) {
-  throw new Error(`Build sürümü merkezi metadata ile eşleşmiyor: ${version.version} / ${SITE_METADATA.releaseVersion}`);
-}
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
