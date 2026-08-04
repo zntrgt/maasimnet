@@ -52,6 +52,11 @@ function replaceFirstElement(html, tag, replacement) {
   return re.test(html) ? html.replace(re, replacement) : html.replace(/<body([^>]*)>/i, `<body$1>${replacement}`);
 }
 
+function replaceHeader(html) {
+  const legacyHeader = /<header\b[\s\S]*?<\/header>/i;
+  return legacyHeader.test(html) ? html.replace(legacyHeader, header) : replaceFirstElement(html, 'nav', header);
+}
+
 function addAssets(html) {
   if (!html.includes('/assets/site-shell.css')) html = html.replace(/<\/head>/i, '<link rel="stylesheet" href="/assets/site-shell.css"></head>');
   if (!html.includes('/assets/site-shell.js')) html = html.replace(/<\/body>/i, '<script src="/assets/site-shell.js" defer></script></body>');
@@ -71,7 +76,7 @@ export async function applySharedShell(dist) {
   const files = await walk(dist);
   for (const path of files) {
     let html = await readFile(path, 'utf8');
-    html = replaceFirstElement(html, 'nav', header);
+    html = replaceHeader(html);
     html = replaceFirstElement(html, 'footer', footer);
     html = addAssets(html);
     await writeFile(path, html);
