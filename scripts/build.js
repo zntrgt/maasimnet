@@ -9,6 +9,7 @@ import { applyMetricCardStandard } from './apply-metric-card-standard.js';
 import { applyTaxBracketColumn } from './apply-tax-bracket-column.js';
 import { renderBlog } from './render-blog.js';
 import { applyBlogImages } from './apply-blog-images.js';
+import { applyBlogOriginalData } from './apply-blog-original-data.js';
 import { add2027EstimateCalculator } from './add-2027-estimate-calculator.js';
 import { addOfferComparison } from './add-offer-comparison.js';
 import { addContactPage } from './add-contact-page.js';
@@ -58,6 +59,7 @@ await applyTaxBracketColumn(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await renderBlog(distDir);
 await applyBlogImages(distDir);
+const originalDataResult = await applyBlogOriginalData(distDir);
 await add2027EstimateCalculator(distDir);
 await addOfferComparison(distDir);
 await addContactPage(distDir);
@@ -84,11 +86,13 @@ const version = {
   payrollDataReviewedAt: SITE_METADATA.payrollDataReviewedAt,
   calculationEngine: payrollAudit.engineVersion,
   payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`,
-  metaDescriptionsReviewed: metaDescriptionResult.scanned
+  metaDescriptionsReviewed: metaDescriptionResult.scanned,
+  proprietaryDataBlogs: originalDataResult.enhanced
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
 console.log(`bordro sınır testleri: ${payrollAudit.passed}/${payrollAudit.total}`);
+console.log(`özgün hesaplama verisi eklenen bloglar: ${originalDataResult.enhanced}`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
