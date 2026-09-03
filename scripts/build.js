@@ -29,6 +29,7 @@ import { inlineHomeCss } from './inline-home-css.js';
 import { fixCalculatorAnalyticsInputReset } from './fix-calculator-analytics-input-reset.js';
 import { applyCalculatorFlowFixes } from './apply-calculator-flow-fixes.js';
 import { applyEmptyInitialCalculatorState } from './apply-empty-initial-calculator-state.js';
+import { applyMetaDescriptionQuality } from './apply-meta-description-quality.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -73,6 +74,7 @@ await applySharedShell(distDir);
 await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
 await applyContentDates(distDir);
+const metaDescriptionResult = await applyMetaDescriptionQuality(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 
 const version = {
@@ -81,10 +83,12 @@ const version = {
   contentModifiedAt: SITE_METADATA.releaseModifiedAt,
   payrollDataReviewedAt: SITE_METADATA.payrollDataReviewedAt,
   calculationEngine: payrollAudit.engineVersion,
-  payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`
+  payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`,
+  metaDescriptionsReviewed: metaDescriptionResult.scanned
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
 console.log(`bordro sınır testleri: ${payrollAudit.passed}/${payrollAudit.total}`);
+console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
