@@ -54,6 +54,9 @@ jobs:
       - name: Verify sitewide meta descriptions
         run: npm run verify:meta
 
+      - name: Verify proprietary blog data
+        run: npm run verify:proprietary-data
+
       - name: Smoke test generated output
         run: npm run smoke
 
