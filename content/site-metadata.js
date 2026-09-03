@@ -6,10 +6,10 @@ export const SITE_METADATA = Object.freeze({
   origin: 'https://maasim.net',
   defaultPublishedAt: '2026-07-29',
   defaultModifiedAt: '2026-07-29',
-  releaseModifiedAt: '2026-08-01',
+  releaseModifiedAt: '2026-09-03',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.7.0-payroll-audit-dates-dashboard'
+  releaseVersion: '1.8.0-editorial-images-original-data'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
