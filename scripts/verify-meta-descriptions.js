@@ -27,8 +27,8 @@ function normalize(value = '') {
 }
 
 function description(html) {
-  const tag = html.match(/<meta\b[^>]*name=["']description["'][^>]*>/i)
-    || html.match(/<meta\b[^>]*content=["'][^"']*["'][^>]*name=["']description["'][^>]*>/i)
+  const tag = html.match(/<meta\b[^>]*name=["']description["'][^>]*>/i)?.[0]
+    || html.match(/<meta\b[^>]*content=["'][^"']*["'][^>]*name=["']description["'][^>]*>/i)?.[0]
     || '';
   return normalize(tag.match(/content=["']([^"']*)["']/i)?.[1] || '');
 }
