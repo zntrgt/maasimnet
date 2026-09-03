@@ -9,7 +9,7 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-03',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.8.0-editorial-images-original-data'
+  releaseVersion: '1.9.0-proprietary-data-expansion'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
