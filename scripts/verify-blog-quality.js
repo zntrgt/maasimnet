@@ -19,8 +19,8 @@ const strip = (html) => html
   .trim();
 
 function metaDescription(html) {
-  const tag = html.match(/<meta\b[^>]*name=["']description["'][^>]*>/i)
-    || html.match(/<meta\b[^>]*content=["'][^"']*["'][^>]*name=["']description["'][^>]*>/i)
+  const tag = html.match(/<meta\b[^>]*name=["']description["'][^>]*>/i)?.[0]
+    || html.match(/<meta\b[^>]*content=["'][^"']*["'][^>]*name=["']description["'][^>]*>/i)?.[0]
     || '';
   return tag.match(/content=["']([^"']*)["']/i)?.[1]?.trim() || '';
 }
