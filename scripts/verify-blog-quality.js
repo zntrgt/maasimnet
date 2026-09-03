@@ -7,6 +7,27 @@ const failures = [];
 const seenTitles = new Map();
 const seenDescriptions = new Map();
 
+const originalDataSlugs = new Set([
+  '2026-maas-vergi-dilimleri',
+  'netten-brute-maas-neden-aylik-degisir',
+  '100000-tl-brut-maas-neti-2026',
+  'prim-ikramiye-net-maasi-neden-dusurur',
+  'is-teklifinin-yillik-degeri'
+]);
+
+const editorialImages = new Map([
+  ['is-yerinde-finansal-saglik', 'is-yerinde-finansal-saglik-editorial.webp'],
+  ['2027-maas-zammi-beklentileri', '2027-maas-zammi-beklentileri-editorial.webp'],
+  ['maas-zam-gorusmesi-nasil-yapilir', 'maas-zam-gorusmesi-editorial.webp'],
+  ['is-teklifinin-yillik-degeri', 'is-teklifinin-yillik-degeri-editorial.webp'],
+  ['isveren-katkili-bes', 'isveren-katkili-bes-editorial.webp'],
+  ['esnek-yan-hak-butcesi', 'esnek-yan-hak-butcesi-editorial.webp'],
+  ['is-degisikliginde-vergi-matrahi', 'is-degisikliginde-vergi-matrahi-editorial.webp'],
+  ['2026-maas-vergi-dilimleri', '2026-maas-vergi-dilimleri-editorial.webp'],
+  ['netten-brute-maas-neden-aylik-degisir', 'netten-brute-maas-neden-aylik-degisir-editorial.webp'],
+  ['maas-hesaplama-siteleri-neden-farkli', 'maas-hesaplama-siteleri-neden-farkli-editorial.webp']
+]);
+
 const strip = (html) => html
   .replace(/<script[\s\S]*?<\/script>/gi, ' ')
   .replace(/<style[\s\S]*?<\/style>/gi, ' ')
@@ -74,7 +95,7 @@ for (const post of indexableBlogPosts) {
   const hasEvidenceLink = externalLinks.length > 0 || /href=["']\/(?:metodoloji|hesaplama-metodolojisi|2026-verileri|veriler)\/?["']/i.test(article);
   const imageWithAlt = /<img\b(?=[^>]*\bsrc=["'][^"']+["'])(?=[^>]*\balt=["'][^"']+["'])[^>]*>/i.test(article);
   const ogImage = html.match(/<meta\b[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i)?.[1] || '';
-  const hasOriginalValue = /quality-depth|decision-table|<figure\b|content-cta|<table\b/i.test(article);
+  const hasOriginalValue = /maasim-original-data|quality-depth|decision-table|<figure\b|content-cta|<table\b/i.test(article);
   const visibleFaqCount = (article.match(/<details\b/gi) || []).length;
 
   const checks = [
@@ -102,6 +123,18 @@ for (const post of indexableBlogPosts) {
     checks.push([Array.isArray(faqNode.mainEntity) && faqNode.mainEntity.length >= 1, 'FAQPage mainEntity boş']);
   }
 
+  if (originalDataSlugs.has(post.slug)) {
+    checks.push([html.includes('class="maasim-original-data"'), 'yüksek niyetli içerikte Maaşım.net özgün hesaplama bloğu yok']);
+    checks.push([html.includes('class="original-data-method"'), 'özgün hesaplama metodoloji notu yok']);
+    checks.push([html.includes('href="/hesaplama-metodolojisi/"'), 'özgün hesaplama metodoloji bağlantısı yok']);
+  }
+
+  if (editorialImages.has(post.slug)) {
+    const asset = editorialImages.get(post.slug);
+    checks.push([html.includes(`/assets/${asset}`), `konuya özel editoryal görsel kullanılmıyor (${asset})`]);
+    checks.push([ogImage.endsWith(`/assets/${asset}`), `og:image konuya özel editoryal görselle eşleşmiyor (${asset})`]);
+  }
+
   for (const [ok, message] of checks) {
     if (!ok) failures.push(`${post.slug}: ${message}`);
   }
@@ -116,9 +149,18 @@ for (const post of indexableBlogPosts) {
   }
 }
 
+const blogIndex = await readFile(join(dist, 'blog', 'index.html'), 'utf8');
+for (const [slug, asset] of editorialImages) {
+  const routePos = blogIndex.indexOf(`href="/blog/${slug}/"`);
+  const assetPos = blogIndex.indexOf(`/assets/${asset}`, routePos);
+  if (routePos < 0 || assetPos < 0 || assetPos - routePos > 1600) {
+    failures.push(`${slug}: blog kartında konuya özel editoryal görsel yok (${asset})`);
+  }
+}
+
 if (failures.length) {
   console.error('Blog SEO/GEO kalite kapısı başarısız:\n- ' + failures.join('\n- '));
   process.exit(1);
 }
 
-console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${indexableBlogPosts.length} içerik; mekanik kelime/H2/tablo/FAQ kotaları uygulanmıyor.`);
+console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${indexableBlogPosts.length} içerik; ${originalDataSlugs.size} yüksek niyetli blogda özgün hesaplama, ${editorialImages.size} blogda konuya özel görsel doğrulandı.`);
