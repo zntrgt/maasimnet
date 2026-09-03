@@ -5,58 +5,58 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const sourceDir = join(root, 'assets-source', 'direct');
 
-const posts = [
+export const blogImageAssignments = Object.freeze([
   {
     slug: 'is-yerinde-finansal-saglik',
     asset: 'is-yerinde-finansal-saglik-editorial.webp',
-    alt: 'Modern bir ofiste finansal sağlık verilerini inceleyen profesyoneller'
+    alt: 'Modern bir ofiste finansal sağlık verilerini inceleyen Türk profesyoneller'
   },
   {
     slug: '2027-maas-zammi-beklentileri',
     asset: '2027-maas-zammi-beklentileri-editorial.webp',
-    alt: '2027 maaş ve zam beklentilerini veri tabloları üzerinden değerlendiren ekip'
+    alt: '2027 maaş ve zam beklentilerini veri tabloları üzerinden değerlendiren Türk profesyoneller'
   },
   {
     slug: 'maas-zam-gorusmesi-nasil-yapilir',
     asset: 'maas-zam-gorusmesi-editorial.webp',
-    alt: 'Yöneticiyle maaş ve zam görüşmesi yapan çalışan'
+    alt: 'Ofiste yöneticiyle maaş ve zam görüşmesi yapan Türk çalışan'
   },
   {
     slug: 'is-teklifinin-yillik-degeri',
     asset: 'is-teklifinin-yillik-degeri-editorial.webp',
-    alt: 'Bir iş teklifinin ücret ve yan hak paketini değerlendiren profesyoneller'
+    alt: 'Bir iş teklifinin ücret ve yan hak paketini ofiste değerlendiren Türk profesyoneller'
   },
   {
     slug: 'isveren-katkili-bes',
     asset: 'isveren-katkili-bes-editorial.webp',
-    alt: 'İşveren katkılı BES ve çalışan yan haklarını görüşen profesyoneller'
+    alt: 'İşveren katkılı BES ve çalışan yan haklarını görüşen Türk profesyoneller'
   },
   {
     slug: 'esnek-yan-hak-butcesi',
     asset: 'esnek-yan-hak-butcesi-editorial.webp',
-    alt: 'Esnek yan hak bütçesini birlikte planlayan çalışma ekibi'
+    alt: 'Esnek yan hak bütçesini birlikte planlayan Türk çalışma ekibi'
   },
   {
     slug: 'is-degisikliginde-vergi-matrahi',
     asset: 'is-degisikliginde-vergi-matrahi-editorial.webp',
-    alt: 'İş değişikliğinde vergi matrahını bordro belgeleriyle inceleyen çalışan ve danışman'
+    alt: 'İş değişikliğinde vergi matrahını bordro belgeleriyle inceleyen Türk çalışan ve danışman'
   },
   {
     slug: '2026-maas-vergi-dilimleri',
     asset: '2026-maas-vergi-dilimleri-editorial.webp',
-    alt: '2026 maaş vergi dilimlerini tablo ve grafiklerle analiz eden ekip'
+    alt: '2026 maaş vergi dilimlerini tablo ve grafiklerle analiz eden Türk profesyoneller'
   },
   {
     slug: 'netten-brute-maas-neden-aylik-degisir',
     asset: 'netten-brute-maas-neden-aylik-degisir-editorial.webp',
-    alt: 'Net ve brüt maaşın aylık değişimini hesaplayan profesyoneller'
+    alt: 'Net ve brüt maaşın aylık değişimini ofiste hesaplayan Türk profesyoneller'
   },
   {
     slug: 'maas-hesaplama-siteleri-neden-farkli',
     asset: 'maas-hesaplama-siteleri-neden-farkli-editorial.webp',
-    alt: 'Maaş hesaplama sonuçlarını belgeler ve bilgisayar üzerinden karşılaştıran ekip'
+    alt: 'Maaş hesaplama sonuçlarını belgeler ve bilgisayar üzerinden karşılaştıran Türk profesyoneller'
   }
-];
+]);
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -85,6 +85,9 @@ function updateHero(html, post) {
   attributes = replaceAttribute(attributes, 'alt', post.alt);
   attributes = replaceAttribute(attributes, 'width', '480');
   attributes = replaceAttribute(attributes, 'height', '270');
+  attributes = replaceAttribute(attributes, 'loading', 'eager');
+  attributes = replaceAttribute(attributes, 'decoding', 'async');
+  attributes = replaceAttribute(attributes, 'fetchpriority', 'high');
 
   html = html.replace(figureImage, `$1${attributes}$3`);
   html = html.replaceAll(currentSrc, relative);
@@ -96,6 +99,8 @@ function updateHero(html, post) {
   html = html.replaceAll(currentAbsolute, absolute);
   html = html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i, `$1${absolute}$2`);
   html = html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/i, `$1${absolute}$2`);
+  html = html.replace(/(<meta\s+property="og:image:alt"\s+content=")[^"]*(")/i, `$1${post.alt}$2`);
+  html = html.replace(/(<meta\s+name="twitter:image:alt"\s+content=")[^"]*(")/i, `$1${post.alt}$2`);
   return html;
 }
 
@@ -111,8 +116,11 @@ function updateIndexCard(html, post) {
 
   let attributes = match[2];
   attributes = replaceAttribute(attributes, 'src', `/assets/${post.asset}`);
+  attributes = replaceAttribute(attributes, 'alt', post.alt);
   attributes = replaceAttribute(attributes, 'width', '480');
   attributes = replaceAttribute(attributes, 'height', '270');
+  attributes = replaceAttribute(attributes, 'loading', 'lazy');
+  attributes = replaceAttribute(attributes, 'decoding', 'async');
 
   return html.replace(anchorPattern, `$1${attributes}$3`);
 }
@@ -121,7 +129,7 @@ export async function applyBlogImages(dist) {
   const assetDir = join(dist, 'assets');
   await mkdir(assetDir, { recursive: true });
 
-  for (const post of posts) {
+  for (const post of blogImageAssignments) {
     await cp(join(sourceDir, post.asset), join(assetDir, post.asset));
 
     const articlePath = join(dist, 'blog', post.slug, 'index.html');
@@ -131,8 +139,9 @@ export async function applyBlogImages(dist) {
 
   const indexPath = join(dist, 'blog', 'index.html');
   let indexHtml = await readFile(indexPath, 'utf8');
-  for (const post of posts) indexHtml = updateIndexCard(indexHtml, post);
+  for (const post of blogImageAssignments) indexHtml = updateIndexCard(indexHtml, post);
   await writeFile(indexPath, indexHtml);
 
-  console.log(`blog içeriklerine ${posts.length} editoryal görsel uygulandı`);
+  console.log(`blog içeriklerinde ve kartlarında ${blogImageAssignments.length} konuya özel editoryal görsel uygulandı`);
+  return { applied: blogImageAssignments.length };
 }
