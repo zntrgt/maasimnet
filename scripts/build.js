@@ -10,6 +10,7 @@ import { applyTaxBracketColumn } from './apply-tax-bracket-column.js';
 import { renderBlog } from './render-blog.js';
 import { applyBlogImages } from './apply-blog-images.js';
 import { applyBlogOriginalData } from './apply-blog-original-data.js';
+import { applyBlogOriginalDataSecondary } from './apply-blog-original-data-secondary.js';
 import { add2027EstimateCalculator } from './add-2027-estimate-calculator.js';
 import { addOfferComparison } from './add-offer-comparison.js';
 import { addContactPage } from './add-contact-page.js';
@@ -60,6 +61,7 @@ const scenarioResult = await renderScenarioPages(distDir);
 await renderBlog(distDir);
 await applyBlogImages(distDir);
 const originalDataResult = await applyBlogOriginalData(distDir);
+const secondaryOriginalDataResult = await applyBlogOriginalDataSecondary(distDir);
 await add2027EstimateCalculator(distDir);
 await addOfferComparison(distDir);
 await addContactPage(distDir);
@@ -78,6 +80,7 @@ await inlineHomeCss(distDir);
 await applyContentDates(distDir);
 const metaDescriptionResult = await applyMetaDescriptionQuality(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
+const proprietaryDataBlogs = originalDataResult.enhanced + secondaryOriginalDataResult.enhanced;
 
 const version = {
   version: SITE_METADATA.releaseVersion,
@@ -87,12 +90,12 @@ const version = {
   calculationEngine: payrollAudit.engineVersion,
   payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`,
   metaDescriptionsReviewed: metaDescriptionResult.scanned,
-  proprietaryDataBlogs: originalDataResult.enhanced
+  proprietaryDataBlogs
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
 console.log(`bordro sınır testleri: ${payrollAudit.passed}/${payrollAudit.total}`);
-console.log(`özgün hesaplama verisi eklenen bloglar: ${originalDataResult.enhanced}`);
+console.log(`özgün hesaplama/veri içeriği eklenen bloglar: ${proprietaryDataBlogs}`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
