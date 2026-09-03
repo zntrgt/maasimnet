@@ -48,8 +48,11 @@ jobs:
       - name: Verify blog manifest
         run: npm run verify:manifest
 
-      - name: Verify SEO GEO blog quality
+      - name: Verify SEO GEO blog quality v2
         run: npm run verify:quality
+
+      - name: Verify sitewide meta descriptions
+        run: npm run verify:meta
 
       - name: Smoke test generated output
         run: npm run smoke
