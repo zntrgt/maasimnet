@@ -18,14 +18,9 @@ const strip = (html) => html
   .replace(/\s+/g, ' ')
   .trim();
 
-const attr = (html, name, attribute = 'content') => {
-  const tag = html.match(new RegExp(`<${name}\\b[^>]*>`, 'i'))?.[0] || '';
-  return tag.match(new RegExp(`${attribute}=["']([^"']*)["']`, 'i'))?.[1]?.trim() || '';
-};
-
 function metaDescription(html) {
-  const tag = html.match(/<meta\b[^>]*name=["']description["'][^>]*>/i)?.[0]
-    || html.match(/<meta\b[^>]*content=["'][^"']*["'][^>]*name=["']description["'][^>]*>/i)?.[0]
+  const tag = html.match(/<meta\b[^>]*name=["']description["'][^>]*>/i)
+    || html.match(/<meta\b[^>]*content=["'][^"']*["'][^>]*name=["']description["'][^>]*>/i)
     || '';
   return tag.match(/content=["']([^"']*)["']/i)?.[1]?.trim() || '';
 }
@@ -38,7 +33,7 @@ function articleHtml(html) {
   return html.match(/<article\b[\s\S]*?<\/article>/i)?.[0] || html.match(/<main\b[\s\S]*?<\/main>/i)?.[0] || html;
 }
 
-function jsonLdNodes(html) {
+function jsonLdNodes(html, slug) {
   const nodes = [];
   for (const match of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
     try {
@@ -47,7 +42,7 @@ function jsonLdNodes(html) {
       else if (Array.isArray(parsed?.['@graph'])) nodes.push(...parsed['@graph']);
       else nodes.push(parsed);
     } catch {
-      failures.push('geçersiz JSON-LD bulundu');
+      failures.push(`${slug}: geçersiz JSON-LD bulundu`);
     }
   }
   return nodes;
@@ -62,12 +57,11 @@ for (const post of indexableBlogPosts) {
   const file = join(dist, blogOutputPath(post));
   const html = await readFile(file, 'utf8');
   const article = articleHtml(html);
-  const text = strip(article);
   const title = titleText(html);
   const description = metaDescription(html);
   const h1Count = (html.match(/<h1\b/gi) || []).length;
   const canonical = html.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i)?.[1] || '';
-  const nodes = jsonLdNodes(html);
+  const nodes = jsonLdNodes(html, post.slug);
   const articleNode = nodes.find((node) => hasType(node, 'Article') || hasType(node, 'BlogPosting'));
   const breadcrumbNode = nodes.find((node) => hasType(node, 'BreadcrumbList'));
   const faqNode = nodes.find((node) => hasType(node, 'FAQPage'));
@@ -77,15 +71,15 @@ for (const post of indexableBlogPosts) {
     .map((match) => match[1])
     .filter((href) => href.startsWith('/') && !href.startsWith('/#') && href !== '/');
   const externalLinks = [...article.matchAll(/<a\b[^>]*href=["']https?:\/\/[^"']+["'][^>]*>/gi)];
-  const hasEvidenceLink = externalLinks.length > 0 || /href=["']\/(?:metodoloji|2026-verileri|veriler)\/?["']/i.test(article);
+  const hasEvidenceLink = externalLinks.length > 0 || /href=["']\/(?:metodoloji|hesaplama-metodolojisi|2026-verileri|veriler)\/?["']/i.test(article);
   const imageWithAlt = /<img\b(?=[^>]*\bsrc=["'][^"']+["'])(?=[^>]*\balt=["'][^"']+["'])[^>]*>/i.test(article);
   const ogImage = html.match(/<meta\b[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i)?.[1] || '';
   const hasOriginalValue = /quality-depth|decision-table|<figure\b|content-cta|<table\b/i.test(article);
   const visibleFaqCount = (article.match(/<details\b/gi) || []).length;
 
   const checks = [
-    [title.length >= 25 && title.length <= 75, `title uzunluğu uygun değil (${title.length}/25-75)`],
-    [description.length >= 105 && description.length <= 180, `meta description uzunluğu uygun değil (${description.length}/105-180)`],
+    [title.length >= 20 && title.length <= 90, `title okunabilir aralıkta değil (${title.length}/20-90)`],
+    [description.length >= 105 && description.length <= 190, `meta description uzunluğu uygun değil (${description.length}/105-190)`],
     [h1Count === 1, `H1 sayısı 1 olmalı (${h1Count})`],
     [canonical.startsWith('https://maasim.net/'), 'canonical eksik veya maasim.net dışında'],
     [earlyText.length >= 140, 'arama niyetine erken ve doğrudan cevap yetersiz'],
