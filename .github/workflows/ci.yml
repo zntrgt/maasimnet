@@ -84,6 +84,9 @@ jobs:
       - name: Verify Tier C worktime and SGK calculators
         run: npm run verify:worktime-calculators
 
+      - name: Verify 2020-2025 historical payroll calculators
+        run: npm run verify:historical-payroll
+
       - name: Verify sitewide contrast safety
         run: npm run verify:contrast
 
