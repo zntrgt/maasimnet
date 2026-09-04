@@ -27,6 +27,13 @@ test('notice period follows 2/4/6/8 week statutory bands', () => {
   assert.deepEqual(getNoticePeriod('2022-01-01', '2026-09-01'), { weeks: 8, days: 56 });
 });
 
+test('notice period keeps exact statutory boundaries in the lower band', () => {
+  assert.deepEqual(getNoticePeriod('2026-01-01', '2026-07-01'), { weeks: 4, days: 28 });
+  assert.deepEqual(getNoticePeriod('2025-03-01', '2026-09-01'), { weeks: 6, days: 42 });
+  assert.deepEqual(getNoticePeriod('2023-09-01', '2026-09-01'), { weeks: 6, days: 42 });
+  assert.deepEqual(getNoticePeriod('2023-09-01', '2026-09-02'), { weeks: 8, days: 56 });
+});
+
 test('severance uses 2026 ceiling and only stamp tax', () => {
   const result = calculateSeverance({
     startIso: '2022-01-01',
