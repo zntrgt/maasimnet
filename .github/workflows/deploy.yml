@@ -127,6 +127,76 @@ jobs:
             wait_for_200 "$url"
           done
 
+      - name: Production cache and security header smoke test
+        id: headers
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+
+          response_headers() {
+            local url="$1"
+            curl \
+              --connect-timeout 10 \
+              --max-time 20 \
+              -H 'Cache-Control: no-cache' \
+              -H 'Pragma: no-cache' \
+              -sS -D - -o /dev/null \
+              "${url}?header_check=${DEPLOY_SHA}"
+          }
+
+          header_value() {
+            local headers="$1"
+            local name="$2"
+            printf '%s\n' "$headers" \
+              | tr -d '\r' \
+              | awk -F': ' -v wanted="$name" 'tolower($1) == tolower(wanted) { value=$0; sub(/^[^:]+:[[:space:]]*/, "", value); found=value } END { print found }'
+          }
+
+          assert_response() {
+            local url="$1"
+            local expected_status="$2"
+            local expected_cache="$3"
+            local expected_cdn="${4:-}"
+            local headers status cache cdn xcto
+
+            headers="$(response_headers "$url")"
+            status="$(printf '%s\n' "$headers" | tr -d '\r' | awk '/^HTTP\// { code=$2 } END { print code }')"
+            cache="$(header_value "$headers" 'cache-control')"
+            cdn="$(header_value "$headers" 'cdn-cache-control')"
+            xcto="$(header_value "$headers" 'x-content-type-options')"
+
+            test "$status" = "$expected_status" || {
+              echo "::error::$url HTTP $status; beklenen $expected_status"
+              return 1
+            }
+
+            [[ "$cache" == *"$expected_cache"* ]] || {
+              echo "::error::$url cache-control '$cache'; beklenen parça '$expected_cache'"
+              return 1
+            }
+
+            if [ -n "$expected_cdn" ]; then
+              [[ "$cdn" == *"$expected_cdn"* ]] || {
+                echo "::error::$url cdn-cache-control '$cdn'; beklenen parça '$expected_cdn'"
+                return 1
+              }
+            fi
+
+            test "$xcto" = "nosniff" || {
+              echo "::error::$url x-content-type-options '$xcto'; beklenen nosniff"
+              return 1
+            }
+
+            echo "Header smoke başarılı: $url -> HTTP $status; cache='$cache'; cdn='$cdn'"
+          }
+
+          assert_response 'https://maasim.net/' '200' 'max-age=0' 's-maxage=300'
+          assert_response 'https://maasim.net/assets/app.js' '200' 'max-age=86400' 's-maxage=604800'
+          assert_response 'https://maasim.net/assets/sirket-destekli-spor-wellness-editorial.webp' '200' 'max-age=2592000' 's-maxage=2592000'
+          assert_response 'https://maasim.net/sitemap.xml' '200' 'max-age=3600' 's-maxage=86400'
+          assert_response 'https://maasim.net/api/contact' '405' 'no-store'
+
       - name: Submit sitemap URLs to IndexNow
         id: indexnow
         continue-on-error: true
@@ -140,6 +210,7 @@ jobs:
         env:
           DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
           SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          HEADER_OUTCOME: ${{ steps.headers.outcome }}
           INDEXNOW_OUTCOME: ${{ steps.indexnow.outcome }}
           DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
           DEPLOY_RUN_ID: ${{ github.run_id }}
@@ -147,20 +218,22 @@ jobs:
           script: |
             const deployOutcome = process.env.DEPLOY_OUTCOME || 'skipped';
             const smokeOutcome = process.env.SMOKE_OUTCOME || 'skipped';
+            const headerOutcome = process.env.HEADER_OUTCOME || 'skipped';
             const indexNowOutcome = process.env.INDEXNOW_OUTCOME || 'skipped';
             const sha = process.env.DEPLOY_SHA;
             const runId = process.env.DEPLOY_RUN_ID;
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}`;
 
-            const success = deployOutcome === 'success' && smokeOutcome === 'success';
+            const success = deployOutcome === 'success' && smokeOutcome === 'success' && headerOutcome === 'success';
             const status = success
-              ? '✅ Cloudflare production deployment ve canlı smoke test başarılı.'
-              : `❌ Production deployment başarısız. Deploy: **${deployOutcome}**, smoke: **${smokeOutcome}**.`;
+              ? '✅ Cloudflare production deployment, canlı smoke ve cache/header kontrolleri başarılı.'
+              : `❌ Production doğrulaması başarısız. Deploy: **${deployOutcome}**, smoke: **${smokeOutcome}**, headers: **${headerOutcome}**.`;
 
             const body = [
               status,
               '',
               `- Commit: \`${sha}\``,
+              `- Cache/header smoke: **${headerOutcome}**`,
               `- IndexNow: **${indexNowOutcome}**`,
               `- Workflow: ${runUrl}`,
               `- UTC zamanı: ${new Date().toISOString()}`
