@@ -3,7 +3,7 @@ import { join, relative, sep } from 'node:path';
 
 const dist = join(process.cwd(), 'dist');
 const MIN = 105;
-const MAX = 190;
+const MAX = 160;
 const failures = [];
 const seen = new Map();
 
