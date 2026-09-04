@@ -1,7 +1,17 @@
-/* Maaşım.net mobile calculator UX v3 — sticky result only; layout width stays owned by fintech-ui */
+/* Maaşım.net mobile calculator UX v4 — stable iOS focus; no viewport mutation */
 .enterprise-mobile-sticky{display:none!important}
 
 @media (max-width:700px){
+  html{-webkit-text-size-adjust:100%}
+  body[data-fintech-ui="v2"] .enterprise-form-card input:not(#input-salary),
+  body[data-fintech-ui="v2"] .enterprise-form-card select,
+  body[data-fintech-ui="v2"] .enterprise-form-card textarea{
+    font-size:16px!important;
+  }
+  body[data-fintech-ui="v2"] .enterprise-money-input #input-salary{
+    font-size:clamp(28px,8.5vw,36px)!important;
+  }
+
   .enterprise-mobile-sticky{
     position:fixed!important;
     left:12px!important;
