@@ -14,6 +14,7 @@ import { applyBlogOriginalDataSecondary } from './apply-blog-original-data-secon
 import { add2027EstimateCalculator } from './add-2027-estimate-calculator.js';
 import { addOfferComparison } from './add-offer-comparison.js';
 import { addContactPage } from './add-contact-page.js';
+import { addEditorialAuthority } from './add-editorial-authority.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { addPayrollTestReport } from './add-payroll-test-report.js';
@@ -68,6 +69,7 @@ await add2027EstimateCalculator(distDir);
 await addOfferComparison(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
+const editorialAuthorityResult = await addEditorialAuthority(distDir);
 await addHomeFreshness(distDir);
 const payrollAudit = await addPayrollTestReport(distDir);
 await applyConsentManagement(distDir);
@@ -93,7 +95,8 @@ const version = {
   payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`,
   metaDescriptionsReviewed: metaDescriptionResult.scanned,
   proprietaryDataBlogs,
-  editorialBlogImages: blogImageResult.applied
+  editorialBlogImages: blogImageResult.applied,
+  editorialAuthorityPages: editorialAuthorityResult.generated
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
@@ -101,5 +104,6 @@ console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
 console.log(`bordro sınır testleri: ${payrollAudit.passed}/${payrollAudit.total}`);
 console.log(`özgün hesaplama/veri içeriği eklenen bloglar: ${proprietaryDataBlogs}`);
 console.log(`konuya özel editoryal görsel uygulanan bloglar: ${blogImageResult.applied}`);
+console.log(`editoryal otorite sayfaları: ${editorialAuthorityResult.generated}`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
