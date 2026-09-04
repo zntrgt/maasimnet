@@ -17,6 +17,12 @@ export const DATA_2026 = Object.freeze({
       legalBasis: '4447 sayılı İşsizlik Sigortası Kanunu m.50',
       url: 'https://media.iskur.gov.tr/48434/issizlik-sigortasi-hizmetleri.pdf'
     }),
+    overtime: Object.freeze({
+      institution: 'Çalışma ve Sosyal Güvenlik Bakanlığı',
+      documentTitle: 'İş Kanununa İlişkin Fazla Çalışma ve Fazla Sürelerle Çalışma Yönetmeliği',
+      legalBasis: '4857 sayılı İş Kanunu m.41',
+      url: 'https://www.csgb.gov.tr/Media/gekgpqcm/i%C5%9F-kanununa-ili%C5%9Fkin-fazla-%C3%A7al%C4%B1%C5%9Fma-ve-fazla-s%C3%BCrelerle-%C3%A7al%C4%B1%C5%9Fma-y%C3%B6netmeli%C4%9Fi.pdf'
+    }),
     incomeTax: Object.freeze({
       institution: 'Gelir İdaresi Başkanlığı',
       documentTitle: '332 Seri No.lu Gelir Vergisi Genel Tebliği – 2026 ücret geliri tarifesi',
@@ -92,6 +98,16 @@ export const DATA_2026 = Object.freeze({
       applicationDaysWithoutLoss: 30,
       period: '2026-01-01/2026-12-31',
       sourceKey: 'unemployment'
+    }),
+    overtime: Object.freeze({
+      standardMonthlyHours: 225,
+      overtimeRatePpm: 1_500_000,
+      extraTimeRatePpm: 1_250_000,
+      annualOvertimeLimitMinutes: 16_200,
+      overtimeTimeOffRatePpm: 1_500_000,
+      extraTimeTimeOffRatePpm: 1_250_000,
+      period: '2026-01-01/2026-12-31',
+      sourceKey: 'overtime'
     }),
     mealAllowance: Object.freeze({ incomeTaxDailyKurus: 30_000, sgkDailyKurus: 15_800, period: '2026-01-01/2026-12-31', incomeTaxSourceKey: 'mealIncomeTax', sgkSourceKey: 'sgk' })
   })

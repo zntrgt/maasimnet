@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "title": "Maaşım.net Search, AI Visibility ve Hesaplama Funnel Dashboard",
   "owner": "Growth / SEO",
   "timezone": "Europe/Istanbul",
@@ -86,7 +86,8 @@
     "payroll_detail_toggle",
     "calculator_csv_download",
     "termination_calculator_complete",
-    "unemployment_calculator_complete"
+    "unemployment_calculator_complete",
+    "overtime_calculator_complete"
   ],
   "registered_custom_dimensions": [
     "calculation_direction",
@@ -121,6 +122,7 @@
     "csv_download_rate": "calculator_csv_download / salary_results_viewed",
     "organic_termination_completion_rate": "termination_calculator_complete / organic_termination_landing_sessions",
     "organic_unemployment_completion_rate": "unemployment_calculator_complete / organic_unemployment_landing_sessions",
+    "organic_overtime_completion_rate": "overtime_calculator_complete / organic_overtime_landing_sessions",
     "google_ai_visibility_change": "current_period_google_generative_ai_impressions vs previous_period_google_generative_ai_impressions",
     "bing_citation_change": "current_period_total_citations vs previous_period_total_citations"
   },
@@ -138,6 +140,7 @@
         "Salary calculations completed",
         "Termination calculations completed",
         "Unemployment calculations completed",
+        "Overtime calculations completed",
         "Organic session to completion rate"
       ],
       "charts": [
@@ -152,7 +155,7 @@
       "name": "Sorgu ve Landing Page",
       "tables": [
         "Query > landing page: impressions, clicks, CTR, position",
-        "Landing page: organic sessions, salary calculation events, termination and unemployment calculation completions and completion rate"
+        "Landing page: organic sessions, salary calculation events, termination, unemployment and overtime calculation completions and completion rate"
       ],
       "interaction": "Selecting a query filters the landing page table through its page path; conversion counts remain at landing-page grain."
     },
@@ -214,6 +217,25 @@
       "guardrail": "unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs"
     },
     {
+      "name": "Fazla Mesai Hesaplayıcı",
+      "scorecards": [
+        "Overtime landing sessions",
+        "Overtime calculations completed",
+        "Organic overtime calculations completed",
+        "Organic overtime session to completion rate"
+      ],
+      "tables": [
+        "Overtime landing page by channel, sessions, completions and completion rate",
+        "Overtime completion trend by device category"
+      ],
+      "breakdowns": [
+        "deviceCategory",
+        "landing page",
+        "sessionDefaultChannelGroup"
+      ],
+      "guardrail": "overtime_calculator_complete must not contain salary, overtime-hours, tax-base, retirement or disability inputs"
+    },
+    {
       "name": "AI Search Görünürlüğü",
       "scorecards": [
         "Google Generative AI impressions",
@@ -254,6 +276,7 @@
         "salary_range must include range_version",
         "termination_calculator_complete must contain only an allowlisted calculator_type and no financial input values",
         "unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs",
+        "overtime_calculator_complete must not contain salary, overtime-hours, tax-base, retirement or disability inputs",
         "GSC and GA4 dates use Europe/Istanbul reporting context",
         "Google Generative AI impressions must not be labeled clicks or sessions",
         "Bing citations must not be labeled rankings",
