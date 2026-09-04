@@ -6,7 +6,8 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const spec = JSON.parse(await readFile(join(root, 'analytics', 'gsc-ga4-dashboard.json'), 'utf8'));
 const salaryAnalyticsSource = await readFile(join(root, 'src', 'calculator-analytics.js'), 'utf8');
 const terminationAnalyticsSource = await readFile(join(root, 'src', 'termination-calculators.js'), 'utf8');
-const analyticsSources = `${salaryAnalyticsSource}\n${terminationAnalyticsSource}`;
+const unemploymentAnalyticsSource = await readFile(join(root, 'src', 'unemployment-calculator.js'), 'utf8');
+const analyticsSources = `${salaryAnalyticsSource}\n${terminationAnalyticsSource}\n${unemploymentAnalyticsSource}`;
 const googleTagsSource = await readFile(join(root, 'scripts', 'apply-google-tags.js'), 'utf8');
 const readme = await readFile(join(root, 'analytics', 'README.md'), 'utf8');
 
@@ -29,6 +30,18 @@ if (spec.ga4_events.includes('termination_calculator_complete')) {
     if (!terminationAnalyticsSource.includes(`'${type}'`)) {
       failures.push(`Tazminat calculator_type allowlist değeri eksik: ${type}`);
     }
+  }
+}
+
+if (spec.ga4_events.includes('unemployment_calculator_complete')) {
+  if (!unemploymentAnalyticsSource.includes("'unemployment_calculator_complete'")) {
+    failures.push('İşsizlik maaşı completion eventi dashboard sözleşmesinde var fakat UI analytics kodunda yok.');
+  }
+  if (!/gtag\(\s*['"]event['"]\s*,\s*['"]unemployment_calculator_complete['"]\s*\)/.test(unemploymentAnalyticsSource)) {
+    failures.push('İşsizlik maaşı completion eventi finansal/eligibility payload olmadan gönderilmeli.');
+  }
+  if (!JSON.stringify(spec).includes('unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs')) {
+    failures.push('İşsizlik maaşı analytics veri minimizasyonu guardrail metni eksik.');
   }
 }
 
@@ -95,8 +108,21 @@ for (const readmeCopy of [
   if (!readme.includes(readmeCopy)) failures.push(`AI ölçüm dokümantasyonu eksik: ${readmeCopy}`);
 }
 
-for (const forbidden of ['exact_salary', 'salary_amount', 'gross_salary_value', 'net_salary_value', 'severance_amount', 'notice_amount', 'previous_tax_base']) {
-  if (JSON.stringify(spec).includes(forbidden)) failures.push(`Dashboard exact finansal değer alanı içermemeli: ${forbidden}`);
+for (const forbidden of [
+  'exact_salary',
+  'salary_amount',
+  'gross_salary_value',
+  'net_salary_value',
+  'severance_amount',
+  'notice_amount',
+  'previous_tax_base',
+  'unemployment_pek',
+  'unemployment_premium_days',
+  'termination_reason',
+  'application_delay_days',
+  'eligibility_status'
+]) {
+  if (JSON.stringify(spec).includes(`"${forbidden}"`)) failures.push(`Dashboard exact/sensitive calculator input alanı içermemeli: ${forbidden}`);
 }
 
 if (failures.length) throw new Error(`Growth dashboard doğrulaması başarısız:\n${failures.join('\n')}`);
