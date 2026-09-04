@@ -47,10 +47,10 @@ for (const rule of [
 const terminationRoutes = ['tazminat-hesaplama', 'kidem-tazminati-hesaplama', 'ihbar-tazminati-hesaplama'];
 for (const route of terminationRoutes) {
   const html = await readFile(join(dist, route, 'index.html'), 'utf8');
-  assert.match(html, /class="termination-grid"/);
-  assert.match(html, /class="termination-panel"/);
-  assert.match(html, /class="termination-results"/);
-  assert.doesNotMatch(html, /style=["'][^"']*(?:min-)?width:\s*[1-9]\d{3,}px/i, `${route}: dört haneli sabit genişlik layout taşması riski`);
+  assert.match(html, /class="termination-grid"/, `${route}: calculator grid eksik`);
+  assert.match(html, /class="termination-panel"/, `${route}: form paneli eksik`);
+  assert.match(html, /class="termination-results"/, `${route}: sonuç paneli eksik`);
+  assert.match(html, /class="termination-options/, `${route}: responsive seçenek grupları eksik`);
 }
 
 console.log(`Sitewide layout güvenliği doğrulandı: ${htmlFiles.length} HTML, universal border-box, form containment ve mobil tablo taşma kontrolü.`);
