@@ -14,15 +14,16 @@ for (const token of [
 ]) if (!html.includes(token)) throw new Error(`Mobile UX HTML contract eksik: ${token}`);
 
 for (const token of [
-  '/* Maaşım.net mobile calculator UX v1',
+  '/* Maaşım.net mobile calculator UX v2',
   '.enterprise-mobile-sticky{display:none!important}',
   '.enterprise-mobile-sticky.is-visible',
   'env(safe-area-inset-bottom,0px)',
   'env(safe-area-inset-left,0px)',
   'body.enterprise-input-active .enterprise-mobile-sticky',
   '.enterprise-money-input #input-salary',
-  'width:100vw!important',
-  'margin-left:calc(50% - 50vw)!important',
+  'width:var(--mobile-visual-viewport-width,100dvw)!important',
+  'max-width:var(--mobile-visual-viewport-width,100dvw)!important',
+  'transform:none!important',
   'box-sizing:border-box!important',
   '.metric-hero{position:static!important',
   'font-size:clamp(2.7rem,12.5vw,4rem)!important',
@@ -35,12 +36,19 @@ for (const token of [
 for (const token of [
   "const MOBILE_QUERY = '(max-width: 700px)'",
   'hasUsableResult()',
+  'syncMainToVisualViewport()',
+  "qs('body[data-fintech-ui=\"v2\"] > main')",
+  'viewport?.width || document.documentElement.clientWidth',
+  "main.style.setProperty('width', `${width}px`, 'important')",
+  "main.style.setProperty('max-width', `${width}px`, 'important')",
+  "document.documentElement.style.setProperty('--mobile-visual-viewport-width'",
   "sticky.classList.toggle('is-visible', shouldShow)",
   'new IntersectionObserver(',
   'entry.intersectionRatio >= 0.18',
   "document.body.classList.add('enterprise-input-active')",
   "document.body.classList.remove('enterprise-input-active')",
-  'window.visualViewport?.addEventListener',
+  "window.visualViewport?.addEventListener('resize', refresh",
+  "window.visualViewport?.addEventListener('scroll', refresh",
   'inputValue > 0 && netValue > 0'
 ]) if (!js.includes(token)) throw new Error(`Mobile UX JS contract eksik: ${token}`);
 
@@ -48,4 +56,4 @@ for (const forbidden of ['fetch(', 'XMLHttpRequest', 'navigator.sendBeacon', 'gt
   if (js.includes(forbidden)) throw new Error(`Mobile UX finansal girdiyi ağ/analytics katmanına taşıyamaz: ${forbidden}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: viewport width, input focus, contextual sticky, safe-area, compact result ve overflow guard.');
+console.log('Mobile calculator UX doğrulandı: Safari visualViewport width lock, input focus, contextual sticky, safe-area, compact result ve overflow guard.');
