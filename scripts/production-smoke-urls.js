@@ -19,6 +19,7 @@ const urls = [
   'https://maasim.net/kidem-tazminati-hesaplama/',
   'https://maasim.net/ihbar-tazminati-hesaplama/',
   'https://maasim.net/issizlik-maasi-hesaplama/',
+  'https://maasim.net/fazla-mesai-hesaplama/',
   'https://maasim.net/sitemap.xml',
   ...preferred.map((post) => `https://maasim.net${blogRoute(post)}`)
 ];
