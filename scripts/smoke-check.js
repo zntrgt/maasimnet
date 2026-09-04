@@ -12,7 +12,8 @@ const MIME_TYPES = {
   '.svg': 'image/svg+xml',
   '.xml': 'application/xml; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
-  '.jpg': 'image/jpeg'
+  '.jpg': 'image/jpeg',
+  '.webp': 'image/webp'
 };
 
 function resolveRequestPath(urlPath) {
@@ -105,6 +106,9 @@ try {
     '/veriler/2026/',
     '/hesaplama-metodolojisi/',
     '/2027-maas-hesaplama/',
+    '/tazminat-hesaplama/',
+    '/kidem-tazminati-hesaplama/',
+    '/ihbar-tazminati-hesaplama/',
     '/cerez-politikasi/',
     '/gizlilik/'
   ];
@@ -122,6 +126,14 @@ try {
   assert.match(estimate.text, /id="estimate-mode-net"[^>]*aria-pressed="false"/);
   assert.match(estimate.text, /Bu bir tahmin aracıdır/i);
   assert.match(estimate.text, /FAQPage/);
+
+  for (const path of ['/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/']) {
+    const page = await fetchText(path);
+    assert.equal(page.response.status, 200);
+    assert.match(page.text, /data-termination-calculator=/);
+    assert.match(page.text, /\/assets\/termination-calculators\.js/);
+    assert.match(page.text, /FAQPage/);
+  }
 
   const app = await fetchText('/assets/app.js');
   assert.equal(app.response.status, 200);
@@ -148,6 +160,15 @@ try {
   assert.match(engine.text, /export function calculatePayrollYear/);
   assert.match(engine.text, /export function solveMonthlyGrossForFixedNet/);
 
+  const terminationEngine = await fetchText('/assets/termination-engine.js');
+  assert.equal(terminationEngine.response.status, 200);
+  assert.match(terminationEngine.text, /export function calculateSeverance/);
+  assert.match(terminationEngine.text, /export function calculateNotice/);
+
+  const terminationUi = await fetchText('/assets/termination-calculators.js');
+  assert.equal(terminationUi.response.status, 200);
+  assert.match(terminationUi.text, /termination_calculator_complete/);
+
   const styles = await fetchText('/assets/styles.css');
   assert.equal(styles.response.status, 200);
   assert.match(styles.text, /\.mobile-payroll-table/);
@@ -159,15 +180,16 @@ try {
   assert.equal(versionResponse.status, 200);
   const version = await versionResponse.json();
   assert.equal(version.calculationEngine, 'central-kurus-engine');
+  assert.equal(version.terminationCalculators, 3);
   assert.ok(version.version);
   assert.ok(version.builtAt);
 
   const missing = await fetch(`${baseUrl}/olmayan-sayfa/`);
   assert.equal(missing.status, 404);
 
-  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, kullanıcı girdisi koruması, ortak shell, 2026/2027 hesaplayıcılar ve statik assetler doğrulandı.`);
+  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, kullanıcı girdisi koruması, ortak shell, 2026/2027 ve tazminat hesaplayıcıları doğrulandı.`);
 } finally {
   await new Promise((resolvePromise, rejectPromise) => {
-    server.close((error) => error ? rejectPromise(error) : resolvePromise());
+    server.close((error) => error ? rejectPromise(error) : resolvePromise);
   });
 }
