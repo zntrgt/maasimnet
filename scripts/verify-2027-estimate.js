@@ -15,8 +15,8 @@ const home = await readFile(join(dist, 'index.html'), 'utf8');
 const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
 
 for (const token of [
-  '<title>2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin | Maaşım.net</title>',
-  'content="2027 maaş hesaplama aracıyla tahmini brütten nete ve netten brüte maaşınızı hesaplayın.',
+  '<title>2027 Brütten Nete Maaş Hesaplama | Netten Brüte Tahmin | Maaşım.net</title>',
+  'content="2027 brütten nete maaş hesaplama aracıyla tahmini net maaşınızı görün; netten brüte hesaplayın, asgari ücret, SGK tavanı ve vergi dilimi varsayımlarını değiştirin.',
   '<link rel="canonical" href="https://maasim.net/2027-maas-hesaplama/">',
   '<link rel="modulepreload" href="/assets/estimate-2027.js">',
   '<link rel="modulepreload" href="/assets/payroll-engine.js">',
@@ -24,6 +24,7 @@ for (const token of [
   'Tahmini parametreler · Resmî 2027 verisi değildir',
   'Bu bir tahmin aracıdır; bordro veya resmî hesaplama değildir.',
   'Son uyarı: Sonuçlar resmî değildir',
+  '<h1>2027 Brütten Nete Maaş Hesaplama ve Netten Brüte Tahmin</h1>',
   'id="estimate-mode-gross"',
   'id="estimate-mode-net"',
   'id="estimate-salary"',
@@ -41,7 +42,8 @@ for (const token of [
   'href="/veriler/2026-gelir-vergisi-dilimleri/"',
   'type="module" src="/assets/estimate-2027.js"',
   '"@type":"WebApplication"',
-  '"@type":"FAQPage"'
+  '"@type":"FAQPage"',
+  '"name":"2027 Brütten Nete Maaş Hesaplama"'
 ]) {
   if (!html.includes(token)) throw new Error(`2027 tahmin sayfası eksik: ${token}`);
 }
@@ -74,11 +76,18 @@ if (!blog.includes('href="/2027-maas-hesaplama/"')) {
 }
 for (const token of [
   'class="home-2027-estimate-cta"',
-  '2027’de alabileceğin tahmini ücreti karşılaştır',
-  'href="/2027-maas-hesaplama/"',
-  'Bu araç resmî 2027 hesaplaması değildir'
+  '2027 ücret senaryolarını karşılaştır',
+  'href="/2027-maas-hesaplama/">2027 brütten nete maaş hesaplama →</a>',
+  'Tahmin aracı resmî 2027 bordrosu değildir'
 ]) {
   if (!home.includes(token)) throw new Error(`2026 ana sayfa 2027 yönlendirmesi eksik: ${token}`);
+}
+
+if (home.includes('brütten nete veya netten brüte tahmin yap')) {
+  throw new Error('Ana sayfa 2027 exact-query açıklamasını sahiplenmemeli; dedicated URL yalnız linkle desteklenmeli.');
+}
+if (!home.includes('href="/2027-maas-hesaplama/">2027 Brütten Nete Maaş Hesaplama</a>')) {
+  throw new Error('Sitewide footer dedicated 2027 URL’ye exact-anchor iç link vermiyor.');
 }
 
 for (const token of [
@@ -97,4 +106,4 @@ if (html.includes('/assets/site-shell.css')) {
 const warningCount = (html.match(/resmî değil|resmî değildir|resmî olmayan|tahmin aracıdır|tahminidir/gi) || []).length;
 if (warningCount < 10) throw new Error(`2027 sayfasında görünür uyarı sayısı yetersiz: ${warningCount}`);
 
-console.log('2027 tahmini maaş hesaplayıcı; çift yönlü hesaplama, SEO/GEO içeriği, SSS, modulepreload, performans ve güçlü iç linklerle doğrulandı.');
+console.log('2027 dedicated URL arama niyeti, çift yönlü hesaplama, SEO/GEO içeriği, SSS, sitewide iç link ve cannibalization guardrail ile doğrulandı.');
