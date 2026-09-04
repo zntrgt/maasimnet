@@ -9,7 +9,7 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-04',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.11.0-editorial-authority-ai-visibility'
+  releaseVersion: '1.12.0-termination-search-expansion'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
@@ -21,13 +21,21 @@ const PAGE_OVERRIDES = Object.freeze({
   '/hakkimizda/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/editoryal-politika/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kaynak-politikasi/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/tazminat-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/ihbar-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/sgk-tavani/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt })
 });
 
-export const INDEXABLE_STATIC_PATHS = Object.freeze(['/test-raporu/']);
+export const INDEXABLE_STATIC_PATHS = Object.freeze([
+  '/test-raporu/',
+  '/tazminat-hesaplama/',
+  '/kidem-tazminati-hesaplama/',
+  '/ihbar-tazminati-hesaplama/'
+]);
 
 export function normalizeSitePath(pathname = '/') {
   const clean = String(pathname || '/').split(/[?#]/, 1)[0] || '/';
@@ -50,6 +58,11 @@ export function getPageMetadata(pathname = '/') {
   const override = PAGE_OVERRIDES[path] || {};
   const isPayrollDataPage = path === '/veriler/2026/' || path.startsWith('/veriler/2026/');
   const isBlogPage = path === '/blog/' || path.startsWith('/blog/');
+  const isTerminationCalculator = [
+    '/tazminat-hesaplama/',
+    '/kidem-tazminati-hesaplama/',
+    '/ihbar-tazminati-hesaplama/'
+  ].includes(path);
 
   const familyModifiedAt = isPayrollDataPage
     ? SITE_METADATA.payrollDataReviewedAt
@@ -61,7 +74,7 @@ export function getPageMetadata(pathname = '/') {
     path,
     publishedAt: override.publishedAt || SITE_METADATA.defaultPublishedAt,
     modifiedAt: override.modifiedAt || familyModifiedAt,
-    reviewedAt: isPayrollDataPage || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
+    reviewedAt: isPayrollDataPage || isTerminationCalculator || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
       ? SITE_METADATA.payrollDataReviewedAt
       : isBlogPage
         ? SITE_METADATA.blogReviewedAt
