@@ -37,8 +37,8 @@ assert.match(engine, /premiumDaysLast3Years >= 900/);
 assert.match(engine, /premiumDaysLast3Years >= 600/);
 assert.match(engine, /applicationDaysWithoutLoss/);
 assert.match(ui, /Cookiebot\?\.consent\?\.statistics\s*!==\s*true/, 'Analytics Cookiebot istatistik iznine bağlı olmalı');
-assert.match(ui, /unemployment_calculator_complete/);
-assert.doesNotMatch(ui, /pekKurus\s*:/, 'Analytics event payloadına PEK eklenmemeli');
+assert.match(ui, /globalThis\.gtag\(\s*['"]event['"]\s*,\s*['"]unemployment_calculator_complete['"]\s*\)/, 'Completion eventi payload olmadan gönderilmeli');
+assert.doesNotMatch(ui, /gtag\(\s*['"]event['"]\s*,\s*['"]unemployment_calculator_complete['"]\s*,/, 'Completion eventinde üçüncü analytics payloadı bulunmamalı');
 assert.match(css, /box-sizing:border-box/, 'Form box model koruması bulunmalı');
 assert.match(css, /minmax\(0,/, 'Grid taşma koruması bulunmalı');
 
