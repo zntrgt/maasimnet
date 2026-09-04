@@ -42,7 +42,7 @@ jobs:
       - name: Verify centralized content dates
         run: npm run verify:content-dates
 
-      - name: Verify GSC and GA4 dashboard contract
+      - name: Verify Search, AI visibility and GA4 dashboard contract
         run: npm run verify:growth-dashboard
 
       - name: Verify blog manifest
@@ -50,6 +50,12 @@ jobs:
 
       - name: Verify SEO GEO blog quality v2
         run: npm run verify:quality
+
+      - name: Verify editorial authority entities
+        run: npm run verify:editorial-authority
+
+      - name: Verify semantic topic clusters
+        run: npm run verify:topic-clusters
 
       - name: Verify sitewide meta descriptions
         run: npm run verify:meta
