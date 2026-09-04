@@ -20,11 +20,16 @@ if (/class=["'][^"']*\bcontainer\b/i.test(mainTag)) {
 }
 
 for (const token of [
-  '/* Maaşım.net mobile calculator UX v3',
+  '/* Maaşım.net mobile calculator UX v4',
   '.enterprise-mobile-sticky{display:none!important}',
   '.enterprise-mobile-sticky.is-visible',
   'env(safe-area-inset-bottom,0px)',
-  'body.enterprise-input-active .enterprise-mobile-sticky'
+  'body.enterprise-input-active .enterprise-mobile-sticky',
+  'html{-webkit-text-size-adjust:100%}',
+  '.enterprise-form-card input:not(#input-salary)',
+  'font-size:16px!important',
+  '.enterprise-money-input #input-salary',
+  'font-size:clamp(28px,8.5vw,36px)!important'
 ]) if (!css.includes(token)) throw new Error(`Mobile UX CSS contract eksik: ${token}`);
 
 for (const token of [
@@ -51,13 +56,16 @@ for (const forbiddenCss of [
 
 for (const forbiddenJs of [
   'syncMainToVisualViewport',
-  'visualViewport.width',
   "main.style.setProperty('width'",
   "main.style.setProperty('max-width'",
   "--mobile-visual-viewport-width",
+  'viewportMeta.setAttribute',
+  'setupIosViewportRecovery',
+  'maximum-scale=1',
+  'minimum-scale=1',
   'fetch(', 'XMLHttpRequest', 'navigator.sendBeacon', 'gtag(', 'dataLayer.push'
 ]) {
   if (js.includes(forbiddenJs)) throw new Error(`Mobile UX yasaklı davranış içeriyor: ${forbiddenJs}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: Tailwind container cap yok; native responsive width korunuyor; sticky sonuç context-aware ve safe-area uyumlu.');
+console.log('Mobile calculator UX doğrulandı: native responsive width korunuyor; iOS input odak güvenliği 16px+; viewport meta runtime değiştirilmiyor; sticky sonuç context-aware.');
