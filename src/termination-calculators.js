@@ -46,6 +46,7 @@ function readInput(form) {
     mealKurus: parseMoneyToKurus(inputValue(form, 'meal')),
     transportKurus: parseMoneyToKurus(inputValue(form, 'transport')),
     regularOtherKurus: parseMoneyToKurus(inputValue(form, 'regularOther')),
+    annualRegularBenefitsKurus: parseMoneyToKurus(inputValue(form, 'annualRegularBenefits')),
     previousCumulativeTaxBaseKurus: parseMoneyToKurus(inputValue(form, 'previousTaxBase')),
     remainingIncomeTaxExemptionKurus: parseMoneyToKurus(inputValue(form, 'remainingIncomeTaxExemption')),
     remainingStampTaxExemptionKurus: parseMoneyToKurus(inputValue(form, 'remainingStampTaxExemption'))
@@ -61,15 +62,32 @@ function setText(root, selector, value) {
   if (node) node.textContent = value;
 }
 
+function severanceFormula(result) {
+  return `${formatMoney(result.basisKurus)} × (${result.duration.years} yıl + ${result.duration.months}/12 + ${result.duration.days}/365) = ${formatMoney(result.grossKurus)}`;
+}
+
+function dressedGrossFormula(result) {
+  return [
+    formatMoney(result.baseGrossKurus),
+    formatMoney(result.mealKurus),
+    formatMoney(result.transportKurus),
+    formatMoney(result.regularOtherKurus),
+    formatMoney(result.annualRegularBenefitsMonthlyKurus)
+  ].join(' + ') + ` = ${formatMoney(result.dressedGrossKurus)}`;
+}
+
 function renderSeverance(root, result, stampExemptionProvided = false) {
   setText(root, '[data-result="duration"]', durationText(result.duration));
   setText(root, '[data-result="dressed-gross"]', formatMoney(result.dressedGrossKurus));
+  setText(root, '[data-result="annual-benefits-monthly"]', formatMoney(result.annualRegularBenefitsMonthlyKurus));
   setText(root, '[data-result="severance-ceiling"]', formatMoney(result.ceilingKurus));
   setText(root, '[data-result="severance-basis"]', formatMoney(result.basisKurus));
   setText(root, '[data-result="severance-gross"]', formatMoney(result.grossKurus));
   setText(root, '[data-result="severance-stamp-exemption"]', formatMoney(result.stampTaxExemptionAppliedKurus));
   setText(root, '[data-result="severance-stamp"]', formatMoney(result.stampTaxKurus));
   setText(root, '[data-result="severance-net"]', formatMoney(result.netKurus));
+  setText(root, '[data-result="severance-formula"]', severanceFormula(result));
+  setText(root, '[data-result="dressed-gross-formula"]', dressedGrossFormula(result));
 
   const warning = root.querySelector('[data-severance-warning]');
   if (warning) {
@@ -78,7 +96,7 @@ function renderSeverance(root, result, stampExemptionProvided = false) {
       messages.push('Bu hizmet süresi 1 yıldan kısa. 1475 sayılı Kanun kapsamındaki genel kıdem tazminatı koşulunda en az 1 yıl çalışma aranır.');
     }
     if (result.ceilingApplied) {
-      messages.push('Giydirilmiş brüt ücret, fesih tarihinde geçerli kıdem tazminatı tavanını aştığı için hesap tavan üzerinden yapıldı.');
+      messages.push('Giydirilmiş brüt ücret fesih tarihinde geçerli kıdem tazminatı tavanını aştığı için hesap tavandan yapıldı.');
     }
     if (result.stampTaxExemptionAppliedKurus > 0) {
       messages.push(`${formatMoney(result.stampTaxExemptionAppliedKurus)} kullanılmamış damga vergisi istisnası kıdem tazminatına uygulandı.`);
@@ -93,6 +111,7 @@ function renderSeverance(root, result, stampExemptionProvided = false) {
 function renderNotice(root, result, { taxBaseProvided = false, incomeExemptionProvided = false, stampExemptionProvided = false } = {}) {
   setText(root, '[data-result="duration"]', durationText(result.duration));
   setText(root, '[data-result="dressed-gross"]', formatMoney(result.dressedGrossKurus));
+  setText(root, '[data-result="annual-benefits-monthly"]', formatMoney(result.annualRegularBenefitsMonthlyKurus));
   setText(root, '[data-result="notice-period"]', `${result.noticePeriod.weeks} hafta (${result.noticePeriod.days} gün)`);
   setText(root, '[data-result="notice-gross"]', formatMoney(result.grossKurus));
   setText(root, '[data-result="notice-rates"]', formatRates(result.incomeTaxRatesPpm));
