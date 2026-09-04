@@ -69,6 +69,9 @@ jobs:
       - name: Verify unemployment benefit calculator
         run: npm run verify:unemployment-calculator
 
+      - name: Verify overtime calculator
+        run: npm run verify:overtime-calculator
+
       - name: Verify calculator discovery and SEO internal linking
         run: npm run verify:calculator-discovery
 
