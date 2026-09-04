@@ -85,7 +85,7 @@ export function getNoticePeriod(startIso, endIso) {
   let weeks;
   if (end < addMonths(start, 6)) weeks = 2;
   else if (end < addMonths(start, 18)) weeks = 4;
-  else if (end < addYears(start, 3)) weeks = 6;
+  else if (end <= addYears(start, 3)) weeks = 6;
   else weeks = 8;
 
   return Object.freeze({ weeks, days: weeks * 7 });
