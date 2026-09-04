@@ -1,5 +1,7 @@
 const PPM = 1_000_000;
 
+export const HISTORICAL_PAYROLL_CHECKED_AT = '2026-09-04';
+
 const bracket = (upToTl, ratePercent) => Object.freeze({
   upToKurus: Number.isFinite(upToTl) ? Math.round(upToTl * 100) : Number.POSITIVE_INFINITY,
   ratePpm: Math.round((ratePercent / 100) * PPM)
@@ -21,8 +23,13 @@ export const HISTORICAL_AGI_OPTIONS = Object.freeze([
   Object.freeze({ id: 'nonworking-spouse', label: 'Eşi çalışmayan, çocuksuz', ratePpm: 600_000 }),
   Object.freeze({ id: 'nonworking-spouse-1', label: 'Eşi çalışmayan, 1 çocuk', ratePpm: 675_000 }),
   Object.freeze({ id: 'nonworking-spouse-2', label: 'Eşi çalışmayan, 2 çocuk', ratePpm: 750_000 }),
+  // 3. çocukla birlikte teorik oran %85'e ulaşır. Daha fazla çocukta oran artsa da
+  // AGİ, asgari ücret üzerinden hesaplanan gelir vergisini aşamadığı için fiilî üst sınır %85'tir.
   Object.freeze({ id: 'nonworking-spouse-3', label: 'Eşi çalışmayan, 3+ çocuk', ratePpm: 850_000 })
 ]);
+
+const CSG_B_ARCHIVE = 'https://www.csgb.gov.tr/poco-pages/asgari-ucret/';
+const GIB_INCOME_TAX_LAW = 'https://gib.gov.tr/mevzuat/kanun/433';
 
 export const HISTORICAL_PAYROLL_DATA = Object.freeze({
   2020: Object.freeze({
@@ -34,8 +41,9 @@ export const HISTORICAL_PAYROLL_DATA = Object.freeze({
     agiEnabled: true,
     minimumWageTaxExemption: false,
     sourceUrls: Object.freeze([
-      'https://www.csgb.gov.tr/poco-pages/asgari-ucret/',
-      'https://cdn.gib.gov.tr/api/gibportal-file/file/getFileResources?objectKey=arsiv%2Fonceki-dokumanlar%2F2020_ucret.pdf'
+      CSG_B_ARCHIVE,
+      'https://cdn.gib.gov.tr/api/gibportal-file/file/getFileResources?objectKey=arsiv%2Fonceki-dokumanlar%2F2020_ucret.pdf',
+      GIB_INCOME_TAX_LAW
     ])
   }),
   2021: Object.freeze({
@@ -47,8 +55,9 @@ export const HISTORICAL_PAYROLL_DATA = Object.freeze({
     agiEnabled: true,
     minimumWageTaxExemption: false,
     sourceUrls: Object.freeze([
-      'https://www.csgb.gov.tr/Media/xddbty3t/asgari-ucret-2021.pdf',
-      'https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/2021_ucretgelirirehber.pdf'
+      CSG_B_ARCHIVE,
+      'https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/2021_ucretgelirirehber.pdf',
+      GIB_INCOME_TAX_LAW
     ])
   }),
   2022: Object.freeze({
@@ -62,10 +71,7 @@ export const HISTORICAL_PAYROLL_DATA = Object.freeze({
     ]),
     agiEnabled: false,
     minimumWageTaxExemption: true,
-    sourceUrls: Object.freeze([
-      'https://www.csgb.gov.tr/poco-pages/asgari-ucret/',
-      'https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/2022_ucretgelirirehber.pdf'
-    ])
+    sourceUrls: Object.freeze([CSG_B_ARCHIVE, GIB_INCOME_TAX_LAW])
   }),
   2023: Object.freeze({
     year: 2023,
@@ -78,10 +84,7 @@ export const HISTORICAL_PAYROLL_DATA = Object.freeze({
     ]),
     agiEnabled: false,
     minimumWageTaxExemption: true,
-    sourceUrls: Object.freeze([
-      'https://www.csgb.gov.tr/poco-pages/asgari-ucret/',
-      'https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/2024UcretGeliriVergiRehberi.pdf'
-    ])
+    sourceUrls: Object.freeze([CSG_B_ARCHIVE, GIB_INCOME_TAX_LAW])
   }),
   2024: Object.freeze({
     year: 2024,
@@ -91,10 +94,7 @@ export const HISTORICAL_PAYROLL_DATA = Object.freeze({
     ]),
     agiEnabled: false,
     minimumWageTaxExemption: true,
-    sourceUrls: Object.freeze([
-      'https://www.csgb.gov.tr/poco-pages/asgari-ucret/',
-      'https://intvrg.gib.gov.tr/hazirbeyan/pdflink.html'
-    ])
+    sourceUrls: Object.freeze([CSG_B_ARCHIVE, GIB_INCOME_TAX_LAW])
   }),
   2025: Object.freeze({
     year: 2025,
@@ -105,8 +105,9 @@ export const HISTORICAL_PAYROLL_DATA = Object.freeze({
     agiEnabled: false,
     minimumWageTaxExemption: true,
     sourceUrls: Object.freeze([
-      'https://www.csgb.gov.tr/poco-pages/asgari-ucret/',
-      'https://gib.gov.tr/vergi-konulari/1_bireysel/11_ucret_geliri/11'
+      CSG_B_ARCHIVE,
+      'https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/2025UcretGeliriVergiRehberi.pdf',
+      GIB_INCOME_TAX_LAW
     ])
   })
 });
