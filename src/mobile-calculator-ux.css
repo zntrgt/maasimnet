@@ -1,8 +1,14 @@
-/* Maaşım.net mobile calculator UX v4 — stable iOS focus; no viewport mutation */
+/* Maaşım.net mobile calculator UX v5 — stable iOS focus + overflow containment */
 .enterprise-mobile-sticky{display:none!important}
 
 @media (max-width:700px){
-  html{-webkit-text-size-adjust:100%}
+  html{
+    -webkit-text-size-adjust:100%;
+    overflow-x:clip;
+  }
+  body[data-fintech-ui="v2"]{
+    overflow-x:clip;
+  }
   body[data-fintech-ui="v2"] .enterprise-form-card input:not(#input-salary),
   body[data-fintech-ui="v2"] .enterprise-form-card select,
   body[data-fintech-ui="v2"] .enterprise-form-card textarea{
@@ -10,6 +16,27 @@
   }
   body[data-fintech-ui="v2"] .enterprise-money-input #input-salary{
     font-size:clamp(28px,8.5vw,36px)!important;
+  }
+
+  /* Keep wide payroll content scrollable inside its own shell; never let it widen the document. */
+  body[data-fintech-ui="v2"] .calculator-table-full,
+  body[data-fintech-ui="v2"] #payroll-results-shell,
+  body[data-fintech-ui="v2"] #payroll-results-shell>div,
+  body[data-fintech-ui="v2"] #payroll-results-shell .overflow-x-auto{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  body[data-fintech-ui="v2"] #payroll-results-shell{
+    contain:inline-size;
+    overflow:hidden!important;
+  }
+  body[data-fintech-ui="v2"] #payroll-results-shell>div,
+  body[data-fintech-ui="v2"] #payroll-results-shell .overflow-x-auto{
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    -webkit-overflow-scrolling:touch;
   }
 
   .enterprise-mobile-sticky{
