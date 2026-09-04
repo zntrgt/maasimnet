@@ -46,7 +46,9 @@ function readInput(form) {
     mealKurus: parseMoneyToKurus(inputValue(form, 'meal')),
     transportKurus: parseMoneyToKurus(inputValue(form, 'transport')),
     regularOtherKurus: parseMoneyToKurus(inputValue(form, 'regularOther')),
-    previousCumulativeTaxBaseKurus: parseMoneyToKurus(inputValue(form, 'previousTaxBase'))
+    previousCumulativeTaxBaseKurus: parseMoneyToKurus(inputValue(form, 'previousTaxBase')),
+    remainingIncomeTaxExemptionKurus: parseMoneyToKurus(inputValue(form, 'remainingIncomeTaxExemption')),
+    remainingStampTaxExemptionKurus: parseMoneyToKurus(inputValue(form, 'remainingStampTaxExemption'))
   };
 }
 
@@ -59,46 +61,62 @@ function setText(root, selector, value) {
   if (node) node.textContent = value;
 }
 
-function renderSeverance(root, result) {
+function renderSeverance(root, result, stampExemptionProvided = false) {
   setText(root, '[data-result="duration"]', durationText(result.duration));
   setText(root, '[data-result="dressed-gross"]', formatMoney(result.dressedGrossKurus));
   setText(root, '[data-result="severance-ceiling"]', formatMoney(result.ceilingKurus));
   setText(root, '[data-result="severance-basis"]', formatMoney(result.basisKurus));
   setText(root, '[data-result="severance-gross"]', formatMoney(result.grossKurus));
+  setText(root, '[data-result="severance-stamp-exemption"]', formatMoney(result.stampTaxExemptionAppliedKurus));
   setText(root, '[data-result="severance-stamp"]', formatMoney(result.stampTaxKurus));
   setText(root, '[data-result="severance-net"]', formatMoney(result.netKurus));
 
   const warning = root.querySelector('[data-severance-warning]');
   if (warning) {
+    const messages = [];
     if (!result.eligibleByDuration) {
-      warning.hidden = false;
-      warning.textContent = 'Bu hizmet süresi 1 yıldan kısa. 1475 sayılı Kanun kapsamındaki genel kıdem tazminatı koşulunda en az 1 yıl çalışma aranır.';
-    } else if (result.ceilingApplied) {
-      warning.hidden = false;
-      warning.textContent = 'Giydirilmiş brüt ücret, fesih tarihinde geçerli kıdem tazminatı tavanını aştığı için hesap tavan üzerinden yapıldı.';
-    } else {
-      warning.hidden = true;
-      warning.textContent = '';
+      messages.push('Bu hizmet süresi 1 yıldan kısa. 1475 sayılı Kanun kapsamındaki genel kıdem tazminatı koşulunda en az 1 yıl çalışma aranır.');
     }
+    if (result.ceilingApplied) {
+      messages.push('Giydirilmiş brüt ücret, fesih tarihinde geçerli kıdem tazminatı tavanını aştığı için hesap tavan üzerinden yapıldı.');
+    }
+    if (result.stampTaxExemptionAppliedKurus > 0) {
+      messages.push(`${formatMoney(result.stampTaxExemptionAppliedKurus)} kullanılmamış damga vergisi istisnası kıdem tazminatına uygulandı.`);
+    } else if (!stampExemptionProvided) {
+      messages.push('Damga vergisi hesabı, fesih ayındaki asgari ücret damga vergisi istisnasının normal ücret bordrosunda tamamen kullanıldığı varsayımıyla yapılır. Bordronuzda kullanılmamış istisna varsa gelişmiş alana girebilirsiniz.');
+    }
+    warning.hidden = messages.length === 0;
+    warning.textContent = messages.join(' ');
   }
 }
 
-function renderNotice(root, result, taxBaseProvided) {
+function renderNotice(root, result, { taxBaseProvided = false, incomeExemptionProvided = false, stampExemptionProvided = false } = {}) {
   setText(root, '[data-result="duration"]', durationText(result.duration));
   setText(root, '[data-result="dressed-gross"]', formatMoney(result.dressedGrossKurus));
   setText(root, '[data-result="notice-period"]', `${result.noticePeriod.weeks} hafta (${result.noticePeriod.days} gün)`);
   setText(root, '[data-result="notice-gross"]', formatMoney(result.grossKurus));
   setText(root, '[data-result="notice-rates"]', formatRates(result.incomeTaxRatesPpm));
+  setText(root, '[data-result="notice-income-tax-exemption"]', formatMoney(result.incomeTaxExemptionAppliedKurus));
   setText(root, '[data-result="notice-income-tax"]', formatMoney(result.incomeTaxKurus));
+  setText(root, '[data-result="notice-stamp-exemption"]', formatMoney(result.stampTaxExemptionAppliedKurus));
   setText(root, '[data-result="notice-stamp"]', formatMoney(result.stampTaxKurus));
   setText(root, '[data-result="notice-net"]', formatMoney(result.netKurus));
 
   const warning = root.querySelector('[data-notice-warning]');
   if (warning) {
+    const messages = [];
+    messages.push(taxBaseProvided
+      ? 'Net ihbar tahmini, girdiğiniz ödeme öncesi kümülatif gelir vergisi matrahına göre hesaplandı.'
+      : 'Kümülatif vergi matrahı girilmediği için gelir vergisi 0 TL önceki matrahtan başlatıldı; gerçek bordro matrahı sonucu değiştirebilir.');
+
+    if (result.incomeTaxExemptionAppliedKurus > 0 || result.stampTaxExemptionAppliedKurus > 0) {
+      messages.push('Girdiğiniz kullanılmamış aylık asgari ücret vergi istisnaları, 2026 için geçerli aylık üst sınırlarla kısıtlanarak hesaba dahil edildi.');
+    } else if (!incomeExemptionProvided && !stampExemptionProvided) {
+      messages.push('Vergi hesabı, fesih ayındaki asgari ücret gelir ve damga vergisi istisnalarının normal ücret bordrosunda tamamen kullanıldığı varsayımıyla yapılır. Kısmi ay veya o ay düşük/hiç ücret ödenmemesi halinde bordroda kalan istisna net ihbarı artırabilir.');
+    }
+
     warning.hidden = false;
-    warning.textContent = taxBaseProvided
-      ? 'Net ihbar tahmini, girdiğiniz önceki kümülatif gelir vergisi matrahına göre hesaplandı. Bordrodaki diğer ücret ve istisnalar sonucu değiştirebilir.'
-      : 'Kümülatif vergi matrahı girilmediği için gelir vergisi 0 TL önceki matrahtan başlatıldı. Net sonuç bordronuzdaki gerçek kümülatif matraha göre değişebilir.';
+    warning.textContent = messages.join(' ');
   }
 }
 
@@ -149,15 +167,20 @@ if (typeof document !== 'undefined') {
         if (!input.startIso || !input.endIso) throw new Error('İşe giriş ve işten ayrılma tarihlerini girin.');
         if (!input.baseGrossKurus) throw new Error('Aylık brüt ücreti girin.');
 
-        const taxBaseProvided = Boolean(inputValue(form, 'previousTaxBase').trim());
+        const taxOptions = {
+          taxBaseProvided: Boolean(inputValue(form, 'previousTaxBase').trim()),
+          incomeExemptionProvided: Boolean(inputValue(form, 'remainingIncomeTaxExemption').trim()),
+          stampExemptionProvided: Boolean(inputValue(form, 'remainingStampTaxExemption').trim())
+        };
+
         if (type === 'severance') {
-          renderSeverance(root, calculateSeverance(input));
+          renderSeverance(root, calculateSeverance(input), taxOptions.stampExemptionProvided);
         } else if (type === 'notice') {
-          renderNotice(root, calculateNotice(input), taxBaseProvided);
+          renderNotice(root, calculateNotice(input), taxOptions);
         } else {
           const result = calculateTerminationPackage(input);
-          renderSeverance(root, result.severance);
-          renderNotice(root, result.notice, taxBaseProvided);
+          renderSeverance(root, result.severance, taxOptions.stampExemptionProvided);
+          renderNotice(root, result.notice, taxOptions);
           setText(root, '[data-result="package-gross"]', formatMoney(result.grossTotalKurus));
           setText(root, '[data-result="package-net"]', formatMoney(result.netTotalKurus));
         }

@@ -18,6 +18,12 @@ for (const [route, h1, type] of pages) {
   assert.match(html, /"@type":"WebApplication"/, `${route}: WebApplication schema bulunmalı`);
   assert.match(html, /"@type":"FAQPage"/, `${route}: FAQPage schema bulunmalı`);
   assert.match(html, /csgb\.gov\.tr/i, `${route}: ÇSGB resmî kaynak bağlantısı bulunmalı`);
+  assert.match(html, /gib\.gov\.tr/i, `${route}: GİB resmî kaynak bağlantısı bulunmalı`);
+  assert.match(html, /name="remainingStampTaxExemption"/i, `${route}: kullanılmamış damga vergisi istisnası alanı bulunmalı`);
+  if (type !== 'severance') {
+    assert.match(html, /name="previousTaxBase"/i, `${route}: kümülatif vergi matrahı alanı bulunmalı`);
+    assert.match(html, /name="remainingIncomeTaxExemption"/i, `${route}: kullanılmamış gelir vergisi istisnası alanı bulunmalı`);
+  }
   assert.doesNotMatch(html, /<meta\b[^>]*name=["']robots["'][^>]*noindex/i, `${route}: indexlenebilir olmalı`);
   assert.doesNotMatch(html, /name="baseGross"[^>]*value=/i, `${route}: maaş alanı varsayılan değer taşımamalı`);
 }
@@ -27,9 +33,12 @@ const ui = await readFile(join(dist, 'assets', 'termination-calculators.js'), 'u
 assert.match(engine, /calculateSeverance/);
 assert.match(engine, /calculateNotice/);
 assert.match(engine, /get2026SeveranceCeilingKurus/);
+assert.match(engine, /get2026MonthlyTaxExemptionCaps/);
+assert.match(engine, /remainingIncomeTaxExemptionKurus/);
+assert.match(engine, /remainingStampTaxExemptionKurus/);
 assert.match(ui, /termination_calculator_complete/);
 assert.match(ui, /Cookiebot\?\.consent\?\.statistics\s*!==\s*true/, 'Tazminat eventleri Cookiebot istatistik iznine bağlı olmalı');
 assert.match(ui, /typeof globalThis\.gtag\s*!==\s*['"]function['"]/, 'Tazminat eventleri gtag üzerinden gönderilmeli');
 assert.doesNotMatch(ui, /dataLayer\.push\s*\(\s*\{\s*event:\s*['"]termination_calculator_complete['"]/, 'Tazminat eventleri doğrudan dataLayer içine yazılmamalı');
 
-console.log(`Tazminat hesaplayıcı doğrulaması başarılı: ${pages.length} sayfa, schema, kaynaklar, boş başlangıç, consent-gated analytics ve hesap motoru.`);
+console.log(`Tazminat hesaplayıcı doğrulaması başarılı: ${pages.length} sayfa, schema, kaynaklar, boş başlangıç, aylık vergi istisnası sınırları, consent-gated analytics ve hesap motoru.`);

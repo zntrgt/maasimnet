@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   calculateNotice,
   calculateSeverance,
+  calculateTerminationPackage,
+  get2026MonthlyTaxExemptionCaps,
   get2026SeveranceCeilingKurus,
   getNoticePeriod,
   getServiceDuration
@@ -20,6 +22,14 @@ test('2026 severance ceiling switches on 1 July', () => {
   assert.equal(get2026SeveranceCeilingKurus('2026-07-01'), 7_372_987);
 });
 
+test('2026 monthly minimum-wage tax exemption caps follow the termination month', () => {
+  assert.deepEqual(get2026MonthlyTaxExemptionCaps('2026-09-01'), {
+    monthNumber: 9,
+    incomeTaxKurus: 561_510,
+    stampTaxKurus: 25_070
+  });
+});
+
 test('notice period follows 2/4/6/8 week statutory bands', () => {
   assert.deepEqual(getNoticePeriod('2026-01-01', '2026-05-31'), { weeks: 2, days: 14 });
   assert.deepEqual(getNoticePeriod('2025-10-01', '2026-09-01'), { weeks: 4, days: 28 });
@@ -34,7 +44,7 @@ test('notice period keeps exact statutory boundaries in the lower band', () => {
   assert.deepEqual(getNoticePeriod('2023-09-01', '2026-09-02'), { weeks: 8, days: 56 });
 });
 
-test('severance uses 2026 ceiling and only stamp tax', () => {
+test('severance uses 2026 ceiling and only stamp tax by default', () => {
   const result = calculateSeverance({
     startIso: '2022-01-01',
     endIso: '2026-09-01',
@@ -48,6 +58,7 @@ test('severance uses 2026 ceiling and only stamp tax', () => {
   assert.equal(result.ceilingApplied, true);
   assert.equal(result.incomeTaxKurus, 0);
   assert.equal(result.sgkKurus, 0);
+  assert.equal(result.stampTaxExemptionAppliedKurus, 0);
   assert.ok(result.netKurus < result.grossKurus);
 });
 
@@ -71,7 +82,39 @@ test('notice pay uses dressed gross, no SGK and progressive income tax', () => {
   });
   assert.equal(result.noticePeriod.weeks, 8);
   assert.equal(result.grossKurus, 11_200_000);
+  assert.equal(result.calculatedIncomeTaxKurus, 1_680_000);
   assert.equal(result.incomeTaxKurus, 1_680_000);
   assert.equal(result.sgkKurus, 0);
   assert.ok(result.netKurus < result.grossKurus);
+});
+
+test('unused monthly tax exemptions reduce notice taxes but cannot exceed 2026 monthly caps', () => {
+  const result = calculateNotice({
+    startIso: '2022-01-01',
+    endIso: '2026-09-01',
+    baseGrossKurus: 6_000_000,
+    previousCumulativeTaxBaseKurus: 0,
+    remainingIncomeTaxExemptionKurus: 1_000_000,
+    remainingStampTaxExemptionKurus: 1_000_000
+  });
+  assert.equal(result.incomeTaxExemptionAppliedKurus, 561_510);
+  assert.equal(result.incomeTaxKurus, 1_118_490);
+  assert.equal(result.calculatedStampTaxKurus, 85_008);
+  assert.equal(result.stampTaxExemptionAppliedKurus, 25_070);
+  assert.equal(result.stampTaxKurus, 59_938);
+});
+
+test('combined package caps and applies the remaining stamp exemption only once', () => {
+  const result = calculateTerminationPackage({
+    startIso: '2022-01-01',
+    endIso: '2026-09-01',
+    baseGrossKurus: 6_000_000,
+    remainingStampTaxExemptionKurus: 1_000_000
+  });
+  assert.equal(result.severance.stampTaxExemptionAppliedKurus, 25_070);
+  assert.equal(result.notice.stampTaxExemptionAppliedKurus, 0);
+  assert.equal(
+    result.severance.stampTaxExemptionAppliedKurus + result.notice.stampTaxExemptionAppliedKurus,
+    25_070
+  );
 });

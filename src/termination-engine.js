@@ -77,6 +77,35 @@ export function get2026SeveranceCeilingKurus(endIso) {
     : DATA_2026.publishedData.severanceCeiling.secondHalfKurus;
 }
 
+export function get2026MonthlyTaxExemptionCaps(endIso) {
+  const end = parseIsoDate(endIso, 'İşten ayrılma tarihi');
+  if (end.getUTCFullYear() !== 2026) {
+    throw new RangeError('Asgari ücret vergi istisnası yalnız 2026 fesih tarihleri için hesaplanır.');
+  }
+
+  const payroll = DATA_2026.payroll;
+  const minimumIncomeTaxBaseKurus =
+    payroll.minimumGrossKurus
+    - multiplyRateRoundedKurus(payroll.minimumGrossKurus, payroll.employeeRatesPpm.sgk)
+    - multiplyRateRoundedKurus(payroll.minimumGrossKurus, payroll.employeeRatesPpm.unemployment);
+  const monthNumber = end.getUTCMonth() + 1;
+  const cumulativeMinimumIncomeTaxBaseKurus = minimumIncomeTaxBaseKurus * monthNumber;
+  const incomeTaxKurus = calculateProgressiveTaxKurus(
+    cumulativeMinimumIncomeTaxBaseKurus,
+    minimumIncomeTaxBaseKurus
+  );
+  const stampTaxKurus = multiplyRateRoundedKurus(
+    payroll.minimumGrossKurus,
+    payroll.stampTaxRatePpm
+  );
+
+  return Object.freeze({
+    monthNumber,
+    incomeTaxKurus,
+    stampTaxKurus
+  });
+}
+
 export function getNoticePeriod(startIso, endIso) {
   const start = parseIsoDate(startIso, 'İşe giriş tarihi');
   const end = parseIsoDate(endIso, 'İşten ayrılma tarihi');
@@ -97,14 +126,22 @@ export function calculateSeverance({
   baseGrossKurus,
   mealKurus = 0,
   transportKurus = 0,
-  regularOtherKurus = 0
+  regularOtherKurus = 0,
+  remainingStampTaxExemptionKurus = 0
 }) {
-  for (const [name, value] of Object.entries({ baseGrossKurus, mealKurus, transportKurus, regularOtherKurus })) {
+  for (const [name, value] of Object.entries({
+    baseGrossKurus,
+    mealKurus,
+    transportKurus,
+    regularOtherKurus,
+    remainingStampTaxExemptionKurus
+  })) {
     assertKurus(value, name);
   }
 
   const duration = getServiceDuration(startIso, endIso);
   const ceilingKurus = get2026SeveranceCeilingKurus(endIso);
+  const taxExemptionCaps = get2026MonthlyTaxExemptionCaps(endIso);
   const dressedGrossKurus = baseGrossKurus + mealKurus + transportKurus + regularOtherKurus;
   const basisKurus = Math.min(dressedGrossKurus, ceilingKurus);
   const eligibleByDuration = duration.years >= 1;
@@ -117,7 +154,13 @@ export function calculateSeverance({
     )
     : 0;
 
-  const stampTaxKurus = multiplyRateRoundedKurus(grossKurus, DATA_2026.payroll.stampTaxRatePpm);
+  const calculatedStampTaxKurus = multiplyRateRoundedKurus(grossKurus, DATA_2026.payroll.stampTaxRatePpm);
+  const stampTaxExemptionAppliedKurus = Math.min(
+    remainingStampTaxExemptionKurus,
+    taxExemptionCaps.stampTaxKurus,
+    calculatedStampTaxKurus
+  );
+  const stampTaxKurus = calculatedStampTaxKurus - stampTaxExemptionAppliedKurus;
   const netKurus = grossKurus - stampTaxKurus;
 
   return Object.freeze({
@@ -127,6 +170,9 @@ export function calculateSeverance({
     ceilingKurus,
     basisKurus,
     grossKurus,
+    calculatedStampTaxKurus,
+    stampTaxExemptionCapKurus: taxExemptionCaps.stampTaxKurus,
+    stampTaxExemptionAppliedKurus,
     stampTaxKurus,
     incomeTaxKurus: 0,
     sgkKurus: 0,
@@ -142,20 +188,43 @@ export function calculateNotice({
   mealKurus = 0,
   transportKurus = 0,
   regularOtherKurus = 0,
-  previousCumulativeTaxBaseKurus = 0
+  previousCumulativeTaxBaseKurus = 0,
+  remainingIncomeTaxExemptionKurus = 0,
+  remainingStampTaxExemptionKurus = 0
 }) {
-  for (const [name, value] of Object.entries({ baseGrossKurus, mealKurus, transportKurus, regularOtherKurus, previousCumulativeTaxBaseKurus })) {
+  for (const [name, value] of Object.entries({
+    baseGrossKurus,
+    mealKurus,
+    transportKurus,
+    regularOtherKurus,
+    previousCumulativeTaxBaseKurus,
+    remainingIncomeTaxExemptionKurus,
+    remainingStampTaxExemptionKurus
+  })) {
     assertKurus(value, name);
   }
 
   const duration = getServiceDuration(startIso, endIso);
   const noticePeriod = getNoticePeriod(startIso, endIso);
+  const taxExemptionCaps = get2026MonthlyTaxExemptionCaps(endIso);
   const dressedGrossKurus = baseGrossKurus + mealKurus + transportKurus + regularOtherKurus;
   const grossKurus = Math.round((dressedGrossKurus * noticePeriod.days) / 30);
   const cumulativeAfterKurus = previousCumulativeTaxBaseKurus + grossKurus;
-  const incomeTaxKurus = calculateProgressiveTaxKurus(cumulativeAfterKurus, grossKurus);
+  const calculatedIncomeTaxKurus = calculateProgressiveTaxKurus(cumulativeAfterKurus, grossKurus);
   const incomeTaxRatesPpm = getApplicableIncomeTaxRatesPpm(cumulativeAfterKurus, grossKurus);
-  const stampTaxKurus = multiplyRateRoundedKurus(grossKurus, DATA_2026.payroll.stampTaxRatePpm);
+  const incomeTaxExemptionAppliedKurus = Math.min(
+    remainingIncomeTaxExemptionKurus,
+    taxExemptionCaps.incomeTaxKurus,
+    calculatedIncomeTaxKurus
+  );
+  const incomeTaxKurus = calculatedIncomeTaxKurus - incomeTaxExemptionAppliedKurus;
+  const calculatedStampTaxKurus = multiplyRateRoundedKurus(grossKurus, DATA_2026.payroll.stampTaxRatePpm);
+  const stampTaxExemptionAppliedKurus = Math.min(
+    remainingStampTaxExemptionKurus,
+    taxExemptionCaps.stampTaxKurus,
+    calculatedStampTaxKurus
+  );
+  const stampTaxKurus = calculatedStampTaxKurus - stampTaxExemptionAppliedKurus;
   const netKurus = grossKurus - incomeTaxKurus - stampTaxKurus;
 
   return Object.freeze({
@@ -166,7 +235,13 @@ export function calculateNotice({
     previousCumulativeTaxBaseKurus,
     cumulativeAfterKurus,
     incomeTaxRatesPpm,
+    calculatedIncomeTaxKurus,
+    incomeTaxExemptionCapKurus: taxExemptionCaps.incomeTaxKurus,
+    incomeTaxExemptionAppliedKurus,
     incomeTaxKurus,
+    calculatedStampTaxKurus,
+    stampTaxExemptionCapKurus: taxExemptionCaps.stampTaxKurus,
+    stampTaxExemptionAppliedKurus,
     stampTaxKurus,
     sgkKurus: 0,
     netKurus
@@ -174,8 +249,25 @@ export function calculateNotice({
 }
 
 export function calculateTerminationPackage(input) {
-  const severance = calculateSeverance(input);
-  const notice = calculateNotice(input);
+  const remainingStampTaxExemptionKurus = input.remainingStampTaxExemptionKurus ?? 0;
+  assertKurus(remainingStampTaxExemptionKurus, 'remainingStampTaxExemptionKurus');
+
+  const stampTaxExemptionCapKurus = get2026MonthlyTaxExemptionCaps(input.endIso).stampTaxKurus;
+  const packageStampTaxExemptionKurus = Math.min(
+    remainingStampTaxExemptionKurus,
+    stampTaxExemptionCapKurus
+  );
+  const severance = calculateSeverance({
+    ...input,
+    remainingStampTaxExemptionKurus: packageStampTaxExemptionKurus
+  });
+  const notice = calculateNotice({
+    ...input,
+    remainingStampTaxExemptionKurus: Math.max(
+      0,
+      packageStampTaxExemptionKurus - severance.stampTaxExemptionAppliedKurus
+    )
+  });
   return Object.freeze({
     severance,
     notice,
