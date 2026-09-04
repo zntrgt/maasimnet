@@ -21,6 +21,15 @@ function extract(html, pattern, fallback = '') {
   return match ? stripTags(match[1]) : fallback;
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function hasCardForRoute(html, route) {
+  const pattern = new RegExp(`<a\\b(?=[^>]*\\bclass=["'][^"']*\\bcard\\b[^"']*["'])(?=[^>]*\\bhref=["']${escapeRegExp(route)}["'])[^>]*>`, 'i');
+  return pattern.test(html);
+}
+
 function cardFromArticle(post, html) {
   const route = blogRoute(post);
   const title = extract(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i, post.slug.replaceAll('-', ' '));
@@ -39,7 +48,7 @@ export async function ensureBlogIndex(dist) {
 
   for (const post of indexableBlogPosts) {
     const route = blogRoute(post);
-    if (index.includes(`href="${route}"`)) continue;
+    if (hasCardForRoute(index, route)) continue;
     const articleHtml = await readFile(join(dist, blogOutputPath(post)), 'utf8');
     missingCards.push(cardFromArticle(post, articleHtml));
   }
