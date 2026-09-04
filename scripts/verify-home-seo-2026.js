@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 const html = await readFile(join(process.cwd(), 'dist', 'index.html'), 'utf8');
 const title = 'Maaş Hesaplama 2026 | Brütten Nete &amp; Netten Brüte';
-const description = 'Maaş hesaplama 2026: brüt maaşınızı nete, hedef net maaşınızı brüte çevirin. Güncel vergi dilimleri, SGK kesintileri ve işveren maliyetini 12 aylık bordroda görün.';
+const description = 'Maaş hesaplama 2026: brüt maaşınızı nete, hedef net maaşınızı brüte çevirin. Güncel vergi dilimleri, SGK ve işveren maliyetini 12 aylık bordroda görün.';
 
 assert.match(html, new RegExp(`<title>${title}<\\/title>`), 'Ana sayfa title 2026 maaş hesaplama query ownership ile başlamalı.');
 assert.match(html, /<h1>Maaş Hesaplama 2026: Brütten Nete &amp; Netten Brüte<\/h1>/, 'Ana sayfa H1 exact 2026 maaş hesaplama niyetini sahiplenmeli.');
