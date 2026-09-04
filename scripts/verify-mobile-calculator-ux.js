@@ -13,6 +13,12 @@ for (const token of [
   'class="calculator-results-column"'
 ]) if (!html.includes(token)) throw new Error(`Mobile UX HTML contract eksik: ${token}`);
 
+const mainTag = html.match(/<main\b[^>]*>/i)?.[0] || '';
+if (!mainTag) throw new Error('Mobile UX ana main etiketi bulunamadı.');
+if (/class=["'][^"']*\bcontainer\b/i.test(mainTag)) {
+  throw new Error(`Homepage main Tailwind container max-width kullanamaz: ${mainTag}`);
+}
+
 for (const token of [
   '/* Maaşım.net mobile calculator UX v3',
   '.enterprise-mobile-sticky{display:none!important}',
@@ -54,4 +60,4 @@ for (const forbiddenJs of [
   if (js.includes(forbiddenJs)) throw new Error(`Mobile UX yasaklı davranış içeriyor: ${forbiddenJs}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: native responsive width korunuyor; sticky sonuç context-aware ve safe-area uyumlu.');
+console.log('Mobile calculator UX doğrulandı: Tailwind container cap yok; native responsive width korunuyor; sticky sonuç context-aware ve safe-area uyumlu.');
