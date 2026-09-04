@@ -1,10 +1,12 @@
-# Maaşım.net GSC + GA4 Funnel Dashboard
+# Maaşım.net Search + AI Visibility + GA4 Funnel Dashboard
 
-Bu klasör, Google Search Console sorgularını ve GA4 hesaplayıcı davranışlarını tek Looker Studio raporunda birleştirmek için kaynak tanımını içerir.
+Bu klasör, Google Search Console, Google Search Console Generative AI Performance, Bing Webmaster Tools AI Performance ve GA4 davranış verilerini tek ölçüm çerçevesinde takip etmek için kaynak tanımını içerir.
+
+Makine tarafından doğrulanan rapor modeli `gsc-ga4-dashboard.json` dosyasındadır.
 
 ## Gerçek veri sınırı
 
-GSC; sorgu, sayfa, tarih, cihaz, gösterim ve tıklama verisini sağlar. GA4; landing page, oturum ve event verisini sağlar. Google iki sistem arasında kullanıcı veya oturum seviyesinde ortak bir anahtar sunmaz.
+Klasik Google Search Console; sorgu, sayfa, tarih, cihaz, gösterim, tıklama, CTR ve pozisyon verisini sağlar. GA4; landing page, oturum ve event verisini sağlar. Google iki sistem arasında kullanıcı veya oturum seviyesinde ortak bir anahtar sunmaz.
 
 Bu nedenle dashboard:
 
@@ -14,11 +16,11 @@ Bu nedenle dashboard:
 - aynı landing page'in dönüşüm sayısını o sayfaya gelen her sorguya kopyalamaz,
 - “sorgu başına kesin hesaplama dönüşümü” adında sahte bir metrik üretmez.
 
-Makine tarafından doğrulanan rapor modeli `gsc-ga4-dashboard.json` dosyasındadır.
+Google Generative AI Performance ve Bing AI Performance ise ayrı görünürlük kaynaklarıdır. Bunların impression/citation verileri GA4 oturum veya dönüşümlerine kullanıcı düzeyinde bağlanmaz.
 
 ## 1. Veri kaynakları
 
-### Google Search Console
+### Google Search Console — klasik arama
 
 - Bağlantı türü: **Site Impression**
 - Property: `sc-domain:maasim.net`
@@ -26,13 +28,57 @@ Makine tarafından doğrulanan rapor modeli `gsc-ga4-dashboard.json` dosyasında
 - Boyutlar: Date, Query, Page, Device, Country
 - Metrikler: Impressions, Clicks, CTR, Average Position
 
+### Google Search Console — Generative AI Performance
+
+Google’ın Search Console içindeki özel Generative AI Performance raporu aşağıdaki görünürlüğü izler:
+
+- AI Overviews
+- AI Mode
+
+Raporun doğrulanmış alanları:
+
+- Impressions
+- Page
+- Country
+- Device
+- Date
+
+Google, bu görünürlüğün 31 Ağustos 2026 itibarıyla dünya genelinde kullanıma açıldığını belirtiyor. Düşük hacimli property'lerde veri görünmemesi mümkündür.
+
+Bu rapor **AI tıklaması veya AI dönüşümü raporu değildir**. Dedicated raporda gösterilmeyen click/session metrikleri türetilmemelidir.
+
+Resmî dokümantasyon: `https://support.google.com/webmasters/answer/16984139`
+
+Bağlantı kuralı: Search Console native raporu veya export edilmiş rapor verisi kullanılabilir. API ya da Looker Studio connector'ında aynı alanların desteklendiği ayrıca doğrulanmadan otomatik entegrasyon varsayılmamalıdır.
+
 ### Google Analytics 4
 
 - Web stream measurement ID: `G-988BB5B64E`
 - GA4 property ID: Looker Studio bağlantısı kurulurken seçilmelidir.
 - Organik filtre: `Session default channel group = Organic Search`
-- Ana boyutlar: Date, Landing page + query string, Device category, Event name
+- Ana boyutlar: Date, Landing page + query string, Session source / medium, Device category, Event name
 - Ana metrikler: Sessions, Active users, Event count, Key events
+
+### Bing Webmaster Tools — AI Performance
+
+Bing AI Performance public preview aşağıdaki AI yüzeylerindeki citation görünürlüğünü ölçer:
+
+- Microsoft Copilot
+- Bing AI-generated summaries
+- select partner integrations
+
+Ana metrik ve boyutlar:
+
+- Total citations
+- Average cited pages
+- Page-level citations
+- Grounding queries
+- Date
+- Page
+
+`Total citations` kaynak gösterim sayısıdır; ranking değildir. `Grounding queries` tam arama talebi datası değil, AI retrieval sürecinde kullanılan ifadelerin örneklemidir.
+
+Resmî dokümantasyon: `https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview`
 
 ## 2. GA4 özel boyutları
 
@@ -91,7 +137,51 @@ CONCAT(Date, '|', normalized_landing_page_path)
 
 Blend yalnızca `Date + normalized landing page path` seviyesinde kullanılmalıdır. Query boyutu blend'in dönüşüm tarafına eklenmemelidir.
 
-## 5. Rapor sayfaları
+Google Generative AI report ve Bing AI Performance verileri, desteklenen ortak grain doğrulanmadıkça bu blend'e eklenmemelidir.
+
+## 5. AI görünürlüğü için üç ayrı sinyal
+
+### A. Google Generative AI visibility
+
+Kaynak: Search Console Generative AI Performance.
+
+Ana KPI:
+
+- Generative AI impressions
+- AI görünürlüğü alan sayfa sayısı
+- Sayfa bazında impression trendi
+- Ülke ve cihaz kırılımı
+
+Bu metrikler **görünürlük** ölçer.
+
+### B. Bing AI citation visibility
+
+Kaynak: Bing Webmaster Tools AI Performance.
+
+Ana KPI:
+
+- Total citations
+- Average cited pages
+- En çok cite edilen URL'ler
+- Grounding query örnekleri
+- Citation trendi
+
+Bu metrikler **kaynak gösterilme** ölçer.
+
+### C. GA4 AI referral traffic
+
+Session source/medium filtreleriyle:
+
+- `chatgpt.com`
+- Perplexity
+- Gemini
+- diğer doğrulanmış AI referral kaynakları
+
+Bu metrikler yalnız **siteye gerçekten tıklayıp gelen oturumları** ölçer. Citation veya AI impression'ın tamamını temsil etmez.
+
+Bu üç sinyal tek bir “AI traffic” sayısında birleştirilmemelidir.
+
+## 6. Rapor sayfaları
 
 ### Yönetici Özeti
 
@@ -101,16 +191,11 @@ Scorecard'lar:
 - GSC tıklama
 - GSC CTR
 - Ortalama pozisyon
+- Google Generative AI impressions
+- Bing total citations
 - Organik landing session
 - Tamamlanan maaş hesaplaması
 - Organik session → hesaplama tamamlama oranı
-
-Grafikler:
-
-- Günlük organik tıklama ve tamamlanan hesaplama
-- Landing page funnel
-- Cihaz kırılımı
-- Tamamlanan hesaplamaya göre en iyi landing page'ler
 
 ### Sorgu ve Landing Page
 
@@ -152,16 +237,36 @@ Results view rate = salary_results_viewed / salary_calculation_completed
 CSV download rate = calculator_csv_download / salary_results_viewed
 ```
 
-### İçerik ve AI Trafiği
+### AI Search Görünürlüğü
 
-Session source/medium filtreleriyle:
+Ayrı kartlar ve tablolar:
 
-- `chatgpt.com`
-- Perplexity
-- Gemini
-- Organic Search
+- Google Generative AI impressions
+- Google AI görünür sayfalar
+- Bing total citations
+- Bing average cited pages
+- Bing cited page listesi
+- Bing grounding query örnekleri
+- GA4 AI referral sessions
+- AI referral → tamamlanan hesaplama
 
-İçerik landing page'lerinden hesaplayıcıya geçiş ve tamamlanan hesaplama sayısı izlenmelidir.
+Google/Bing native visibility ile GA4 referral data yan yana gösterilebilir fakat tek attributed conversion metriğinde birleştirilmez.
+
+### İçerik Performansı
+
+İçerikleri konu kümesi bazında karşılaştır:
+
+- 2026 Maaş, Vergi ve Bordro
+- Kariyer, Zam ve Ücret Kararları
+- Yan Haklar ve Çalışan Finansal Sağlığı
+
+Her küme için:
+
+- organik landing session
+- hesaplayıcıya geçiş
+- Google Generative AI impressions
+- Bing citations
+- AI referral sessions
 
 ### Veri Kalitesi
 
@@ -169,13 +274,17 @@ Session source/medium filtreleriyle:
 - Exact maaş event parametresi bulunmamalı.
 - `salary_range` ile birlikte `range_version` gelmeli.
 - Tarih ve saat raporlaması `Europe/Istanbul` bağlamında yorumlanmalı.
+- Google Generative AI impressions click/session diye etiketlenmemeli.
+- Bing citations ranking diye etiketlenmemeli.
+- AI referral sessions toplam AI görünürlüğü gibi sunulmamalı.
 
-## 6. Canlı bağlantı için gereken erişimler
+## 7. Canlı bağlantı için gereken erişimler
 
-Looker Studio raporunun canlı hale gelmesi için raporu oluşturacak Google hesabında aşağıdaki erişimler gerekir:
+Looker Studio ve native AI raporlarının canlı hale gelmesi için raporu yönetecek Google/Microsoft hesaplarında aşağıdaki erişimler gerekir:
 
 - Search Console `sc-domain:maasim.net` property erişimi
 - İlgili GA4 property için Viewer veya üzeri erişim
+- Bing Webmaster Tools `maasim.net` property erişimi
 - Looker Studio'da veri kaynağı oluşturma yetkisi
 
-Repo, event sözlüğünü, birleşim seviyesini, calculated field'ları, sayfa düzenini ve veri kalite kurallarını tanımlar. Google hesap yetkilendirmesi repository veya deployment üzerinden yapılamaz; rapor sahibinin Google oturumunda bir kez tamamlanmalıdır.
+Repo, event sözlüğünü, birleşim seviyesini, AI görünürlük guardrail'lerini, calculated field'ları, sayfa düzenini ve veri kalite kurallarını tanımlar. Hesap yetkilendirmesi repository veya deployment üzerinden yapılamaz; rapor sahibinin oturumunda tamamlanmalıdır.
