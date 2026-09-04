@@ -119,7 +119,8 @@ function init(root) {
   if (julyBox) {
     if (july.minimumGrossKurus !== january.minimumGrossKurus) {
       julyBox.hidden = false;
-      julyBox.textContent = `Temmuz–Aralık: ${formatKurus(july.minimumGrossKurus)} brüt · ${formatKurus(july.referenceMinimumNetKurus)} net`;
+      const julyValue = julyBox.querySelector('strong');
+      if (julyValue) julyValue.textContent = `${formatKurus(july.minimumGrossKurus)} brüt · ${formatKurus(july.referenceMinimumNetKurus)} net`;
     } else julyBox.hidden = true;
   }
 }
