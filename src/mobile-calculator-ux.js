@@ -15,37 +15,6 @@ function hasUsableResult() {
   return inputValue > 0 && netValue > 0;
 }
 
-function syncMainToVisualViewport() {
-  const main = qs('body[data-fintech-ui="v2"] > main');
-  if (!main) return;
-
-  const mobile = window.matchMedia(MOBILE_QUERY).matches;
-  if (!mobile) {
-    for (const property of ['width', 'max-width', 'margin-left', 'margin-right', 'transform']) {
-      main.style.removeProperty(property);
-    }
-    document.documentElement.style.removeProperty('--mobile-visual-viewport-width');
-    delete document.body.dataset.mobileVisualViewport;
-    return;
-  }
-
-  const viewport = window.visualViewport;
-  const width = Math.max(280, Math.round((viewport?.width || document.documentElement.clientWidth) * 100) / 100);
-  const offsetLeft = Math.max(0, Math.round((viewport?.offsetLeft || 0) * 100) / 100);
-
-  document.documentElement.style.setProperty('--mobile-visual-viewport-width', `${width}px`);
-  document.body.dataset.mobileVisualViewport = String(width);
-
-  // iOS Safari can keep a layout viewport wider than the currently visible viewport
-  // after focus/keyboard/result updates. Inline !important makes the calculator use
-  // exactly the visible width instead of inheriting that stale layout width.
-  main.style.setProperty('width', `${width}px`, 'important');
-  main.style.setProperty('max-width', `${width}px`, 'important');
-  main.style.setProperty('margin-left', `${offsetLeft}px`, 'important');
-  main.style.setProperty('margin-right', '0px', 'important');
-  main.style.setProperty('transform', 'none', 'important');
-}
-
 function setupMobileStickyUx() {
   const sticky = qs('.enterprise-mobile-sticky');
   const result = qs('.metric-hero');
@@ -54,7 +23,6 @@ function setupMobileStickyUx() {
 
   let resultVisible = false;
   const refresh = () => {
-    syncMainToVisualViewport();
     const mobile = window.matchMedia(MOBILE_QUERY).matches;
     const shouldShow = mobile && hasUsableResult() && !resultVisible && document.activeElement !== input;
     sticky.classList.toggle('is-visible', shouldShow);
@@ -79,7 +47,6 @@ function setupMobileStickyUx() {
   window.addEventListener('resize', refresh, { passive: true });
   window.addEventListener('orientationchange', () => window.setTimeout(refresh, 120), { passive: true });
   window.visualViewport?.addEventListener('resize', refresh, { passive: true });
-  window.visualViewport?.addEventListener('scroll', refresh, { passive: true });
 
   const payrollBody = qs('#payroll-body');
   if (payrollBody) new MutationObserver(refresh).observe(payrollBody, { childList: true, subtree: true, characterData: true });
