@@ -44,13 +44,14 @@ test('notice period keeps exact statutory boundaries in the lower band', () => {
   assert.deepEqual(getNoticePeriod('2023-09-01', '2026-09-02'), { weeks: 8, days: 56 });
 });
 
-test('exact two-year severance uses one monthly wage per full service year', () => {
+test('exact two-year severance uses actual service days divided by 365', () => {
   const result = calculateSeverance({
     startIso: '2024-09-04',
     endIso: '2026-09-04',
     baseGrossKurus: 6_000_000
   });
   assert.deepEqual(result.duration, { years: 2, months: 0, days: 0, totalDays: 730 });
+  assert.equal(result.serviceFactor, 2);
   assert.equal(result.basisKurus, 6_000_000);
   assert.equal(result.grossKurus, 12_000_000);
   assert.equal(result.calculatedStampTaxKurus, 91_080);
@@ -58,19 +59,20 @@ test('exact two-year severance uses one monthly wage per full service year', () 
   assert.equal(result.netKurus, 11_908_920);
 });
 
-test('severance ceiling applies per full service year when dressed wage exceeds the ceiling', () => {
+test('severance includes the leap-day service day because actual calendar days are divided by 365', () => {
   const result = calculateSeverance({
     startIso: '2023-09-04',
     endIso: '2026-09-04',
     baseGrossKurus: 10_000_000
   });
+  assert.equal(result.duration.totalDays, 1096);
   assert.equal(result.ceilingKurus, 7_372_987);
   assert.equal(result.basisKurus, 7_372_987);
   assert.equal(result.ceilingApplied, true);
-  assert.equal(result.grossKurus, 22_118_961);
+  assert.equal(result.grossKurus, 22_139_161);
 });
 
-test('annual regular bonus is divided by twelve and excess months are paid proportionally', () => {
+test('annual regular bonus is divided by twelve and total service days are divided by 365', () => {
   const result = calculateSeverance({
     startIso: '2025-04-04',
     endIso: '2026-09-04',
@@ -81,7 +83,39 @@ test('annual regular bonus is divided by twelve and excess months are paid propo
   assert.equal(result.annualRegularBenefitsMonthlyKurus, 100_000);
   assert.equal(result.dressedGrossKurus, 5_100_000);
   assert.equal(result.basisKurus, 5_100_000);
-  assert.equal(result.grossKurus, 7_225_000);
+  assert.equal(result.grossKurus, 7_237_808);
+});
+
+test('reported 01.01.2025 to 30.09.2026 case matches 637-day severance calculation exactly', () => {
+  const result = calculateSeverance({
+    startIso: '2025-01-01',
+    endIso: '2026-09-30',
+    baseGrossKurus: 10_000_000
+  });
+  assert.deepEqual(result.duration, { years: 1, months: 8, days: 29, totalDays: 637 });
+  assert.equal(result.basisKurus, 7_372_987);
+  assert.equal(result.grossKurus, 12_867_377);
+  assert.equal(result.calculatedStampTaxKurus, 97_663);
+  assert.equal(result.netKurus, 12_769_714);
+});
+
+test('365 service days satisfy the statutory one-year threshold and 364 do not', () => {
+  const eligible = calculateSeverance({
+    startIso: '2025-09-30',
+    endIso: '2026-09-30',
+    baseGrossKurus: 6_000_000
+  });
+  const ineligible = calculateSeverance({
+    startIso: '2025-10-01',
+    endIso: '2026-09-30',
+    baseGrossKurus: 6_000_000
+  });
+  assert.equal(eligible.duration.totalDays, 365);
+  assert.equal(eligible.eligibleByDuration, true);
+  assert.equal(eligible.grossKurus, 6_000_000);
+  assert.equal(ineligible.duration.totalDays, 364);
+  assert.equal(ineligible.eligibleByDuration, false);
+  assert.equal(ineligible.grossKurus, 0);
 });
 
 test('severance uses 2026 ceiling and only stamp tax by default', () => {
