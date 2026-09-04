@@ -29,6 +29,12 @@ const urls = [
   'https://maasim.net/2022-maas-hesaplama/',
   'https://maasim.net/2021-maas-hesaplama/',
   'https://maasim.net/2020-maas-hesaplama/',
+  'https://maasim.net/brutten-nete-2025/',
+  'https://maasim.net/brutten-nete-2024/',
+  'https://maasim.net/brutten-nete-2023/',
+  'https://maasim.net/brutten-nete-2022/',
+  'https://maasim.net/brutten-nete-2021/',
+  'https://maasim.net/brutten-nete-2020/',
   'https://maasim.net/sitemap.xml',
   ...preferred.map((post) => `https://maasim.net${blogRoute(post)}`)
 ];
