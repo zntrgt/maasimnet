@@ -20,16 +20,20 @@ if (/class=["'][^"']*\bcontainer\b/i.test(mainTag)) {
 }
 
 for (const token of [
-  '/* Maaşım.net mobile calculator UX v4',
+  '/* Maaşım.net mobile calculator UX v5',
   '.enterprise-mobile-sticky{display:none!important}',
   '.enterprise-mobile-sticky.is-visible',
   'env(safe-area-inset-bottom,0px)',
   'body.enterprise-input-active .enterprise-mobile-sticky',
-  'html{-webkit-text-size-adjust:100%}',
+  '-webkit-text-size-adjust:100%',
   '.enterprise-form-card input:not(#input-salary)',
   'font-size:16px!important',
   '.enterprise-money-input #input-salary',
-  'font-size:clamp(28px,8.5vw,36px)!important'
+  'font-size:clamp(28px,8.5vw,36px)!important',
+  'overflow-x:clip',
+  '#payroll-results-shell{',
+  'contain:inline-size',
+  '-webkit-overflow-scrolling:touch'
 ]) if (!css.includes(token)) throw new Error(`Mobile UX CSS contract eksik: ${token}`);
 
 for (const token of [
@@ -68,4 +72,4 @@ for (const forbiddenJs of [
   if (js.includes(forbiddenJs)) throw new Error(`Mobile UX yasaklı davranış içeriyor: ${forbiddenJs}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: native responsive width korunuyor; iOS input odak güvenliği 16px+; viewport meta runtime değiştirilmiyor; sticky sonuç context-aware.');
+console.log('Mobile calculator UX doğrulandı: document overflow clip; geniş bordro tablosu inline-size containment içinde scroll ediyor; iOS input odak güvenliği 16px+; viewport meta runtime değiştirilmiyor.');
