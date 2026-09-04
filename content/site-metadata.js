@@ -1,4 +1,5 @@
 import { DATA_2026 } from '../src/data-2026.js';
+import { HISTORICAL_PAYROLL_CHECKED_AT } from '../src/historical-payroll-data.js';
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -9,7 +10,8 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-04',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.19.0-tier-c-calculators-contrast'
+  historicalPayrollReviewedAt: HISTORICAL_PAYROLL_CHECKED_AT,
+  releaseVersion: '1.20.0-historical-payroll-2020-2025'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
@@ -35,6 +37,12 @@ const PAGE_OVERRIDES = Object.freeze({
   '/part-time-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/eksik-gun-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/sgk-prim-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/2025-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
+  '/2024-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
+  '/2023-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
+  '/2022-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
+  '/2021-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
+  '/2020-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
   '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
@@ -56,7 +64,13 @@ export const INDEXABLE_STATIC_PATHS = Object.freeze([
   '/hafta-tatili-ucreti-hesaplama/',
   '/part-time-maas-hesaplama/',
   '/eksik-gun-maas-hesaplama/',
-  '/sgk-prim-hesaplama/'
+  '/sgk-prim-hesaplama/',
+  '/2025-maas-hesaplama/',
+  '/2024-maas-hesaplama/',
+  '/2023-maas-hesaplama/',
+  '/2022-maas-hesaplama/',
+  '/2021-maas-hesaplama/',
+  '/2020-maas-hesaplama/'
 ]);
 
 export function normalizeSitePath(pathname = '/') {
@@ -79,18 +93,25 @@ export function getPageMetadata(pathname = '/') {
   const isWorkerRightsCalculator = ['/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/resmi-tatil-mesai-ucreti-hesaplama/', '/hafta-tatili-ucreti-hesaplama/'].includes(path);
   const isPayrollUtilityCalculator = ['/asgari-ucret-hesaplama/', '/part-time-maas-hesaplama/', '/eksik-gun-maas-hesaplama/', '/sgk-prim-hesaplama/'].includes(path);
   const isSalaryRaiseCalculator = path === '/maas-zam-hesaplama/';
+  const isHistoricalPayrollCalculator = /^\/202[0-5]-maas-hesaplama\/$/.test(path);
   const isCalculatorHub = path === '/hesaplama-araclari/';
 
-  const familyModifiedAt = isPayrollDataPage ? SITE_METADATA.payrollDataReviewedAt : isBlogPage ? SITE_METADATA.blogReviewedAt : SITE_METADATA.defaultModifiedAt;
+  const familyModifiedAt = isHistoricalPayrollCalculator
+    ? SITE_METADATA.historicalPayrollReviewedAt
+    : isPayrollDataPage
+      ? SITE_METADATA.payrollDataReviewedAt
+      : isBlogPage ? SITE_METADATA.blogReviewedAt : SITE_METADATA.defaultModifiedAt;
   const metadata = {
     path,
     publishedAt: override.publishedAt || SITE_METADATA.defaultPublishedAt,
     modifiedAt: override.modifiedAt || familyModifiedAt,
-    reviewedAt: isSalaryRaiseCalculator
-      ? SITE_METADATA.releaseModifiedAt
-      : isPayrollDataPage || isTerminationCalculator || isWorkerRightsCalculator || isPayrollUtilityCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
-        ? SITE_METADATA.payrollDataReviewedAt
-        : isBlogPage ? SITE_METADATA.blogReviewedAt : undefined
+    reviewedAt: isHistoricalPayrollCalculator
+      ? SITE_METADATA.historicalPayrollReviewedAt
+      : isSalaryRaiseCalculator
+        ? SITE_METADATA.releaseModifiedAt
+        : isPayrollDataPage || isTerminationCalculator || isWorkerRightsCalculator || isPayrollUtilityCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
+          ? SITE_METADATA.payrollDataReviewedAt
+          : isBlogPage ? SITE_METADATA.blogReviewedAt : undefined
   };
 
   for (const [name, value] of Object.entries(metadata)) {
