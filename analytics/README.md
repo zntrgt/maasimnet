@@ -101,10 +101,13 @@ Aşağıdaki event parametreleri GA4 Admin → Data display → Custom definitio
 | Değişiklik türü | `override_type` |
 | Detay aksiyonu | `detail_action` |
 | Giriş yöntemi | `input_method` |
+| Tazminat hesaplayıcı türü | `calculator_type` |
 
-Exact maaş tutarı özel boyut olarak kaydedilmemelidir.
+`calculator_type` yalnız `combined`, `severance` veya `notice` değerlerinden birini almalıdır. Exact maaş, kıdem, ihbar veya kümülatif vergi matrahı tutarı özel boyut olarak kaydedilmemelidir.
 
 ## 3. Ana funnel eventleri
+
+Maaş hesaplama funnel'ı:
 
 1. `calculator_view`
 2. `salary_input_started`
@@ -113,7 +116,13 @@ Exact maaş tutarı özel boyut olarak kaydedilmemelidir.
 5. `payroll_detail_toggle` (`detail_action = open`)
 6. `calculator_csv_download`
 
-`salary_calculation_completed` ve `salary_results_viewed` GA4 içinde key event olarak işaretlenmelidir.
+Tazminat hesaplayıcıları için ana sonuç eventi:
+
+- `termination_calculator_complete` (`calculator_type = combined | severance | notice`)
+
+`salary_calculation_completed`, `salary_results_viewed` ve `termination_calculator_complete` GA4 içinde key event olarak işaretlenmelidir.
+
+Tazminat eventi yalnız Cookiebot istatistik izni verildiğinde gönderilir ve finansal giriş değerlerini içermez.
 
 ## 4. Normalize edilmiş landing page alanları
 
@@ -195,6 +204,7 @@ Scorecard'lar:
 - Bing total citations
 - Organik landing session
 - Tamamlanan maaş hesaplaması
+- Tamamlanan tazminat hesaplaması
 - Organik session → hesaplama tamamlama oranı
 
 ### Sorgu ve Landing Page
@@ -214,7 +224,8 @@ Sağ tablo:
 - Organic sessions
 - `salary_input_started`
 - `salary_calculation_completed`
-- Completion rate
+- `termination_calculator_complete`
+- İlgili landing page için completion rate
 
 Query tablosundan yapılan seçim landing page tablosunu sayfa yolu üzerinden filtrelemelidir.
 
@@ -236,6 +247,30 @@ Completion rate = salary_calculation_completed / salary_input_started
 Results view rate = salary_results_viewed / salary_calculation_completed
 CSV download rate = calculator_csv_download / salary_results_viewed
 ```
+
+### Tazminat Hesaplayıcıları
+
+Bu sayfa üç tazminat aracını ayrı bir ürün ailesi olarak izler:
+
+- `/tazminat-hesaplama/`
+- `/kidem-tazminati-hesaplama/`
+- `/ihbar-tazminati-hesaplama/`
+
+Ana KPI'lar:
+
+- termination landing sessions
+- `termination_calculator_complete`
+- organic termination completions
+- organic termination session → completion rate
+
+Kırılımlar:
+
+- `calculator_type`
+- device category
+- landing page
+- session default channel group
+
+Bu raporda maaş, kıdem/ihbar tutarı, tarih veya kümülatif vergi matrahı gibi finansal girişler boyut ya da metrik olarak kullanılmamalıdır.
 
 ### AI Search Görünürlüğü
 
@@ -273,6 +308,7 @@ Her küme için:
 - `salary_results_viewed` > `salary_calculation_completed` olmamalı.
 - Exact maaş event parametresi bulunmamalı.
 - `salary_range` ile birlikte `range_version` gelmeli.
+- `termination_calculator_complete` yalnız allowlist `calculator_type` taşımalı ve finansal giriş değeri taşımamalı.
 - Tarih ve saat raporlaması `Europe/Istanbul` bağlamında yorumlanmalı.
 - Google Generative AI impressions click/session diye etiketlenmemeli.
 - Bing citations ranking diye etiketlenmemeli.
