@@ -13,6 +13,7 @@ assert.doesNotMatch(hub, /noindex/i, 'Hub indexlenebilir olmalı');
 
 const requiredToolRoutes = [
   '/',
+  '/maas-zam-hesaplama/',
   '/asgari-ucret-hesaplama/',
   '/tazminat-hesaplama/',
   '/kidem-tazminati-hesaplama/',
@@ -27,7 +28,7 @@ for (const route of requiredToolRoutes) {
 }
 
 const home = await readFile(join(dist, 'index.html'), 'utf8');
-for (const route of ['/asgari-ucret-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/tazminat-hesaplama/', '/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/']) {
+for (const route of ['/maas-zam-hesaplama/', '/asgari-ucret-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/tazminat-hesaplama/', '/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/']) {
   assert.match(home, new RegExp(`href="${route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`), `Ana sayfa araca link vermeli: ${route}`);
 }
 assert.match(home, /data-calculator-discovery="v1"/, 'Ana sayfada görünür hesaplama araçları modülü eksik');
@@ -41,7 +42,7 @@ for (const route of ['/veriler/2026/', '/hesaplama-metodolojisi/', '/sss/', '/so
   try {
     const html = await read(route);
     assert.match(html, /data-calculator-discovery="v1"/, `${route}: bağlamsal hesaplayıcı link modülü eksik`);
-    for (const target of ['/asgari-ucret-hesaplama/', '/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/']) {
+    for (const target of ['/maas-zam-hesaplama/', '/asgari-ucret-hesaplama/', '/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/']) {
       assert.match(html, new RegExp(`href="${target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`), `${route}: bağlamsal link eksik: ${target}`);
     }
     contextual += 1;
@@ -61,8 +62,8 @@ try {
 }
 
 const sitemap = await readFile(join(dist, 'sitemap.xml'), 'utf8');
-for (const route of ['/hesaplama-araclari/', '/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/asgari-ucret-hesaplama/']) {
+for (const route of ['/hesaplama-araclari/', '/maas-zam-hesaplama/', '/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/asgari-ucret-hesaplama/']) {
   assert.match(sitemap, new RegExp(`<loc>https:\\/\\/maasim\\.net${route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/loc>`), `Sitemap içinde olmalı: ${route}`);
 }
 
-console.log(`Hesaplayıcı keşif mimarisi doğrulandı: hub + ana sayfa + sade enterprise header + ${contextual} bağlamsal otorite sayfası.`);
+console.log(`Hesaplayıcı keşif mimarisi doğrulandı: hub + ana sayfa + sade enterprise header + ${contextual} bağlamsal otorite sayfası + maaş zam aracı.`);

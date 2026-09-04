@@ -21,6 +21,7 @@ import { addUnemploymentCalculator } from './add-unemployment-calculator.js';
 import { addOvertimeCalculator } from './add-overtime-calculator.js';
 import { addAnnualLeaveCalculator } from './add-annual-leave-calculator.js';
 import { addMinimumWageCalculator } from './add-minimum-wage-calculator.js';
+import { addSalaryRaiseCalculator } from './add-salary-raise-calculator.js';
 import { addContactPage } from './add-contact-page.js';
 import { addEditorialAuthority } from './add-editorial-authority.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
@@ -66,6 +67,7 @@ for (const file of [
   'overtime-engine.js','overtime-calculator.js','overtime-calculator.css',
   'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
   'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
+  'salary-raise-engine.js','salary-raise-calculator.js','salary-raise-calculator.css',
   'fintech-ui.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
@@ -89,6 +91,7 @@ const unemploymentResult = await addUnemploymentCalculator(distDir);
 const overtimeResult = await addOvertimeCalculator(distDir);
 const annualLeaveResult = await addAnnualLeaveCalculator(distDir);
 const minimumWageResult = await addMinimumWageCalculator(distDir);
+const salaryRaiseResult = await addSalaryRaiseCalculator(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 const editorialAuthorityResult = await addEditorialAuthority(distDir);
@@ -131,6 +134,7 @@ const version = {
   overtimeCalculators: overtimeResult.generated,
   annualLeaveCalculators: annualLeaveResult.generated,
   minimumWageCalculators: minimumWageResult.generated,
+  salaryRaiseCalculators: salaryRaiseResult.generated,
   calculatorDiscovery
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
@@ -146,6 +150,7 @@ console.log(`işsizlik maaşı hesaplayıcıları: ${unemploymentResult.generate
 console.log(`fazla mesai hesaplayıcıları: ${overtimeResult.generated}`);
 console.log(`yıllık izin ücreti hesaplayıcıları: ${annualLeaveResult.generated}`);
 console.log(`asgari ücret hesaplayıcıları: ${minimumWageResult.generated}`);
+console.log(`maaş zam hesaplayıcıları: ${salaryRaiseResult.generated}`);
 console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
