@@ -157,13 +157,13 @@ jobs:
             local url="$1"
             local expected_status="$2"
             local expected_cache="$3"
-            local expected_cdn="${4:-}"
-            local headers status cache cdn xcto
+            local headers status cache cdn cf_cache xcto
 
             headers="$(response_headers "$url")"
             status="$(printf '%s\n' "$headers" | tr -d '\r' | awk '/^HTTP\// { code=$2 } END { print code }')"
             cache="$(header_value "$headers" 'cache-control')"
             cdn="$(header_value "$headers" 'cdn-cache-control')"
+            cf_cache="$(header_value "$headers" 'cf-cache-status')"
             xcto="$(header_value "$headers" 'x-content-type-options')"
 
             test "$status" = "$expected_status" || {
@@ -176,25 +176,20 @@ jobs:
               return 1
             }
 
-            if [ -n "$expected_cdn" ]; then
-              [[ "$cdn" == *"$expected_cdn"* ]] || {
-                echo "::error::$url cdn-cache-control '$cdn'; beklenen parça '$expected_cdn'"
-                return 1
-              }
-            fi
-
             test "$xcto" = "nosniff" || {
               echo "::error::$url x-content-type-options '$xcto'; beklenen nosniff"
               return 1
             }
 
-            echo "Header smoke başarılı: $url -> HTTP $status; cache='$cache'; cdn='$cdn'"
+            # CDN-Cache-Control edge cache girdisidir ve Cloudflare bunu istemciye
+            # geri yansıtmayabilir. Canlı testte zorunlu tutmuyor, yalnız teşhis için logluyoruz.
+            echo "Header smoke başarılı: $url -> HTTP $status; cache='$cache'; cdn='${cdn:-<not-exposed>}'; cf-cache='${cf_cache:-<none>}'"
           }
 
-          assert_response 'https://maasim.net/' '200' 'max-age=0' 's-maxage=300'
-          assert_response 'https://maasim.net/assets/app.js' '200' 'max-age=86400' 's-maxage=604800'
-          assert_response 'https://maasim.net/assets/sirket-destekli-spor-wellness-editorial.webp' '200' 'max-age=2592000' 's-maxage=2592000'
-          assert_response 'https://maasim.net/sitemap.xml' '200' 'max-age=3600' 's-maxage=86400'
+          assert_response 'https://maasim.net/' '200' 'max-age=0'
+          assert_response 'https://maasim.net/assets/app.js' '200' 'max-age=86400'
+          assert_response 'https://maasim.net/assets/sirket-destekli-spor-wellness-editorial.webp' '200' 'max-age=2592000'
+          assert_response 'https://maasim.net/sitemap.xml' '200' 'max-age=3600'
           assert_response 'https://maasim.net/api/contact' '405' 'no-store'
 
       - name: Submit sitemap URLs to IndexNow
