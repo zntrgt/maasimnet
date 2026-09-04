@@ -14,15 +14,19 @@ async function walk(dir, output = []) {
 }
 
 function addNavLinks(html) {
-  if (!html.includes('href="/hesaplama-araclari/"')) {
+  if (!html.includes('href="/hesaplama-araclari/">Araçlar</a>')) {
     html = html.replace(
       /(<div class="site-nav site-nav--desktop"[^>]*><a href="\/#hesaplayici">Hesapla<\/a>)/,
       '$1<a href="/hesaplama-araclari/">Araçlar</a><a href="/tazminat-hesaplama/">Tazminat</a>'
     );
+  }
+  if (!html.includes('href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a><a href="/tazminat-hesaplama/">Tazminat Hesaplama</a>')) {
     html = html.replace(
       /(<div class="site-mobile-menu"[^>]*><a href="\/#hesaplayici">Hesapla<\/a>)/,
       '$1<a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a><a href="/tazminat-hesaplama/">Tazminat Hesaplama</a>'
     );
+  }
+  if (!/<nav aria-label="Hesaplayıcı bağlantıları"><a href="\/hesaplama-araclari\/">Tüm Hesaplama Araçları<\/a>/.test(html)) {
     html = html.replace(
       /(<nav aria-label="Hesaplayıcı bağlantıları">)/,
       '$1<a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a>'
