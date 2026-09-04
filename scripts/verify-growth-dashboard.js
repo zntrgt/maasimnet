@@ -4,15 +4,31 @@ import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const spec = JSON.parse(await readFile(join(root, 'analytics', 'gsc-ga4-dashboard.json'), 'utf8'));
-const analyticsSource = await readFile(join(root, 'src', 'calculator-analytics.js'), 'utf8');
+const salaryAnalyticsSource = await readFile(join(root, 'src', 'calculator-analytics.js'), 'utf8');
+const terminationAnalyticsSource = await readFile(join(root, 'src', 'termination-calculators.js'), 'utf8');
+const analyticsSources = `${salaryAnalyticsSource}\n${terminationAnalyticsSource}`;
 const googleTagsSource = await readFile(join(root, 'scripts', 'apply-google-tags.js'), 'utf8');
 const readme = await readFile(join(root, 'analytics', 'README.md'), 'utf8');
 
 const failures = [];
 
 for (const eventName of spec.ga4_events) {
-  if (!analyticsSource.includes(`'${eventName}'`)) {
+  if (!analyticsSources.includes(`'${eventName}'`)) {
     failures.push(`Dashboard event sözlüğünde bulunup analytics kodunda bulunmayan event: ${eventName}`);
+  }
+}
+
+if (spec.ga4_events.includes('termination_calculator_complete')) {
+  if (!terminationAnalyticsSource.includes("'termination_calculator_complete'")) {
+    failures.push('Tazminat hesaplama completion eventi dashboard sözleşmesinde var fakat UI analytics kodunda yok.');
+  }
+  if (!spec.registered_custom_dimensions?.includes('calculator_type')) {
+    failures.push('Tazminat hesaplama kırılımı için calculator_type custom dimension eksik.');
+  }
+  for (const type of ['combined', 'severance', 'notice']) {
+    if (!terminationAnalyticsSource.includes(`'${type}'`)) {
+      failures.push(`Tazminat calculator_type allowlist değeri eksik: ${type}`);
+    }
   }
 }
 
@@ -79,8 +95,8 @@ for (const readmeCopy of [
   if (!readme.includes(readmeCopy)) failures.push(`AI ölçüm dokümantasyonu eksik: ${readmeCopy}`);
 }
 
-for (const forbidden of ['exact_salary', 'salary_amount', 'gross_salary_value', 'net_salary_value']) {
-  if (JSON.stringify(spec).includes(forbidden)) failures.push(`Dashboard exact maaş alanı içermemeli: ${forbidden}`);
+for (const forbidden of ['exact_salary', 'salary_amount', 'gross_salary_value', 'net_salary_value', 'severance_amount', 'notice_amount', 'previous_tax_base']) {
+  if (JSON.stringify(spec).includes(forbidden)) failures.push(`Dashboard exact finansal değer alanı içermemeli: ${forbidden}`);
 }
 
 if (failures.length) throw new Error(`Growth dashboard doğrulaması başarısız:\n${failures.join('\n')}`);
