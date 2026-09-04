@@ -252,12 +252,20 @@ export function calculateTerminationPackage(input) {
   const remainingStampTaxExemptionKurus = input.remainingStampTaxExemptionKurus ?? 0;
   assertKurus(remainingStampTaxExemptionKurus, 'remainingStampTaxExemptionKurus');
 
-  const severance = calculateSeverance(input);
+  const stampTaxExemptionCapKurus = get2026MonthlyTaxExemptionCaps(input.endIso).stampTaxKurus;
+  const packageStampTaxExemptionKurus = Math.min(
+    remainingStampTaxExemptionKurus,
+    stampTaxExemptionCapKurus
+  );
+  const severance = calculateSeverance({
+    ...input,
+    remainingStampTaxExemptionKurus: packageStampTaxExemptionKurus
+  });
   const notice = calculateNotice({
     ...input,
     remainingStampTaxExemptionKurus: Math.max(
       0,
-      remainingStampTaxExemptionKurus - severance.stampTaxExemptionAppliedKurus
+      packageStampTaxExemptionKurus - severance.stampTaxExemptionAppliedKurus
     )
   });
   return Object.freeze({
