@@ -9,6 +9,7 @@ const preferred = [
 
 const urls = [
   'https://maasim.net/version.json',
+  'https://maasim.net/BingSiteAuth.xml',
   'https://maasim.net/test-raporu/',
   'https://maasim.net/blog/',
   'https://maasim.net/iletisim/',
