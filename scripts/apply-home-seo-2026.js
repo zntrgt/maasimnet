@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const TITLE = 'Maaş Hesaplama 2026 | Brütten Nete & Netten Brüte';
-const DESCRIPTION = 'Maaş hesaplama 2026: brüt maaşınızı nete, hedef net maaşınızı brüte çevirin. Güncel vergi dilimleri, SGK kesintileri ve işveren maliyetini 12 aylık bordroda görün.';
+const DESCRIPTION = 'Maaş hesaplama 2026: brüt maaşınızı nete, hedef net maaşınızı brüte çevirin. Güncel vergi dilimleri, SGK ve işveren maliyetini 12 aylık bordroda görün.';
 const H1 = 'Maaş Hesaplama 2026: Brütten Nete & Netten Brüte';
 const LEAD = 'Brüt maaşınızı nete, hedef net maaşınızı brüte çevirin; 2026 vergi dilimleri, SGK tavanı, asgari ücret istisnası ve işveren maliyetini 12 aylık bordroda birlikte görün.';
 
