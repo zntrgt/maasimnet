@@ -19,6 +19,7 @@ GSC verisi geldikten sonra her satıra 28 günlük impressions, clicks, CTR, ave
 | ihbar tazminatı hesaplama 2026 | `/ihbar-tazminati-hesaplama/` | ihbar hesaplama, ihbar süresi hesaplama | İhbar aracı primary owner. |
 | tazminat hesaplama | `/tazminat-hesaplama/` | kıdem ihbar hesaplama, toplam tazminat | Kombine sayfa primary owner. |
 | işsizlik maaşı hesaplama 2026 | `/issizlik-maasi-hesaplama/` | işsizlik ödeneği hesaplama, kaç ay işsizlik maaşı alırım | İşsizlik aracı primary owner; kıdem/tazminat sayfaları yalnız bağlamsal destek verir. |
+| fazla mesai hesaplama 2026 | `/fazla-mesai-hesaplama/` | mesai ücreti hesaplama, saatlik fazla mesai ücreti | Fazla mesai aracı primary owner; maaş/vergi sayfaları yalnız bağlamsal destek verir. |
 | işveren maliyeti hesaplama | `/isveren-maliyeti-hesaplama/` | maaşın işverene maliyeti | Bu URL primary owner; ana sayfa yalnız contextual destek verir. |
 | vergi dilimi hesaplama 2026 | `/vergi-dilimi-hesaplama/` | gelir vergisi dilimi hesaplama | Bu URL primary owner. |
 | asgari ücret işveren maliyeti 2026 | `/asgari-ucret-isveren-maliyeti/` | asgari ücretin işverene maliyeti | Bu URL primary owner. |
@@ -29,24 +30,18 @@ GSC verisi geldikten sonra her satıra 28 günlük impressions, clicks, CTR, ave
 
 Bu sayfalar **thin placeholder olarak açılmamalı**. Her biri gerçek çalışan hesap motoru, resmî kaynaklar, formül açıklaması, FAQ ve regression testleri hazır olduğunda yayınlanmalı.
 
-1. `/fazla-mesai-hesaplama/`
-   - fazla mesai hesaplama 2026
-   - mesai ücreti hesaplama
-   - saatlik fazla mesai ücreti
-   - ihtiyaç: aylık brüt/saatlik brüt + %50/%25 katsayı + vergi matrahı/bordro etkisi
-
-2. `/yillik-izin-ucreti-hesaplama/`
+1. `/yillik-izin-ucreti-hesaplama/`
    - yıllık izin ücreti hesaplama 2026
    - kullanılmayan izin parası hesaplama
    - yıllık izin hesaplama
    - ihtiyaç: fesih tarihi + son çıplak brüt + kullanılmayan gün + SGK/GV/DV kesintileri
 
-3. `/asgari-ucret-hesaplama/`
+2. `/asgari-ucret-hesaplama/`
    - asgari ücret hesaplama 2026
    - net asgari ücret / brüt asgari ücret
    - işveren maliyeti URL'sinden ayrışmalı; çalışan neti ve kesintileri primary intent olmalı
 
-4. `/maas-zam-hesaplama/`
+3. `/maas-zam-hesaplama/`
    - maaş zam hesaplama
    - yüzde zam hesaplama maaş
    - eski maaş / yeni maaş / zam oranı üç yönlü çözüm
@@ -79,12 +74,13 @@ Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir 
 - `/kidem-tazminati-hesaplama/`
 - `/ihbar-tazminati-hesaplama/`
 - `/issizlik-maasi-hesaplama/`
+- `/fazla-mesai-hesaplama/`
 - `/isveren-maliyeti-hesaplama/`
 - `/vergi-dilimi-hesaplama/`
 
 ### Konu sayfaları
 
-`/veriler/2026/`, `/hesaplama-metodolojisi/`, `/sss/`, `/sozluk/`, `/senaryolar/` sayfaları maaş + tazminat + işsizlik araçlarına bağlamsal link verir.
+`/veriler/2026/`, `/hesaplama-metodolojisi/`, `/sss/`, `/sozluk/`, `/senaryolar/` sayfaları maaş + tazminat + işsizlik + fazla mesai araçlarına bağlamsal link verir.
 
 `/blog/kidem-tazminatina-dahil-odemeler/` doğrudan kıdem, ihbar ve kombine tazminat araçlarına link verir.
 
@@ -99,6 +95,12 @@ Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir 
 - `işsizlik maaşı hesaplama 2026`, `işsizlik ödeneği hesaplama`, `kaç ay işsizlik maaşı alırım` sorgularının tek primary owner'ı `/issizlik-maasi-hesaplama/` olur.
 - Ana sayfa ve hesaplama hub'ı doğrudan link verir.
 - Tazminat sayfaları işten ayrılma bağlamında yalnız ikincil bağlantı sağlar; title/H1 seviyesinde işsizlik sorgusunu hedeflemez.
+
+### Fazla mesai cluster
+
+- `fazla mesai hesaplama 2026`, `mesai ücreti hesaplama`, `saatlik fazla mesai ücreti` sorgularının tek primary owner'ı `/fazla-mesai-hesaplama/` olur.
+- Ana sayfa, hesaplama hub'ı ve metodoloji/SSS/sözlük/veri sayfaları doğrudan link verir.
+- `resmi tatil mesai` ve `hafta tatili ücreti` daha farklı hukuki hesap türleri olduğu için bu sayfada primary keyword olarak sahiplenilmez; Tier C'de ayrı değerlendirilecektir.
 
 ## GSC sonrası karar kuralları
 
