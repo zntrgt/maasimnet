@@ -1,29 +1,52 @@
 {
-  "version": "1.0.0",
-  "title": "Maaşım.net Organik Arama ve Hesaplama Funnel Dashboard",
+  "version": "2.0.0",
+  "title": "Maaşım.net Search, AI Visibility ve Hesaplama Funnel Dashboard",
   "owner": "Growth / SEO",
   "timezone": "Europe/Istanbul",
   "sources": {
     "google_search_console": {
       "property": "sc-domain:maasim.net",
+      "connection_mode": "Looker Studio Search Console connector",
       "dimensions": ["date", "query", "page", "device", "country"],
       "metrics": ["impressions", "clicks", "ctr", "position"]
+    },
+    "google_search_console_generative_ai": {
+      "property": "sc-domain:maasim.net",
+      "report": "Generative AI performance report (Search)",
+      "connection_mode": "Search Console native report or exported report data; do not assume API/Looker connector parity until verified",
+      "features": ["AI Overviews", "AI Mode"],
+      "dimensions": ["date", "page", "country", "device"],
+      "metrics": ["impressions"],
+      "official_documentation": "https://support.google.com/webmasters/answer/16984139",
+      "availability_note": "Google states the report was rolled out worldwide by 2026-08-31; low-volume properties may still show no report data."
     },
     "google_analytics_4": {
       "measurement_id": "G-988BB5B64E",
       "property_id": "REQUIRED_AT_CONNECTION_TIME",
+      "connection_mode": "Looker Studio GA4 connector",
       "dimensions": [
         "date",
         "landingPagePlusQueryString",
         "sessionDefaultChannelGroup",
+        "sessionSourceMedium",
         "deviceCategory",
         "eventName"
       ],
       "metrics": ["sessions", "activeUsers", "eventCount", "keyEvents"]
+    },
+    "bing_webmaster_tools": {
+      "property": "maasim.net",
+      "report": "AI Performance",
+      "status": "public preview",
+      "connection_mode": "Bing Webmaster Tools native report/export; keep separate from GA4 unless a supported common grain exists",
+      "surfaces": ["Microsoft Copilot", "Bing AI-generated summaries", "select partner integrations"],
+      "dimensions": ["date", "page", "grounding_query"],
+      "metrics": ["total_citations", "average_cited_pages", "page_citations"],
+      "official_documentation": "https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview"
     }
   },
   "attribution_guardrail": {
-    "rule": "GSC query data and GA4 behavior data may only be joined at date + normalized landing page path grain.",
+    "rule": "Classic GSC query data and GA4 behavior data may only be joined at date + normalized landing page path grain.",
     "reason": "Google does not expose a user- or session-level key connecting an organic query to a GA4 conversion.",
     "prohibited_metric": "Exact calculation completions by search query",
     "allowed_outputs": [
@@ -31,6 +54,25 @@
       "Exact GA4 landing page sessions and calculator event metrics",
       "Landing-page-level organic funnel rates",
       "Query drill-through to its landing page funnel without assigning the page conversion count to every query"
+    ]
+  },
+  "ai_measurement_guardrails": {
+    "google": [
+      "Generative AI impressions measure visibility, not visits or conversions.",
+      "Do not infer AI Mode or AI Overview clicks when the dedicated report only exposes impressions.",
+      "Do not join Generative AI report rows to GA4 conversions as if they shared a user, query or session identifier.",
+      "If report data is exported manually, retain the export date and report date range."
+    ],
+    "bing": [
+      "Total citations measure references in supported AI answers; they are not ranking positions.",
+      "Average cited pages is an aggregate visibility measure and does not indicate authority or placement within an answer.",
+      "Grounding queries are a sample of retrieval phrases and must not be treated as complete search-demand data.",
+      "Bing citation counts must remain separate from GA4 conversions unless a supported common key and grain become available."
+    ],
+    "referral_traffic": [
+      "GA4 AI referral sessions only represent users who clicked through to the site.",
+      "A citation or generative AI impression can occur without producing a referral session.",
+      "Referral sessions must not be used as a substitute for Google or Bing native AI visibility metrics."
     ]
   },
   "ga4_events": [
@@ -74,7 +116,9 @@
     "results_view_rate": "salary_results_viewed / salary_calculation_completed",
     "organic_session_to_completion_rate": "salary_calculation_completed / organic_landing_sessions",
     "detail_engagement_rate": "payroll_detail_toggle_open / salary_results_viewed",
-    "csv_download_rate": "calculator_csv_download / salary_results_viewed"
+    "csv_download_rate": "calculator_csv_download / salary_results_viewed",
+    "google_ai_visibility_change": "current_period_google_generative_ai_impressions vs previous_period_google_generative_ai_impressions",
+    "bing_citation_change": "current_period_total_citations vs previous_period_total_citations"
   },
   "pages": [
     {
@@ -84,14 +128,17 @@
         "GSC clicks",
         "GSC CTR",
         "Average position",
+        "Google Generative AI impressions",
+        "Bing AI citations",
         "Organic landing sessions",
         "Salary calculations completed",
         "Organic session to completion rate"
       ],
       "charts": [
         "Daily clicks and organic calculation completions",
+        "Google Generative AI impression trend",
+        "Bing citation trend",
         "Landing page funnel",
-        "Device split",
         "Top landing pages by completed calculation"
       ]
     },
@@ -122,17 +169,36 @@
       ]
     },
     {
-      "name": "İçerik ve AI Trafiği",
-      "filters": [
-        "session source contains chatgpt.com",
-        "session source contains perplexity",
-        "session source contains gemini",
-        "organic search"
+      "name": "AI Search Görünürlüğü",
+      "scorecards": [
+        "Google Generative AI impressions",
+        "Bing total citations",
+        "Bing average cited pages",
+        "GA4 AI referral sessions"
       ],
       "tables": [
-        "Content landing pages by sessions and calculator transitions",
+        "Google Generative AI pages by impressions",
+        "Google Generative AI visibility by country and device",
+        "Bing cited pages by citation count",
+        "Bing grounding queries sample",
         "AI referral source by sessions and completed calculations"
-      ]
+      ],
+      "filters": [
+        "GA4 session source/medium contains chatgpt.com",
+        "GA4 session source/medium contains perplexity",
+        "GA4 session source/medium contains gemini",
+        "organic search"
+      ],
+      "note": "Google/Bing native AI visibility and GA4 referral traffic are parallel measurements; do not merge them into a single attributed conversion metric."
+    },
+    {
+      "name": "İçerik Performansı",
+      "tables": [
+        "Content landing pages by organic sessions and calculator transitions",
+        "Content pages by Google Generative AI impressions",
+        "Content pages by Bing citation count"
+      ],
+      "breakdowns": ["topic cluster", "landing page", "device", "country"]
     },
     {
       "name": "Veri Kalitesi",
@@ -141,7 +207,10 @@
         "salary_results_viewed must not exceed salary_calculation_completed",
         "No exact salary amount may be collected",
         "salary_range must include range_version",
-        "GSC and GA4 dates use Europe/Istanbul reporting context"
+        "GSC and GA4 dates use Europe/Istanbul reporting context",
+        "Google Generative AI impressions must not be labeled clicks or sessions",
+        "Bing citations must not be labeled rankings",
+        "AI referral sessions must not be presented as total AI visibility"
       ]
     }
   ]
