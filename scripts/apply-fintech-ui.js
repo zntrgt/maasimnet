@@ -39,6 +39,13 @@ function markBody(html) {
   });
 }
 
+function normalizeMainWidthOwnership(html) {
+  return html.replace(/<main\b([^>]*)class=["']([^"']*)["']([^>]*)>/i, (match, before, className, after) => {
+    const classes = className.split(/\s+/).filter(Boolean).filter((name) => name !== 'container');
+    return `<main${before}class="${classes.join(' ')}"${after}>`;
+  });
+}
+
 function addInteractionScript(html) {
   if (html.includes(SCRIPT_SRC)) return html;
   return html.replace(/<\/body>/i, `<script src="${SCRIPT_SRC}" defer></script></body>`);
@@ -60,6 +67,7 @@ export async function applyFintechUi(distDir) {
 
   html = replaceHomeHero(html);
   html = markBody(html);
+  html = normalizeMainWidthOwnership(html);
   html = addInteractionScript(html);
 
   if (!styles.includes(CSS_MARKER)) styles += `\n${fintechCss}\n`;
@@ -67,5 +75,5 @@ export async function applyFintechUi(distDir) {
   await writeFile(indexPath, html);
   await writeFile(stylesPath, styles);
 
-  console.log('Enterprise fintech UI v2 uygulandı: hero + trust + live output + mobile continuity.');
+  console.log('Enterprise fintech UI v2 uygulandı: hero + trust + live output + native main width ownership.');
 }
