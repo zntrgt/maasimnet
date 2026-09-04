@@ -9,7 +9,7 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-04',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.10.0-all-blog-editorial-images'
+  releaseVersion: '1.11.0-editorial-authority-ai-visibility'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
@@ -18,6 +18,9 @@ const PAGE_OVERRIDES = Object.freeze({
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),
   '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
   '/cerez-politikasi/': Object.freeze({ modifiedAt: '2026-07-30' }),
+  '/hakkimizda/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/editoryal-politika/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/kaynak-politikasi/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
