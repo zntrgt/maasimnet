@@ -84,6 +84,9 @@ jobs:
       - name: Verify sitewide layout safety
         run: npm run verify:layout
 
+      - name: Verify enterprise fintech UI contract
+        run: npm run verify:fintech-ui
+
       - name: Smoke test generated output
         run: npm run smoke
 
