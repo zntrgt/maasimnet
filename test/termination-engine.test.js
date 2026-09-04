@@ -44,6 +44,46 @@ test('notice period keeps exact statutory boundaries in the lower band', () => {
   assert.deepEqual(getNoticePeriod('2023-09-01', '2026-09-02'), { weeks: 8, days: 56 });
 });
 
+test('exact two-year severance uses one monthly wage per full service year', () => {
+  const result = calculateSeverance({
+    startIso: '2024-09-04',
+    endIso: '2026-09-04',
+    baseGrossKurus: 6_000_000
+  });
+  assert.deepEqual(result.duration, { years: 2, months: 0, days: 0, totalDays: 730 });
+  assert.equal(result.basisKurus, 6_000_000);
+  assert.equal(result.grossKurus, 12_000_000);
+  assert.equal(result.calculatedStampTaxKurus, 91_080);
+  assert.equal(result.stampTaxKurus, 91_080);
+  assert.equal(result.netKurus, 11_908_920);
+});
+
+test('severance ceiling applies per full service year when dressed wage exceeds the ceiling', () => {
+  const result = calculateSeverance({
+    startIso: '2023-09-04',
+    endIso: '2026-09-04',
+    baseGrossKurus: 10_000_000
+  });
+  assert.equal(result.ceilingKurus, 7_372_987);
+  assert.equal(result.basisKurus, 7_372_987);
+  assert.equal(result.ceilingApplied, true);
+  assert.equal(result.grossKurus, 22_118_961);
+});
+
+test('annual regular bonus is divided by twelve and excess months are paid proportionally', () => {
+  const result = calculateSeverance({
+    startIso: '2025-04-04',
+    endIso: '2026-09-04',
+    baseGrossKurus: 5_000_000,
+    annualRegularBenefitsKurus: 1_200_000
+  });
+  assert.deepEqual(result.duration, { years: 1, months: 5, days: 0, totalDays: 518 });
+  assert.equal(result.annualRegularBenefitsMonthlyKurus, 100_000);
+  assert.equal(result.dressedGrossKurus, 5_100_000);
+  assert.equal(result.basisKurus, 5_100_000);
+  assert.equal(result.grossKurus, 7_225_000);
+});
+
 test('severance uses 2026 ceiling and only stamp tax by default', () => {
   const result = calculateSeverance({
     startIso: '2022-01-01',
@@ -86,6 +126,19 @@ test('notice pay uses dressed gross, no SGK and progressive income tax', () => {
   assert.equal(result.incomeTaxKurus, 1_680_000);
   assert.equal(result.sgkKurus, 0);
   assert.ok(result.netKurus < result.grossKurus);
+});
+
+test('annual regular bonus monthly share is also included in notice dressed wage', () => {
+  const result = calculateNotice({
+    startIso: '2024-01-01',
+    endIso: '2026-09-01',
+    baseGrossKurus: 5_000_000,
+    annualRegularBenefitsKurus: 1_200_000
+  });
+  assert.equal(result.annualRegularBenefitsMonthlyKurus, 100_000);
+  assert.equal(result.dressedGrossKurus, 5_100_000);
+  assert.equal(result.noticePeriod.days, 42);
+  assert.equal(result.grossKurus, 7_140_000);
 });
 
 test('unused monthly tax exemptions reduce notice taxes but cannot exceed 2026 monthly caps', () => {

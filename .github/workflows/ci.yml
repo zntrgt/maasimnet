@@ -66,6 +66,9 @@ jobs:
       - name: Verify termination calculators
         run: npm run verify:termination-calculators
 
+      - name: Verify sitewide layout safety
+        run: npm run verify:layout
+
       - name: Smoke test generated output
         run: npm run smoke
 

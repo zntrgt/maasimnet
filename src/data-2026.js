@@ -1,7 +1,7 @@
 export const DATA_2026 = Object.freeze({
   year: 2026,
   validity: Object.freeze({ from: '2026-01-01', to: '2026-12-31' }),
-  checkedAt: '2026-07-29',
+  checkedAt: '2026-09-04',
   engineVersion: 'central-kurus-engine',
   sources: Object.freeze({
     minimumWage: Object.freeze({
@@ -16,6 +16,25 @@ export const DATA_2026 = Object.freeze({
       documentTitle: '332 Seri No.lu Gelir Vergisi Genel Tebliği – 2026 ücret geliri tarifesi',
       legalBasis: '193 sayılı Gelir Vergisi Kanunu m.103',
       url: 'https://www.gib.gov.tr/vergi-konulari/1_bireysel/11_ucret_geliri/11'
+    }),
+    stampTax: Object.freeze({
+      institution: 'Gelir İdaresi Başkanlığı',
+      documentTitle: '71 Seri No.lu Damga Vergisi Kanunu Genel Tebliği – 2026 maktu tutar ve nispi oranlar',
+      legalBasis: '488 sayılı Damga Vergisi Kanunu ve (1) sayılı tablo IV/1-b',
+      url: 'https://gib.gov.tr/mevzuat/kanun/438/teblig/11858',
+      publishedAt: '2025-12-31'
+    }),
+    minimumWageTaxExemption: Object.freeze({
+      institution: 'Gelir İdaresi Başkanlığı',
+      documentTitle: '2026 Ücret Geliri Rehberi – Asgari Ücret İstisnası',
+      legalBasis: '193 sayılı Gelir Vergisi Kanunu m.23/18 ve 319 Seri No.lu Gelir Vergisi Genel Tebliği',
+      url: 'https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/DUYURU_UNIVERSAL_2026_2026_Ucret_Geliri.pdf'
+    }),
+    terminationTaxExemption: Object.freeze({
+      institution: 'Gelir İdaresi Başkanlığı',
+      documentTitle: 'Aynı ayda yapılan ücret ve tazminat ödemelerinde asgari ücret gelir ve damga vergisi istisnası uygulaması',
+      legalBasis: '193 sayılı Gelir Vergisi Kanunu m.23/18, 24 ve 25; 488 sayılı Damga Vergisi Kanunu',
+      url: 'https://gib.gov.tr/mevzuat/kanun/433/ozelge/21388'
     }),
     sgk: Object.freeze({
       institution: 'Sosyal Güvenlik Kurumu',
