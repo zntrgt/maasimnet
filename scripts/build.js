@@ -23,6 +23,8 @@ import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { addPayrollTestReport } from './add-payroll-test-report.js';
 import { applySharedShell } from './apply-shared-shell.js';
+import { applyCalculatorDiscovery } from './apply-calculator-discovery.js';
+import { applyCalculatorNavLink } from './apply-calculator-nav-link.js';
 import { applyConsentManagement } from './apply-consent-management.js';
 import { applyGoogleTags } from './apply-google-tags.js';
 import { removeInternalCopy } from './remove-internal-copy.js';
@@ -88,7 +90,9 @@ await applyFintechUi(distDir);
 await apply2027QueryOwnership(distDir);
 await applyBlogImages(distDir);
 await normalizeBlogIndexImages(distDir);
+const calculatorDiscovery = await applyCalculatorDiscovery(distDir);
 await applySharedShell(distDir);
+await applyCalculatorNavLink(distDir);
 await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
 await applyContentDates(distDir);
@@ -108,7 +112,8 @@ const version = {
   editorialBlogImages: blogImageResult.applied,
   editorialAuthorityPages: editorialAuthorityResult.generated,
   editorialTopicClusters: topicClusterResult.clusters,
-  terminationCalculators: terminationResult.generated
+  terminationCalculators: terminationResult.generated,
+  calculatorDiscovery
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
@@ -119,5 +124,6 @@ console.log(`konuya özel editoryal görsel uygulanan bloglar: ${blogImageResult
 console.log(`editoryal otorite sayfaları: ${editorialAuthorityResult.generated}`);
 console.log(`blog konu kümeleri: ${topicClusterResult.clusters}`);
 console.log(`tazminat hesaplayıcıları: ${terminationResult.generated}`);
+console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
