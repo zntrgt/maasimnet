@@ -28,5 +28,8 @@ assert.match(engine, /calculateSeverance/);
 assert.match(engine, /calculateNotice/);
 assert.match(engine, /get2026SeveranceCeilingKurus/);
 assert.match(ui, /termination_calculator_complete/);
+assert.match(ui, /Cookiebot\?\.consent\?\.statistics\s*!==\s*true/, 'Tazminat eventleri Cookiebot istatistik iznine bağlı olmalı');
+assert.match(ui, /typeof globalThis\.gtag\s*!==\s*['"]function['"]/, 'Tazminat eventleri gtag üzerinden gönderilmeli');
+assert.doesNotMatch(ui, /dataLayer\.push\s*\(\s*\{\s*event:\s*['"]termination_calculator_complete['"]/, 'Tazminat eventleri doğrudan dataLayer içine yazılmamalı');
 
-console.log(`Tazminat hesaplayıcı doğrulaması başarılı: ${pages.length} sayfa, schema, kaynaklar, boş başlangıç ve hesap motoru.`);
+console.log(`Tazminat hesaplayıcı doğrulaması başarılı: ${pages.length} sayfa, schema, kaynaklar, boş başlangıç, consent-gated analytics ve hesap motoru.`);
