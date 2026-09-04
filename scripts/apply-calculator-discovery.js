@@ -34,6 +34,13 @@ const TOOL_CANDIDATES = Object.freeze([
     keywords: ['ihbar tazminatı hesaplama', 'ihbar süresi hesaplama']
   },
   {
+    path: '/issizlik-maasi-hesaplama/',
+    title: 'İşsizlik Maaşı Hesaplama 2026',
+    description: 'Son 4 aylık SGK PEK, prim günü ve hak koşullarıyla işsizlik ödeneğini ve ödeme süresini hesapla.',
+    group: 'benefit',
+    keywords: ['işsizlik maaşı hesaplama', 'işsizlik ödeneği hesaplama', 'kaç ay işsizlik maaşı']
+  },
+  {
     path: '/isveren-maliyeti-hesaplama/',
     title: 'İşveren Maliyeti Hesaplama',
     description: 'Brüt ücretin işverene aylık ve yıllık toplam maliyetini karşılaştır.',
@@ -107,7 +114,8 @@ function insertHome(html, section) {
 function hubPage(tools) {
   const salary = tools.filter((tool) => tool.group === 'salary');
   const termination = tools.filter((tool) => tool.group === 'termination');
-  const description = '2026 maaş, brütten nete, netten brüte, kıdem, ihbar, tazminat, vergi dilimi ve işveren maliyeti hesaplama araçlarını tek sayfadan açın.';
+  const benefit = tools.filter((tool) => tool.group === 'benefit');
+  const description = '2026 maaş, brütten nete, netten brüte, kıdem, ihbar, tazminat, işsizlik maaşı, vergi dilimi ve işveren maliyeti hesaplama araçlarını tek sayfadan açın.';
   const graph = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -115,7 +123,7 @@ function hubPage(tools) {
         '@type': 'CollectionPage',
         '@id': `${SITE}/hesaplama-araclari/#page`,
         url: `${SITE}/hesaplama-araclari/`,
-        name: 'Maaş ve Tazminat Hesaplama Araçları 2026',
+        name: 'Maaş ve Çalışan Hakları Hesaplama Araçları 2026',
         description,
         inLanguage: 'tr-TR',
         mainEntity: {
@@ -137,8 +145,8 @@ function hubPage(tools) {
       }
     ]
   };
-  const section = (heading, intro, items) => `<section class="tools-hub__section"><h2>${heading}</h2><p>${intro}</p><div class="tools-hub__grid">${items.map(card).join('')}</div></section>`;
-  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Maaş ve Tazminat Hesaplama Araçları 2026 | Maaşım.net</title><meta name="description" content="${description}"><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="${SITE}/hesaplama-araclari/"><meta property="og:type" content="website"><meta property="og:title" content="Maaş ve Tazminat Hesaplama Araçları 2026"><meta property="og:description" content="${description}"><meta property="og:url" content="${SITE}/hesaplama-araclari/"><script type="application/ld+json">${JSON.stringify(graph)}</script><style data-tools-hub-css>body{margin:0;background:#f8fafc;color:#0f172a;font-family:Inter,ui-sans-serif,system-ui,sans-serif}.tools-hub{max-width:1120px;margin:auto;padding:56px 20px 80px}.tools-hub__hero{max-width:850px;margin-bottom:44px}.tools-hub__hero p:first-child{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#0d9488}.tools-hub h1{font-size:clamp(38px,6vw,64px);line-height:1.04;letter-spacing:-.045em;margin:8px 0 16px}.tools-hub__hero>p:last-child{font-size:19px;line-height:1.7;color:#475569}.tools-hub__section{margin-top:44px}.tools-hub__section h2{font-size:30px;margin:0 0 8px}.tools-hub__section>p{color:#64748b;margin:0 0 20px;line-height:1.65}.tools-hub__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.calculator-discovery__card{display:flex;min-width:0;flex-direction:column;gap:10px;min-height:180px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:#fff;color:#0f172a;text-decoration:none;box-shadow:0 10px 30px rgba(15,23,42,.04)}.calculator-discovery__card strong{font-size:18px;line-height:1.3}.calculator-discovery__card span{color:#64748b;font-size:14px;line-height:1.55}.calculator-discovery__card b{margin-top:auto;color:#0d9488;font-size:13px}.calculator-discovery__card:hover{border-color:#5eead4;transform:translateY(-1px)}@media(max-width:850px){.tools-hub__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.tools-hub{padding-top:36px}.tools-hub__grid{grid-template-columns:1fr}.calculator-discovery__card{min-height:0}}</style></head><body><main class="tools-hub"><div class="tools-hub__hero"><p>2026 · Maaşım.net</p><h1>Maaş ve Tazminat Hesaplama Araçları</h1><p>Maaş, bordro, vergi ve işten ayrılma hesaplarını tek merkezden açın. Her araç kendi arama niyetine ayrılmıştır; böylece maaş, kıdem ve ihbar hesapları birbirinin sorgusunu hedeflemez.</p></div>${section('Maaş, vergi ve işveren hesapları','Brütten nete, netten brüte, vergi dilimi ve işveren maliyeti için ilgili aracı seçin.', salary)}${section('Kıdem, ihbar ve tazminat hesapları','İşten ayrılma senaryosunda kıdem, ihbar veya ikisini birlikte hesaplayın.', termination)}</main></body></html>`;
+  const section = (heading, intro, items) => items.length ? `<section class="tools-hub__section"><h2>${heading}</h2><p>${intro}</p><div class="tools-hub__grid">${items.map(card).join('')}</div></section>` : '';
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Maaş ve Çalışan Hakları Hesaplama Araçları 2026 | Maaşım.net</title><meta name="description" content="${description}"><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="${SITE}/hesaplama-araclari/"><meta property="og:type" content="website"><meta property="og:title" content="Maaş ve Çalışan Hakları Hesaplama Araçları 2026"><meta property="og:description" content="${description}"><meta property="og:url" content="${SITE}/hesaplama-araclari/"><script type="application/ld+json">${JSON.stringify(graph)}</script><style data-tools-hub-css>body{margin:0;background:#f8fafc;color:#0f172a;font-family:Inter,ui-sans-serif,system-ui,sans-serif}.tools-hub{max-width:1120px;margin:auto;padding:56px 20px 80px}.tools-hub__hero{max-width:850px;margin-bottom:44px}.tools-hub__hero p:first-child{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#0d9488}.tools-hub h1{font-size:clamp(38px,6vw,64px);line-height:1.04;letter-spacing:-.045em;margin:8px 0 16px}.tools-hub__hero>p:last-child{font-size:19px;line-height:1.7;color:#475569}.tools-hub__section{margin-top:44px}.tools-hub__section h2{font-size:30px;margin:0 0 8px}.tools-hub__section>p{color:#64748b;margin:0 0 20px;line-height:1.65}.tools-hub__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.calculator-discovery__card{display:flex;min-width:0;flex-direction:column;gap:10px;min-height:180px;padding:22px;border:1px solid #dbe4ee;border-radius:22px;background:#fff;color:#0f172a;text-decoration:none;box-shadow:0 10px 30px rgba(15,23,42,.04)}.calculator-discovery__card strong{font-size:18px;line-height:1.3}.calculator-discovery__card span{color:#64748b;font-size:14px;line-height:1.55}.calculator-discovery__card b{margin-top:auto;color:#0d9488;font-size:13px}.calculator-discovery__card:hover{border-color:#5eead4;transform:translateY(-1px)}@media(max-width:850px){.tools-hub__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.tools-hub{padding-top:36px}.tools-hub__grid{grid-template-columns:1fr}.calculator-discovery__card{min-height:0}}</style></head><body><main class="tools-hub"><div class="tools-hub__hero"><p>2026 · Maaşım.net</p><h1>Maaş ve Çalışan Hakları Hesaplama Araçları</h1><p>Maaş, bordro, vergi, işsizlik ve işten ayrılma hesaplarını tek merkezden açın. Her araç kendi arama niyetine ayrılmıştır.</p></div>${section('Maaş, vergi ve işveren hesapları','Brütten nete, netten brüte, vergi dilimi ve işveren maliyeti için ilgili aracı seçin.', salary)}${section('İşsizlik ve çalışan hakları','İşsizlik ödeneği miktarını, hak süresini ve temel koşulları hesaplayın.', benefit)}${section('Kıdem, ihbar ve tazminat hesapları','İşten ayrılma senaryosunda kıdem, ihbar veya ikisini birlikte hesaplayın.', termination)}</main></body></html>`;
 }
 
 export async function applyCalculatorDiscovery(dist) {
@@ -147,7 +155,7 @@ export async function applyCalculatorDiscovery(dist) {
     if (await routeExists(dist, tool.path)) tools.push(tool);
   }
 
-  for (const required of ['/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/']) {
+  for (const required of ['/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/issizlik-maasi-hesaplama/']) {
     if (!tools.some((tool) => tool.path === required)) throw new Error(`SEO iç link mimarisi için zorunlu hesaplayıcı bulunamadı: ${required}`);
   }
 
@@ -161,11 +169,11 @@ export async function applyCalculatorDiscovery(dist) {
     '/tazminat-hesaplama/',
     '/kidem-tazminati-hesaplama/',
     '/ihbar-tazminati-hesaplama/',
+    '/issizlik-maasi-hesaplama/',
     '/isveren-maliyeti-hesaplama/',
-    '/vergi-dilimi-hesaplama/',
-    '/2027-maas-hesaplama/'
+    '/vergi-dilimi-hesaplama/'
   ].map((path) => tools.find((tool) => tool.path === path)).filter(Boolean);
-  home = insertHome(home, block('Maaştan tazminata: diğer hesaplama araçları','Maaş hesabından sonra kıdem, ihbar, tazminat, vergi dilimi ve işveren maliyeti araçlarına doğrudan geçin.', homeTools, 'calculator-discovery--home'));
+  home = insertHome(home, block('Maaştan çalışan haklarına: diğer hesaplama araçları','Maaş hesabından sonra kıdem, ihbar, tazminat, işsizlik ödeneği, vergi dilimi ve işveren maliyeti araçlarına doğrudan geçin.', homeTools, 'calculator-discovery--home'));
   await writeFile(homeFile, home, 'utf8');
 
   const contextualTargets = [
@@ -175,7 +183,7 @@ export async function applyCalculatorDiscovery(dist) {
     '/sozluk/',
     '/senaryolar/'
   ];
-  const contextualTools = ['/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/']
+  const contextualTools = ['/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/issizlik-maasi-hesaplama/']
     .map((path) => tools.find((tool) => tool.path === path)).filter(Boolean);
 
   let contextualPages = 0;
@@ -183,7 +191,7 @@ export async function applyCalculatorDiscovery(dist) {
     if (!(await routeExists(dist, route))) continue;
     const file = distFile(dist, route);
     let html = await readFile(file, 'utf8');
-    html = insertBeforeMainEnd(html, block('İlgili hesaplama araçları','Okuduğunuz bilgiyi kendi maaş veya tazminat senaryonuzla kontrol edin.', contextualTools, 'calculator-discovery--compact'));
+    html = insertBeforeMainEnd(html, block('İlgili hesaplama araçları','Okuduğunuz bilgiyi kendi maaş, işsizlik veya tazminat senaryonuzla kontrol edin.', contextualTools, 'calculator-discovery--compact'));
     await writeFile(file, html, 'utf8');
     contextualPages += 1;
   }

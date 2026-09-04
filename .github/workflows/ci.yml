@@ -66,6 +66,9 @@ jobs:
       - name: Verify termination calculators
         run: npm run verify:termination-calculators
 
+      - name: Verify unemployment benefit calculator
+        run: npm run verify:unemployment-calculator
+
       - name: Verify calculator discovery and SEO internal linking
         run: npm run verify:calculator-discovery
 

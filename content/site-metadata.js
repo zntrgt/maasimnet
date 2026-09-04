@@ -9,7 +9,7 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-04',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.13.0-calculator-discovery-architecture'
+  releaseVersion: '1.14.0-unemployment-benefit-calculator'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
@@ -25,6 +25,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/tazminat-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/ihbar-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/issizlik-maasi-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
@@ -36,7 +37,8 @@ export const INDEXABLE_STATIC_PATHS = Object.freeze([
   '/test-raporu/',
   '/tazminat-hesaplama/',
   '/kidem-tazminati-hesaplama/',
-  '/ihbar-tazminati-hesaplama/'
+  '/ihbar-tazminati-hesaplama/',
+  '/issizlik-maasi-hesaplama/'
 ]);
 
 export function normalizeSitePath(pathname = '/') {
@@ -65,6 +67,7 @@ export function getPageMetadata(pathname = '/') {
     '/kidem-tazminati-hesaplama/',
     '/ihbar-tazminati-hesaplama/'
   ].includes(path);
+  const isUnemploymentCalculator = path === '/issizlik-maasi-hesaplama/';
   const isCalculatorHub = path === '/hesaplama-araclari/';
 
   const familyModifiedAt = isPayrollDataPage
@@ -77,7 +80,7 @@ export function getPageMetadata(pathname = '/') {
     path,
     publishedAt: override.publishedAt || SITE_METADATA.defaultPublishedAt,
     modifiedAt: override.modifiedAt || familyModifiedAt,
-    reviewedAt: isPayrollDataPage || isTerminationCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
+    reviewedAt: isPayrollDataPage || isTerminationCalculator || isUnemploymentCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
       ? SITE_METADATA.payrollDataReviewedAt
       : isBlogPage
         ? SITE_METADATA.blogReviewedAt

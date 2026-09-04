@@ -18,6 +18,7 @@ GSC verisi geldikten sonra her satıra 28 günlük impressions, clicks, CTR, ave
 | kıdem tazminatı hesaplama 2026 | `/kidem-tazminati-hesaplama/` | kıdem hesaplama, kıdem tazminatı ne kadar | Kıdem aracı primary owner. Kombine sayfa bu sorguyu title/H1'da tekrar hedeflemez. |
 | ihbar tazminatı hesaplama 2026 | `/ihbar-tazminati-hesaplama/` | ihbar hesaplama, ihbar süresi hesaplama | İhbar aracı primary owner. |
 | tazminat hesaplama | `/tazminat-hesaplama/` | kıdem ihbar hesaplama, toplam tazminat | Kombine sayfa primary owner. |
+| işsizlik maaşı hesaplama 2026 | `/issizlik-maasi-hesaplama/` | işsizlik ödeneği hesaplama, kaç ay işsizlik maaşı alırım | İşsizlik aracı primary owner; kıdem/tazminat sayfaları yalnız bağlamsal destek verir. |
 | işveren maliyeti hesaplama | `/isveren-maliyeti-hesaplama/` | maaşın işverene maliyeti | Bu URL primary owner; ana sayfa yalnız contextual destek verir. |
 | vergi dilimi hesaplama 2026 | `/vergi-dilimi-hesaplama/` | gelir vergisi dilimi hesaplama | Bu URL primary owner. |
 | asgari ücret işveren maliyeti 2026 | `/asgari-ucret-isveren-maliyeti/` | asgari ücretin işverene maliyeti | Bu URL primary owner. |
@@ -28,30 +29,24 @@ GSC verisi geldikten sonra her satıra 28 günlük impressions, clicks, CTR, ave
 
 Bu sayfalar **thin placeholder olarak açılmamalı**. Her biri gerçek çalışan hesap motoru, resmî kaynaklar, formül açıklaması, FAQ ve regression testleri hazır olduğunda yayınlanmalı.
 
-1. `/issizlik-maasi-hesaplama/`
-   - işsizlik maaşı hesaplama 2026
-   - işsizlik ödeneği hesaplama
-   - kaç ay işsizlik maaşı alırım
-   - ihtiyaç: son 4 ay prime esas kazanç + 600/900/1080 prim günü + son 120 gün + fesih nedeni
-
-2. `/fazla-mesai-hesaplama/`
+1. `/fazla-mesai-hesaplama/`
    - fazla mesai hesaplama 2026
    - mesai ücreti hesaplama
    - saatlik fazla mesai ücreti
    - ihtiyaç: aylık brüt/saatlik brüt + %50/%25 katsayı + vergi matrahı/bordro etkisi
 
-3. `/yillik-izin-ucreti-hesaplama/`
+2. `/yillik-izin-ucreti-hesaplama/`
    - yıllık izin ücreti hesaplama 2026
    - kullanılmayan izin parası hesaplama
    - yıllık izin hesaplama
    - ihtiyaç: fesih tarihi + son çıplak brüt + kullanılmayan gün + SGK/GV/DV kesintileri
 
-4. `/asgari-ucret-hesaplama/`
+3. `/asgari-ucret-hesaplama/`
    - asgari ücret hesaplama 2026
    - net asgari ücret / brüt asgari ücret
    - işveren maliyeti URL'sinden ayrışmalı; çalışan neti ve kesintileri primary intent olmalı
 
-5. `/maas-zam-hesaplama/`
+4. `/maas-zam-hesaplama/`
    - maaş zam hesaplama
    - yüzde zam hesaplama maaş
    - eski maaş / yeni maaş / zam oranı üç yönlü çözüm
@@ -83,13 +78,13 @@ Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir 
 - `/tazminat-hesaplama/`
 - `/kidem-tazminati-hesaplama/`
 - `/ihbar-tazminati-hesaplama/`
+- `/issizlik-maasi-hesaplama/`
 - `/isveren-maliyeti-hesaplama/`
 - `/vergi-dilimi-hesaplama/`
-- `/2027-maas-hesaplama/`
 
 ### Konu sayfaları
 
-`/veriler/2026/`, `/hesaplama-metodolojisi/`, `/sss/`, `/sozluk/`, `/senaryolar/` sayfaları maaş + tazminat araçlarına bağlamsal link verir.
+`/veriler/2026/`, `/hesaplama-metodolojisi/`, `/sss/`, `/sozluk/`, `/senaryolar/` sayfaları maaş + tazminat + işsizlik araçlarına bağlamsal link verir.
 
 `/blog/kidem-tazminatina-dahil-odemeler/` doğrudan kıdem, ihbar ve kombine tazminat araçlarına link verir.
 
@@ -98,6 +93,12 @@ Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir 
 - Kıdem → İhbar → Kombine sayfalar karşılıklı linklenir.
 - Her sayfanın title/H1 ve ana açıklaması kendi primary query'sini sahiplenir.
 - `tazminat hesaplama` generic sorgusu kombine sayfaya, `kıdem tazminatı hesaplama` kıdem sayfasına, `ihbar tazminatı hesaplama` ihbar sayfasına gider.
+
+### İşsizlik cluster
+
+- `işsizlik maaşı hesaplama 2026`, `işsizlik ödeneği hesaplama`, `kaç ay işsizlik maaşı alırım` sorgularının tek primary owner'ı `/issizlik-maasi-hesaplama/` olur.
+- Ana sayfa ve hesaplama hub'ı doğrudan link verir.
+- Tazminat sayfaları işten ayrılma bağlamında yalnız ikincil bağlantı sağlar; title/H1 seviyesinde işsizlik sorgusunu hedeflemez.
 
 ## GSC sonrası karar kuralları
 

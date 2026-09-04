@@ -11,6 +11,12 @@ export const DATA_2026 = Object.freeze({
       url: 'https://www.csgb.gov.tr/tr/poco-pages/asgari-ucret/',
       publishedAt: '2025-12-23'
     }),
+    unemployment: Object.freeze({
+      institution: 'Türkiye İş Kurumu (İŞKUR)',
+      documentTitle: 'İşsizlik Sigortası Hizmetleri',
+      legalBasis: '4447 sayılı İşsizlik Sigortası Kanunu m.50',
+      url: 'https://media.iskur.gov.tr/48434/issizlik-sigortasi-hizmetleri.pdf'
+    }),
     incomeTax: Object.freeze({
       institution: 'Gelir İdaresi Başkanlığı',
       documentTitle: '332 Seri No.lu Gelir Vergisi Genel Tebliği – 2026 ücret geliri tarifesi',
@@ -77,6 +83,16 @@ export const DATA_2026 = Object.freeze({
     minimumWage: Object.freeze({ grossKurus: 3_303_000, netKurus: 2_807_550, period: '2026-01-01/2026-12-31', sourceKey: 'minimumWage' }),
     sgkCeiling: Object.freeze({ dailyKurus: 990_900, monthlyKurus: 29_727_000, multiplier: 9, period: '2026-01-01/2026-12-31', sourceKey: 'sgk' }),
     severanceCeiling: Object.freeze({ firstHalfKurus: 6_494_877, secondHalfKurus: 7_372_987, currentKurus: 7_372_987, currentPeriod: '2026-07-01/2026-12-31', sourceKey: 'severance' }),
+    unemployment: Object.freeze({
+      benefitRatePpm: 400_000,
+      monthlyGrossCapRatePpm: 800_000,
+      recentContractDays: 120,
+      minimumPremiumDaysLast3Years: 600,
+      durationDaysByPremium: Object.freeze({ 600: 180, 900: 240, 1080: 300 }),
+      applicationDaysWithoutLoss: 30,
+      period: '2026-01-01/2026-12-31',
+      sourceKey: 'unemployment'
+    }),
     mealAllowance: Object.freeze({ incomeTaxDailyKurus: 30_000, sgkDailyKurus: 15_800, period: '2026-01-01/2026-12-31', incomeTaxSourceKey: 'mealIncomeTax', sgkSourceKey: 'sgk' })
   })
 });
