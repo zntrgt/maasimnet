@@ -43,6 +43,25 @@ function assertKurus(value, fieldName) {
   }
 }
 
+function buildDressedGross({
+  baseGrossKurus,
+  mealKurus,
+  transportKurus,
+  regularOtherKurus,
+  annualRegularBenefitsKurus
+}) {
+  const annualRegularBenefitsMonthlyKurus = Math.round(annualRegularBenefitsKurus / 12);
+  return Object.freeze({
+    annualRegularBenefitsMonthlyKurus,
+    dressedGrossKurus:
+      baseGrossKurus
+      + mealKurus
+      + transportKurus
+      + regularOtherKurus
+      + annualRegularBenefitsMonthlyKurus
+  });
+}
+
 export function getServiceDuration(startIso, endIso) {
   const start = parseIsoDate(startIso, 'İşe giriş tarihi');
   const end = parseIsoDate(endIso, 'İşten ayrılma tarihi');
@@ -127,6 +146,7 @@ export function calculateSeverance({
   mealKurus = 0,
   transportKurus = 0,
   regularOtherKurus = 0,
+  annualRegularBenefitsKurus = 0,
   remainingStampTaxExemptionKurus = 0
 }) {
   for (const [name, value] of Object.entries({
@@ -134,6 +154,7 @@ export function calculateSeverance({
     mealKurus,
     transportKurus,
     regularOtherKurus,
+    annualRegularBenefitsKurus,
     remainingStampTaxExemptionKurus
   })) {
     assertKurus(value, name);
@@ -142,16 +163,19 @@ export function calculateSeverance({
   const duration = getServiceDuration(startIso, endIso);
   const ceilingKurus = get2026SeveranceCeilingKurus(endIso);
   const taxExemptionCaps = get2026MonthlyTaxExemptionCaps(endIso);
-  const dressedGrossKurus = baseGrossKurus + mealKurus + transportKurus + regularOtherKurus;
+  const { dressedGrossKurus, annualRegularBenefitsMonthlyKurus } = buildDressedGross({
+    baseGrossKurus,
+    mealKurus,
+    transportKurus,
+    regularOtherKurus,
+    annualRegularBenefitsKurus
+  });
   const basisKurus = Math.min(dressedGrossKurus, ceilingKurus);
   const eligibleByDuration = duration.years >= 1;
 
+  const serviceFactor = duration.years + duration.months / 12 + duration.days / 365;
   const grossKurus = eligibleByDuration
-    ? Math.round(
-      basisKurus * duration.years
-      + (basisKurus * duration.months) / 12
-      + (basisKurus * duration.days) / 365
-    )
+    ? Math.round(basisKurus * serviceFactor)
     : 0;
 
   const calculatedStampTaxKurus = multiplyRateRoundedKurus(grossKurus, DATA_2026.payroll.stampTaxRatePpm);
@@ -165,7 +189,14 @@ export function calculateSeverance({
 
   return Object.freeze({
     duration,
+    serviceFactor,
     eligibleByDuration,
+    baseGrossKurus,
+    mealKurus,
+    transportKurus,
+    regularOtherKurus,
+    annualRegularBenefitsKurus,
+    annualRegularBenefitsMonthlyKurus,
     dressedGrossKurus,
     ceilingKurus,
     basisKurus,
@@ -188,6 +219,7 @@ export function calculateNotice({
   mealKurus = 0,
   transportKurus = 0,
   regularOtherKurus = 0,
+  annualRegularBenefitsKurus = 0,
   previousCumulativeTaxBaseKurus = 0,
   remainingIncomeTaxExemptionKurus = 0,
   remainingStampTaxExemptionKurus = 0
@@ -197,6 +229,7 @@ export function calculateNotice({
     mealKurus,
     transportKurus,
     regularOtherKurus,
+    annualRegularBenefitsKurus,
     previousCumulativeTaxBaseKurus,
     remainingIncomeTaxExemptionKurus,
     remainingStampTaxExemptionKurus
@@ -207,7 +240,13 @@ export function calculateNotice({
   const duration = getServiceDuration(startIso, endIso);
   const noticePeriod = getNoticePeriod(startIso, endIso);
   const taxExemptionCaps = get2026MonthlyTaxExemptionCaps(endIso);
-  const dressedGrossKurus = baseGrossKurus + mealKurus + transportKurus + regularOtherKurus;
+  const { dressedGrossKurus, annualRegularBenefitsMonthlyKurus } = buildDressedGross({
+    baseGrossKurus,
+    mealKurus,
+    transportKurus,
+    regularOtherKurus,
+    annualRegularBenefitsKurus
+  });
   const grossKurus = Math.round((dressedGrossKurus * noticePeriod.days) / 30);
   const cumulativeAfterKurus = previousCumulativeTaxBaseKurus + grossKurus;
   const calculatedIncomeTaxKurus = calculateProgressiveTaxKurus(cumulativeAfterKurus, grossKurus);
@@ -230,6 +269,12 @@ export function calculateNotice({
   return Object.freeze({
     duration,
     noticePeriod,
+    baseGrossKurus,
+    mealKurus,
+    transportKurus,
+    regularOtherKurus,
+    annualRegularBenefitsKurus,
+    annualRegularBenefitsMonthlyKurus,
     dressedGrossKurus,
     grossKurus,
     previousCumulativeTaxBaseKurus,
@@ -283,7 +328,7 @@ export function terminationEngineVersion() {
     severanceCeilingPeriod: DATA_2026.publishedData.severanceCeiling.currentPeriod,
     severanceCeilingKurus: DATA_2026.publishedData.severanceCeiling.currentKurus,
     stampTaxRatePpm: DATA_2026.payroll.stampTaxRatePpm,
-    sourceKeys: Object.freeze(['severance', 'sgk', 'incomeTax'])
+    sourceKeys: Object.freeze(['severance', 'sgk', 'incomeTax', 'stampTax', 'minimumWageTaxExemption'])
   });
 }
 
