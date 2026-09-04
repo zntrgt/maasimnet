@@ -42,6 +42,7 @@ const assetsDir = join(distDir, 'assets');
 await rm(distDir, { recursive: true, force: true });
 await cp(staticDir, distDir, { recursive: true });
 await cp(join(root, 'content', 'robots.txt'), join(distDir, 'robots.txt'));
+await cp(join(root, 'content', 'BingSiteAuth.xml'), join(distDir, 'BingSiteAuth.xml'));
 await mkdir(assetsDir, { recursive: true });
 
 for (const file of [
