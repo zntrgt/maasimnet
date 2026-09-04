@@ -81,11 +81,11 @@ test('annual 270-hour statutory overtime limit is surfaced without changing earn
   const result = calculateOvertimePay({
     monthlyGrossKurus: 6_000_000,
     overtime50Minutes: 600,
-    overtime50MinutesYearToDate: 16_000,
+    overtime50MinutesYearToDate: 16_020,
     monthNumber: 1
   });
   assert.equal(result.annualLimitMinutes, 16_200);
-  assert.equal(result.overtime50MinutesAfter, 16_600);
+  assert.equal(result.overtime50MinutesAfter, 16_620);
   assert.equal(result.annualLimitExceeded, true);
   assert.equal(result.annualRemainingMinutes, 0);
   assert.equal(result.overtime50GrossKurus, 400_000, '270-hour limit does not erase pay already earned');
