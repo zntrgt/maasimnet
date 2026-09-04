@@ -54,7 +54,7 @@ function readInput(form) {
 }
 
 function durationText(duration) {
-  return `${duration.years} yıl ${duration.months} ay ${duration.days} gün`;
+  return `${duration.years} yıl ${duration.months} ay ${duration.days} gün (${duration.totalDays} gün)`;
 }
 
 function setText(root, selector, value) {
@@ -63,7 +63,7 @@ function setText(root, selector, value) {
 }
 
 function severanceFormula(result) {
-  return `${formatMoney(result.basisKurus)} × (${result.duration.years} yıl + ${result.duration.months}/12 + ${result.duration.days}/365) = ${formatMoney(result.grossKurus)}`;
+  return `${formatMoney(result.basisKurus)} × (${result.duration.totalDays} gün / 365) = ${formatMoney(result.grossKurus)}`;
 }
 
 function dressedGrossFormula(result) {
@@ -93,7 +93,7 @@ function renderSeverance(root, result, stampExemptionProvided = false) {
   if (warning) {
     const messages = [];
     if (!result.eligibleByDuration) {
-      messages.push('Bu hizmet süresi 1 yıldan kısa. 1475 sayılı Kanun kapsamındaki genel kıdem tazminatı koşulunda en az 1 yıl çalışma aranır.');
+      messages.push('Bu hizmet süresi 365 günden kısa. 1475 sayılı Kanun kapsamındaki genel kıdem tazminatı koşulunda en az 1 yıl çalışma aranır.');
     }
     if (result.ceilingApplied) {
       messages.push('Giydirilmiş brüt ücret fesih tarihinde geçerli kıdem tazminatı tavanını aştığı için hesap tavandan yapıldı.');
