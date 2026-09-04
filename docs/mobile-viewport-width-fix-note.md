@@ -1,0 +1,1 @@
+Viewport regression is covered by the mobile calculator UX verifier and production CI.
