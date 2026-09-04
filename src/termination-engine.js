@@ -171,9 +171,11 @@ export function calculateSeverance({
     annualRegularBenefitsKurus
   });
   const basisKurus = Math.min(dressedGrossKurus, ceilingKurus);
-  const eligibleByDuration = duration.years >= 1;
+  const eligibleByDuration = duration.totalDays >= 365;
 
-  const serviceFactor = duration.years + duration.months / 12 + duration.days / 365;
+  // Yargıtay uygulamasına göre kıdem yılı 365 gündür. Takvim aylarını 1/12
+  // olarak varsaymak yerine fiilen geçen toplam takvim günü 365'e oranlanır.
+  const serviceFactor = duration.totalDays / 365;
   const grossKurus = eligibleByDuration
     ? Math.round(basisKurus * serviceFactor)
     : 0;
