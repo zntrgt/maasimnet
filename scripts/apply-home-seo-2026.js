@@ -11,8 +11,11 @@ function escapeHtml(value) {
 }
 
 function setMeta(html, selector, value) {
-  const attr = selector.startsWith('property:') ? 'property' : 'name';
-  const key = selector.split(':', 2)[1];
+  const separator = selector.indexOf(':');
+  if (separator <= 0 || separator === selector.length - 1) throw new Error(`Geçersiz meta selector: ${selector}`);
+  const attr = selector.slice(0, separator);
+  const key = selector.slice(separator + 1);
+  if (!['name', 'property'].includes(attr)) throw new Error(`Desteklenmeyen meta attribute: ${attr}`);
   const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const pattern = new RegExp(`<meta\\b(?=[^>]*\\b${attr}=["']${escapedKey}["'])[^>]*>`, 'i');
   const replacement = `<meta ${attr}="${key}" content="${escapeHtml(value)}">`;
@@ -62,5 +65,5 @@ export async function applyHomeSeo2026(distDir) {
   html = updateSchema(html);
 
   await writeFile(indexPath, html, 'utf8');
-  console.log('Ana sayfa 2026 query ownership güçlendirildi: title + H1 + hero + schema hizalandı.');
+  console.log('Ana sayfa 2026 query ownership güçlendirildi: title + H1 + hero + schema + sosyal metadata hizalandı.');
 }
