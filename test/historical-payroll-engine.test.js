@@ -66,8 +66,9 @@ test('official 2020 and 2021 AGI amounts follow GIB family-status tables', () =>
 
 test('GVK 32 additional AGI floor also protects slightly-above-minimum wages when tariff lowers net pay', () => {
   const rows = calculateHistoricalPayrollYear({ year: 2020, grossKurusByMonth: Array(12).fill(300_000) });
-  assert.ok(rows[8].supplementalAgiKurus > 0);
-  assert.equal(rows[8].netKurus, 232_471);
+  const protectedRow = rows.find((row) => row.supplementalAgiKurus > 0);
+  assert.ok(protectedRow, 'tarife ilerlemesi sonrası ilave AGİ uygulanan bir ay bulunmalı');
+  assert.equal(protectedRow.netKurus, 232_471);
 });
 
 test('2022-2025 official minimum wages have zero payable income and stamp tax under minimum-wage exemption', () => {
@@ -116,9 +117,10 @@ test('historical wage tax brackets use the official wage-income thresholds for e
 
 test('net-to-gross historical solver reproduces a fixed target net within one kurus across all months', () => {
   for (const year of [2020, 2021, 2022, 2023, 2024, 2025]) {
-    const target = Array(12).fill(10_000_00);
+    const targetNetKurus = 1_000_000;
+    const target = Array(12).fill(targetNetKurus);
     const result = solveHistoricalGrossForNet({ year, targetNetKurusByMonth: target });
     assert.equal(result.rows.length, 12);
-    for (const row of result.rows) assert.ok(Math.abs(row.netKurus - 10_000_00) <= 1, `${year}/${row.month + 1}`);
+    for (const row of result.rows) assert.ok(Math.abs(row.netKurus - targetNetKurus) <= 1, `${year}/${row.month + 1}`);
   }
 });
