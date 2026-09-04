@@ -16,6 +16,7 @@ import { applyBlogOriginalDataSecondary } from './apply-blog-original-data-secon
 import { add2027EstimateCalculator } from './add-2027-estimate-calculator.js';
 import { apply2027QueryOwnership } from './apply-2027-query-ownership.js';
 import { addOfferComparison } from './add-offer-comparison.js';
+import { addTerminationCalculators } from './add-termination-calculators.js';
 import { addContactPage } from './add-contact-page.js';
 import { addEditorialAuthority } from './add-editorial-authority.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
@@ -53,7 +54,8 @@ await mkdir(assetsDir, { recursive: true });
 for (const file of [
   'app.js','data-2026.js','parameters-2026.js','payroll-engine.js','mobile-payroll-view.js',
   'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
-  'estimate-2027.js','offer-comparison.js','site-shell.css','site-shell.js'
+  'estimate-2027.js','offer-comparison.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
+  'site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await fixCalculatorAnalyticsInputReset(distDir);
@@ -71,6 +73,7 @@ const originalDataResult = await applyBlogOriginalData(distDir);
 const secondaryOriginalDataResult = await applyBlogOriginalDataSecondary(distDir);
 await add2027EstimateCalculator(distDir);
 await addOfferComparison(distDir);
+const terminationResult = await addTerminationCalculators(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 const editorialAuthorityResult = await addEditorialAuthority(distDir);
@@ -104,7 +107,8 @@ const version = {
   proprietaryDataBlogs,
   editorialBlogImages: blogImageResult.applied,
   editorialAuthorityPages: editorialAuthorityResult.generated,
-  editorialTopicClusters: topicClusterResult.clusters
+  editorialTopicClusters: topicClusterResult.clusters,
+  terminationCalculators: terminationResult.generated
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
@@ -114,5 +118,6 @@ console.log(`özgün hesaplama/veri içeriği eklenen bloglar: ${proprietaryData
 console.log(`konuya özel editoryal görsel uygulanan bloglar: ${blogImageResult.applied}`);
 console.log(`editoryal otorite sayfaları: ${editorialAuthorityResult.generated}`);
 console.log(`blog konu kümeleri: ${topicClusterResult.clusters}`);
+console.log(`tazminat hesaplayıcıları: ${terminationResult.generated}`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
