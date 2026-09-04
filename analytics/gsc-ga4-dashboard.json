@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "title": "Maaşım.net Search, AI Visibility ve Hesaplama Funnel Dashboard",
   "owner": "Growth / SEO",
   "timezone": "Europe/Istanbul",
@@ -66,8 +66,7 @@
     "bing": [
       "Total citations measure references in supported AI answers; they are not ranking positions.",
       "Average cited pages is an aggregate visibility measure and does not indicate authority or placement within an answer.",
-      "Grounding queries are a sample of retrieval phrases and must not be treated as complete search-demand data.",
-      "Bing citation counts must remain separate from GA4 conversions unless a supported common key and grain become available."
+      "Grounding queries are a sample of retrieval phrases and must not be treated as complete search-demand data."
     ],
     "referral_traffic": [
       "GA4 AI referral sessions only represent users who clicked through to the site.",
@@ -85,7 +84,8 @@
     "related_content_clicked",
     "calculator_mode_change",
     "payroll_detail_toggle",
-    "calculator_csv_download"
+    "calculator_csv_download",
+    "termination_calculator_complete"
   ],
   "registered_custom_dimensions": [
     "calculation_direction",
@@ -102,7 +102,8 @@
     "month_number",
     "override_type",
     "detail_action",
-    "input_method"
+    "input_method",
+    "calculator_type"
   ],
   "normalized_fields": {
     "gsc_landing_page_path": "REGEXP_REPLACE(Page, '^https?://[^/]+', '')",
@@ -117,6 +118,7 @@
     "organic_session_to_completion_rate": "salary_calculation_completed / organic_landing_sessions",
     "detail_engagement_rate": "payroll_detail_toggle_open / salary_results_viewed",
     "csv_download_rate": "calculator_csv_download / salary_results_viewed",
+    "organic_termination_completion_rate": "termination_calculator_complete / organic_termination_landing_sessions",
     "google_ai_visibility_change": "current_period_google_generative_ai_impressions vs previous_period_google_generative_ai_impressions",
     "bing_citation_change": "current_period_total_citations vs previous_period_total_citations"
   },
@@ -132,6 +134,7 @@
         "Bing AI citations",
         "Organic landing sessions",
         "Salary calculations completed",
+        "Termination calculations completed",
         "Organic session to completion rate"
       ],
       "charts": [
@@ -146,7 +149,7 @@
       "name": "Sorgu ve Landing Page",
       "tables": [
         "Query > landing page: impressions, clicks, CTR, position",
-        "Landing page: organic sessions, input starts, completed calculations, completion rate"
+        "Landing page: organic sessions, salary calculation events, termination calculation completions and completion rate"
       ],
       "interaction": "Selecting a query filters the landing page table through its page path; conversion counts remain at landing-page grain."
     },
@@ -167,6 +170,26 @@
         "deviceCategory",
         "landing page"
       ]
+    },
+    {
+      "name": "Tazminat Hesaplayıcıları",
+      "scorecards": [
+        "Termination landing sessions",
+        "Termination calculations completed",
+        "Organic termination calculations completed",
+        "Organic termination session to completion rate"
+      ],
+      "tables": [
+        "Termination landing page by sessions, completions and completion rate",
+        "Calculator type by completions and device category"
+      ],
+      "breakdowns": [
+        "calculator_type",
+        "deviceCategory",
+        "landing page",
+        "sessionDefaultChannelGroup"
+      ],
+      "guardrail": "Do not collect or report salary, severance, notice, tax-base or date inputs; only the categorical calculator_type is allowed."
     },
     {
       "name": "AI Search Görünürlüğü",
@@ -207,6 +230,7 @@
         "salary_results_viewed must not exceed salary_calculation_completed",
         "No exact salary amount may be collected",
         "salary_range must include range_version",
+        "termination_calculator_complete must contain only an allowlisted calculator_type and no financial input values",
         "GSC and GA4 dates use Europe/Istanbul reporting context",
         "Google Generative AI impressions must not be labeled clicks or sessions",
         "Bing citations must not be labeled rankings",
