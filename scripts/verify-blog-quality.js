@@ -13,10 +13,7 @@ const originalDataSlugs = new Set([
   'netten-brute-maas-neden-aylik-degisir',
   '100000-tl-brut-maas-neti-2026',
   'prim-ikramiye-net-maasi-neden-dusurur',
-  'is-teklifinin-yillik-degeri',
-  '2026-sgk-tavani',
-  'is-degisikliginde-vergi-matrahi',
-  '2026-yemek-karti-istisnasi'
+  'is-teklifinin-yillik-degeri'
 ]);
 
 const editorialImages = new Map(blogImageAssignments.map(({ slug, asset }) => [slug, asset]));
@@ -170,4 +167,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${indexableBlogPosts.length} içerik; ${originalDataSlugs.size} yüksek niyetli blogda özgün hesaplama, ${editorialImages.size}/${indexableBlogPosts.length} blogda konuya özel görsel doğrulandı.`);
+console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${indexableBlogPosts.length} içerik; ${originalDataSlugs.size} birincil yüksek niyetli blogda özgün hesaplama, ${editorialImages.size}/${indexableBlogPosts.length} blogda konuya özel görsel doğrulandı.`);
