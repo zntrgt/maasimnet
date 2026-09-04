@@ -11,6 +11,8 @@ const moneyFormatter = new Intl.NumberFormat('tr-TR', {
   maximumFractionDigits: 2
 });
 
+const VALID_CALCULATOR_TYPES = new Set(['combined', 'severance', 'notice']);
+
 function parseMoneyToKurus(value) {
   const raw = String(value || '').trim();
   if (!raw) return 0;
@@ -121,42 +123,50 @@ function revealResults(root) {
   if (results) results.hidden = false;
 }
 
-function pushAnalytics(type) {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: 'termination_calculator_complete', calculator_type: type });
+export function sendTerminationCalculatorEvent(type) {
+  if (!VALID_CALCULATOR_TYPES.has(type)) return false;
+  if (globalThis.Cookiebot?.consent?.statistics !== true) return false;
+  if (typeof globalThis.gtag !== 'function') return false;
+
+  globalThis.gtag('event', 'termination_calculator_complete', {
+    calculator_type: type
+  });
+  return true;
 }
 
-for (const root of document.querySelectorAll('[data-termination-calculator]')) {
-  const type = root.getAttribute('data-termination-calculator');
-  const form = root.querySelector('form');
-  if (!form) continue;
+if (typeof document !== 'undefined') {
+  for (const root of document.querySelectorAll('[data-termination-calculator]')) {
+    const type = root.getAttribute('data-termination-calculator');
+    const form = root.querySelector('form');
+    if (!form) continue;
 
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    clearError(root);
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearError(root);
 
-    try {
-      const input = readInput(form);
-      if (!input.startIso || !input.endIso) throw new Error('İşe giriş ve işten ayrılma tarihlerini girin.');
-      if (!input.baseGrossKurus) throw new Error('Aylık brüt ücreti girin.');
+      try {
+        const input = readInput(form);
+        if (!input.startIso || !input.endIso) throw new Error('İşe giriş ve işten ayrılma tarihlerini girin.');
+        if (!input.baseGrossKurus) throw new Error('Aylık brüt ücreti girin.');
 
-      const taxBaseProvided = Boolean(inputValue(form, 'previousTaxBase').trim());
-      if (type === 'severance') {
-        renderSeverance(root, calculateSeverance(input));
-      } else if (type === 'notice') {
-        renderNotice(root, calculateNotice(input), taxBaseProvided);
-      } else {
-        const result = calculateTerminationPackage(input);
-        renderSeverance(root, result.severance);
-        renderNotice(root, result.notice, taxBaseProvided);
-        setText(root, '[data-result="package-gross"]', formatMoney(result.grossTotalKurus));
-        setText(root, '[data-result="package-net"]', formatMoney(result.netTotalKurus));
+        const taxBaseProvided = Boolean(inputValue(form, 'previousTaxBase').trim());
+        if (type === 'severance') {
+          renderSeverance(root, calculateSeverance(input));
+        } else if (type === 'notice') {
+          renderNotice(root, calculateNotice(input), taxBaseProvided);
+        } else {
+          const result = calculateTerminationPackage(input);
+          renderSeverance(root, result.severance);
+          renderNotice(root, result.notice, taxBaseProvided);
+          setText(root, '[data-result="package-gross"]', formatMoney(result.grossTotalKurus));
+          setText(root, '[data-result="package-net"]', formatMoney(result.netTotalKurus));
+        }
+
+        revealResults(root);
+        sendTerminationCalculatorEvent(type);
+      } catch (error) {
+        showError(root, error instanceof Error ? error.message : 'Hesaplama sırasında bir hata oluştu.');
       }
-
-      revealResults(root);
-      pushAnalytics(type);
-    } catch (error) {
-      showError(root, error instanceof Error ? error.message : 'Hesaplama sırasında bir hata oluştu.');
-    }
-  });
+    });
+  }
 }
