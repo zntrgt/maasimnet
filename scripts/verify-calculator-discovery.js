@@ -31,8 +31,9 @@ for (const route of ['/asgari-ucret-hesaplama/', '/kidem-tazminati-hesaplama/', 
   assert.match(home, new RegExp(`href="${route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`), `Ana sayfa araca link vermeli: ${route}`);
 }
 assert.match(home, /data-calculator-discovery="v1"/, 'Ana sayfada görünür hesaplama araçları modülü eksik');
-assert.match(home, /site-nav site-nav--desktop[\s\S]*href="\/hesaplama-araclari\/">Araçlar<\/a>/, 'Desktop header Araçlar linki eksik');
-assert.match(home, /site-nav site-nav--desktop[\s\S]*href="\/tazminat-hesaplama\/">Tazminat<\/a>/, 'Desktop header Tazminat linki eksik');
+assert.match(home, /site-nav site-nav--desktop[\s\S]*href="\/hesaplama-araclari\/">Hesaplama Araçları<\/a>/, 'Desktop header Hesaplama Araçları linki eksik');
+assert.match(home, /site-nav site-nav--desktop[\s\S]*href="\/tazminat-hesaplama\/">Kıdem &amp; İhbar<\/a>/, 'Desktop header Kıdem & İhbar linki eksik');
+assert.match(home, /site-nav site-nav--desktop[\s\S]*href="\/isveren-maliyeti-hesaplama\/">İşveren Maliyeti<\/a>/, 'Desktop header İşveren Maliyeti linki eksik');
 assert.match(home, /data-calculator-discovery-css="v1"/, 'Discovery modülü CSS containment eksik');
 
 let contextual = 0;
@@ -64,4 +65,4 @@ for (const route of ['/hesaplama-araclari/', '/issizlik-maasi-hesaplama/', '/faz
   assert.match(sitemap, new RegExp(`<loc>https:\\/\\/maasim\\.net${route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/loc>`), `Sitemap içinde olmalı: ${route}`);
 }
 
-console.log(`Hesaplayıcı keşif mimarisi doğrulandı: hub + ana sayfa + header + ${contextual} bağlamsal otorite sayfası + çalışan hakları ve asgari ücret araçları.`);
+console.log(`Hesaplayıcı keşif mimarisi doğrulandı: hub + ana sayfa + sade enterprise header + ${contextual} bağlamsal otorite sayfası.`);
