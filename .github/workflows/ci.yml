@@ -105,6 +105,9 @@ jobs:
       - name: Verify enterprise fintech UI contract
         run: npm run verify:fintech-ui
 
+      - name: Verify mobile calculator UX contract
+        run: npm run verify:mobile-ux
+
       - name: Smoke test generated output
         run: npm run smoke
 
