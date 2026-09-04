@@ -24,6 +24,8 @@ import { addMinimumWageCalculator } from './add-minimum-wage-calculator.js';
 import { addSalaryRaiseCalculator } from './add-salary-raise-calculator.js';
 import { addWorktimeCalculators } from './add-worktime-calculators.js';
 import { applyWorktimeFreshness } from './apply-worktime-freshness.js';
+import { addHistoricalPayrollCalculators } from './add-historical-payroll-calculators.js';
+import { applyHistoricalPayrollFreshness } from './apply-historical-payroll-freshness.js';
 import { addContactPage } from './add-contact-page.js';
 import { addEditorialAuthority } from './add-editorial-authority.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
@@ -32,6 +34,7 @@ import { addPayrollTestReport } from './add-payroll-test-report.js';
 import { applySharedShell } from './apply-shared-shell.js';
 import { applyCalculatorDiscovery } from './apply-calculator-discovery.js';
 import { applyTierCDiscovery } from './apply-tier-c-discovery.js';
+import { applyHistoricalPayrollDiscovery } from './apply-historical-payroll-discovery.js';
 import { applyCalculatorHubFreshness } from './apply-calculator-hub-freshness.js';
 import { applyCalculatorNavLink } from './apply-calculator-nav-link.js';
 import { applyConsentManagement } from './apply-consent-management.js';
@@ -73,6 +76,7 @@ for (const file of [
   'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
   'salary-raise-engine.js','salary-raise-calculator.js','salary-raise-calculator.css',
   'worktime-engines.js','worktime-calculators.js','worktime-calculators.css',
+  'historical-payroll-data.js','historical-payroll-engine.js','historical-payroll-calculator.js','historical-payroll-calculator.css',
   'fintech-ui.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
@@ -99,6 +103,8 @@ const minimumWageResult = await addMinimumWageCalculator(distDir);
 const salaryRaiseResult = await addSalaryRaiseCalculator(distDir);
 const worktimeResult = await addWorktimeCalculators(distDir);
 await applyWorktimeFreshness(distDir);
+const historicalPayrollResult = await addHistoricalPayrollCalculators(distDir);
+await applyHistoricalPayrollFreshness(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 const editorialAuthorityResult = await addEditorialAuthority(distDir);
@@ -106,6 +112,7 @@ await addHomeFreshness(distDir);
 const payrollAudit = await addPayrollTestReport(distDir);
 const calculatorDiscovery = await applyCalculatorDiscovery(distDir);
 const tierCDiscovery = await applyTierCDiscovery(distDir);
+const historicalDiscovery = await applyHistoricalPayrollDiscovery(distDir);
 await applyCalculatorHubFreshness(distDir);
 await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
@@ -131,6 +138,7 @@ const version = {
   builtAt: new Date().toISOString(),
   contentModifiedAt: SITE_METADATA.releaseModifiedAt,
   payrollDataReviewedAt: SITE_METADATA.payrollDataReviewedAt,
+  historicalPayrollReviewedAt: SITE_METADATA.historicalPayrollReviewedAt,
   calculationEngine: payrollAudit.engineVersion,
   payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`,
   metaDescriptionsReviewed: metaDescriptionResult.scanned,
@@ -145,6 +153,8 @@ const version = {
   minimumWageCalculators: minimumWageResult.generated,
   salaryRaiseCalculators: salaryRaiseResult.generated,
   worktimeCalculators: worktimeResult.generated,
+  historicalPayrollCalculators: historicalPayrollResult.generated,
+  historicalPayrollDiscovery: historicalDiscovery.pages,
   tierCDiscovery: tierCDiscovery.tools,
   calculatorDiscovery
 };
@@ -163,6 +173,8 @@ console.log(`yıllık izin ücreti hesaplayıcıları: ${annualLeaveResult.gener
 console.log(`asgari ücret hesaplayıcıları: ${minimumWageResult.generated}`);
 console.log(`maaş zam hesaplayıcıları: ${salaryRaiseResult.generated}`);
 console.log(`Tier C çalışma/SGK hesaplayıcıları: ${worktimeResult.generated}`);
+console.log(`tarihsel maaş hesaplayıcıları: ${historicalPayrollResult.generated}`);
+console.log(`tarihsel maaş keşif yüzeyleri: ${historicalDiscovery.pages}`);
 console.log(`Tier C hub keşif araçları: ${tierCDiscovery.tools}`);
 console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);

@@ -23,6 +23,12 @@ const urls = [
   'https://maasim.net/fazla-mesai-hesaplama/',
   'https://maasim.net/yillik-izin-ucreti-hesaplama/',
   'https://maasim.net/asgari-ucret-hesaplama/',
+  'https://maasim.net/2025-maas-hesaplama/',
+  'https://maasim.net/2024-maas-hesaplama/',
+  'https://maasim.net/2023-maas-hesaplama/',
+  'https://maasim.net/2022-maas-hesaplama/',
+  'https://maasim.net/2021-maas-hesaplama/',
+  'https://maasim.net/2020-maas-hesaplama/',
   'https://maasim.net/sitemap.xml',
   ...preferred.map((post) => `https://maasim.net${blogRoute(post)}`)
 ];
