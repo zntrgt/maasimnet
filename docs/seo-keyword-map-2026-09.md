@@ -15,6 +15,7 @@ GSC verisi geldikten sonra her satıra 28 günlük impressions, clicks, CTR, ave
 | maaş hesaplama 2026 | `/` | maaş hesaplama, net maaş hesaplama | Ana sayfa sahiplenir. Ayrı generic maaş URL'si açılmaz. |
 | brütten nete maaş hesaplama | `/` | brüt net maaş, brüt maaş neti | Ana sayfa sahiplenir. |
 | netten brüte maaş hesaplama | `/` | net brüt maaş, net maaştan brüt | Ana sayfa sahiplenir. |
+| maaş zam hesaplama | `/maas-zam-hesaplama/` | yüzde zam hesaplama maaş, maaşım yüzde kaç arttı, zamlı maaş | Eski maaş, yeni maaş ve zam oranı arasındaki üç yönlü matematiksel değişim niyetinin tek owner'ı. Bordro/net-brüt niyetini sahiplenmez. |
 | asgari ücret hesaplama 2026 | `/asgari-ucret-hesaplama/` | net asgari ücret, brüt asgari ücret, günlük asgari ücret | Çalışan tarafındaki resmî brüt/net ve kesinti niyetini sahiplenir. İşveren maliyeti ayrı URL'de kalır. |
 | kıdem tazminatı hesaplama 2026 | `/kidem-tazminati-hesaplama/` | kıdem hesaplama, kıdem tazminatı ne kadar | Kıdem aracı primary owner. Kombine sayfa bu sorguyu title/H1'da tekrar hedeflemez. |
 | ihbar tazminatı hesaplama 2026 | `/ihbar-tazminati-hesaplama/` | ihbar hesaplama, ihbar süresi hesaplama | İhbar aracı primary owner. |
@@ -28,14 +29,9 @@ GSC verisi geldikten sonra her satıra 28 günlük impressions, clicks, CTR, ave
 | emekli çalışan maaş hesaplama | `/emekli-calisan-maas-hesaplama/` | SGDP maaş hesaplama | Bu URL primary owner. |
 | 2027 maaş hesaplama | `/2027-maas-hesaplama/` | 2027 brütten nete tahmin | Tahmin niteliği açıkça korunur; 2026 ana sayfayla karıştırılmaz. |
 
-## Tier B — sıradaki yüksek niyetli hesaplayıcı kümeleri
+## Tier B — tamamlandı
 
-Bu sayfalar **thin placeholder olarak açılmamalı**. Her biri gerçek çalışan hesap motoru, resmî kaynaklar, formül açıklaması, FAQ ve regression testleri hazır olduğunda yayınlanmalı.
-
-1. `/maas-zam-hesaplama/`
-   - maaş zam hesaplama
-   - yüzde zam hesaplama maaş
-   - eski maaş / yeni maaş / zam oranı üç yönlü çözüm
+İşsizlik maaşı, fazla mesai, yıllık izin ücreti, asgari ücret ve maaş zam hesaplama kümelerinin tamamı gerçek hesap motorlarıyla yayına alınmıştır. Bundan sonraki yeni hesaplayıcı sırası GSC verisiyle yeniden belirlenecektir; thin placeholder sayfa açılmaz.
 
 ## Tier C — long-tail genişleme
 
@@ -53,14 +49,16 @@ Bu sayfalar **thin placeholder olarak açılmamalı**. Her biri gerçek çalış
 
 ### Global
 
-- Header: `Araçlar` → `/hesaplama-araclari/`
-- Header: `Tazminat` → `/tazminat-hesaplama/`
-- Footer: hub + üç tazminat aracı korunur.
+- Header: `Hesaplama Araçları` → `/hesaplama-araclari/`
+- Header: `İşveren Maliyeti` → `/isveren-maliyeti-hesaplama/`
+- Header: `Kıdem & İhbar` → `/tazminat-hesaplama/`
+- Footer: hesaplama hub'ı ve çalışan hakları/tazminat araçları korunur.
 
 ### Ana sayfa
 
 Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir `Diğer hesaplama araçları` modülü bulunur. En yüksek destek verilen URL'ler:
 
+- `/maas-zam-hesaplama/`
 - `/asgari-ucret-hesaplama/`
 - `/tazminat-hesaplama/`
 - `/kidem-tazminati-hesaplama/`
@@ -73,9 +71,16 @@ Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir 
 
 ### Konu sayfaları
 
-`/veriler/2026/`, `/hesaplama-metodolojisi/`, `/sss/`, `/sozluk/`, `/senaryolar/` sayfaları maaş + asgari ücret + tazminat + işsizlik + fazla mesai + yıllık izin araçlarına bağlamsal link verir.
+`/veriler/2026/`, `/hesaplama-metodolojisi/`, `/sss/`, `/sozluk/`, `/senaryolar/` sayfaları maaş + maaş zam + asgari ücret + tazminat + işsizlik + fazla mesai + yıllık izin araçlarına bağlamsal link verir.
 
 `/blog/kidem-tazminatina-dahil-odemeler/` kıdem, ihbar, kombine tazminat ve kullanılmayan izin ücreti araçlarına link verir.
+
+### Maaş zam cluster
+
+- `maaş zam hesaplama`, `yüzde zam hesaplama maaş`, `maaşım yüzde kaç arttı`, `zamlı maaş` sorgularının tek primary owner'ı `/maas-zam-hesaplama/` olur.
+- Sayfa yalnız matematiksel yüzde değişimi çözer; `brütten nete`, `netten brüte`, vergi veya SGK hesabı ana maaş hesaplayıcısına bırakılır.
+- Net maaş ve brüt maaş için aynı yüzde formülü kullanılır ancak kullanıcı iki aynı tür tutarı karşılaştırmalıdır.
+- Ana sayfa, hesaplama hub'ı ve metodoloji/SSS/sözlük/veri sayfaları bağlamsal link verir.
 
 ### Tazminat cluster
 
@@ -116,4 +121,4 @@ Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir 
 - Impressions yüksek, position 15–40 → içerik derinliği + internal link + özgün hesap örneği artır.
 - İki URL aynı query'de impressions alıyorsa → query ownership/cannibalization kontrolü yap.
 - Calculator landing page organik session yüksek ama completion düşükse → SEO değil UX/form friksiyonu öncelik olur.
-- Yeni calculator yatırımı, Tier B içinde impressions proxy + SERP rekabeti + ürün motoru doğruluğu üçlüsüyle seçilir.
+- Yeni calculator yatırımı, impressions proxy + SERP rekabeti + ürün motoru doğruluğu üçlüsüyle seçilir.
