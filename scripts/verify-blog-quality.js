@@ -71,6 +71,18 @@ function hasType(node, type) {
   return Array.isArray(value) ? value.includes(type) : value === type;
 }
 
+function hasCardImageNearRoute(html, route, asset, maxDistance = 1600) {
+  let start = 0;
+  while (start < html.length) {
+    const routePos = html.indexOf(`href="${route}"`, start);
+    if (routePos < 0) return false;
+    const assetPos = html.indexOf(`/assets/${asset}`, routePos);
+    if (assetPos >= 0 && assetPos - routePos <= maxDistance) return true;
+    start = routePos + route.length + 7;
+  }
+  return false;
+}
+
 for (const post of indexableBlogPosts) {
   const file = join(dist, blogOutputPath(post));
   const html = await readFile(file, 'utf8');
@@ -155,9 +167,7 @@ for (const post of indexableBlogPosts) {
 
 const blogIndex = await readFile(join(dist, 'blog', 'index.html'), 'utf8');
 for (const [slug, asset] of editorialImages) {
-  const routePos = blogIndex.indexOf(`href="/blog/${slug}/"`);
-  const assetPos = blogIndex.indexOf(`/assets/${asset}`, routePos);
-  if (routePos < 0 || assetPos < 0 || assetPos - routePos > 1600) {
+  if (!hasCardImageNearRoute(blogIndex, `/blog/${slug}/`, asset)) {
     failures.push(`${slug}: blog kartında konuya özel editoryal görsel yok (${asset})`);
   }
 }
