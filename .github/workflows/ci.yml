@@ -63,6 +63,9 @@ jobs:
       - name: Verify proprietary blog data
         run: npm run verify:proprietary-data
 
+      - name: Verify termination calculators
+        run: npm run verify:termination-calculators
+
       - name: Smoke test generated output
         run: npm run smoke
 
