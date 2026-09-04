@@ -87,6 +87,9 @@ jobs:
       - name: Verify 2020-2025 historical payroll calculators
         run: npm run verify:historical-payroll
 
+      - name: Verify dedicated 2020-2025 gross-to-net pages and benchmark calculations
+        run: npm run verify:historical-brutten-nete
+
       - name: Verify sitewide contrast safety
         run: npm run verify:contrast
 
