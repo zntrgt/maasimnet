@@ -94,7 +94,8 @@ try {
   assert.match(home.text, /class="mobile-payroll-table"/);
   assert.match(home.text, /calculateAndShowPayroll\(\)/);
   assert.match(home.text, />Vergi Dilimi<\/th>/);
-  assert.match(home.text, /2027’de alabileceğin tahmini ücreti karşılaştır/i);
+  assert.match(home.text, /href="\/2027-maas-hesaplama\/">2027 brütten nete maaş hesaplama/i);
+  assert.doesNotMatch(home.text, /brütten nete veya netten brüte tahmin yap/i);
 
   const shellPages = [
     '/blog/',
@@ -115,7 +116,8 @@ try {
   }
 
   const estimate = await fetchText('/2027-maas-hesaplama/');
-  assert.match(estimate.text, /2027 Maaş Hesaplama: Brütten Nete ve Netten Brüte Tahmin/i);
+  assert.match(estimate.text, /2027 Brütten Nete Maaş Hesaplama ve Netten Brüte Tahmin/i);
+  assert.match(estimate.text, /<title>2027 Brütten Nete Maaş Hesaplama \| Netten Brüte Tahmin \| Maaşım\.net<\/title>/i);
   assert.match(estimate.text, /id="estimate-mode-gross"[^>]*aria-pressed="true"/);
   assert.match(estimate.text, /id="estimate-mode-net"[^>]*aria-pressed="false"/);
   assert.match(estimate.text, /Bu bir tahmin aracıdır/i);
