@@ -30,6 +30,7 @@ import { addHomeFreshness } from './add-home-freshness.js';
 import { addPayrollTestReport } from './add-payroll-test-report.js';
 import { applySharedShell } from './apply-shared-shell.js';
 import { applyCalculatorDiscovery } from './apply-calculator-discovery.js';
+import { applyTierCDiscovery } from './apply-tier-c-discovery.js';
 import { applyCalculatorHubFreshness } from './apply-calculator-hub-freshness.js';
 import { applyCalculatorNavLink } from './apply-calculator-nav-link.js';
 import { applyConsentManagement } from './apply-consent-management.js';
@@ -102,6 +103,7 @@ const editorialAuthorityResult = await addEditorialAuthority(distDir);
 await addHomeFreshness(distDir);
 const payrollAudit = await addPayrollTestReport(distDir);
 const calculatorDiscovery = await applyCalculatorDiscovery(distDir);
+const tierCDiscovery = await applyTierCDiscovery(distDir);
 await applyCalculatorHubFreshness(distDir);
 await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
@@ -141,6 +143,7 @@ const version = {
   minimumWageCalculators: minimumWageResult.generated,
   salaryRaiseCalculators: salaryRaiseResult.generated,
   worktimeCalculators: worktimeResult.generated,
+  tierCDiscovery: tierCDiscovery.tools,
   calculatorDiscovery
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
@@ -158,6 +161,7 @@ console.log(`yıllık izin ücreti hesaplayıcıları: ${annualLeaveResult.gener
 console.log(`asgari ücret hesaplayıcıları: ${minimumWageResult.generated}`);
 console.log(`maaş zam hesaplayıcıları: ${salaryRaiseResult.generated}`);
 console.log(`Tier C çalışma/SGK hesaplayıcıları: ${worktimeResult.generated}`);
+console.log(`Tier C hub keşif araçları: ${tierCDiscovery.tools}`);
 console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
