@@ -3,7 +3,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
-const sourceDir = join(root, 'assets-source', 'direct');
+const directDir = join(root, 'assets-source', 'direct');
+const encodedDir = join(root, 'assets-source', 'encoded');
 
 export const blogImageAssignments = Object.freeze([
   {
@@ -55,6 +56,60 @@ export const blogImageAssignments = Object.freeze([
     slug: 'maas-hesaplama-siteleri-neden-farkli',
     asset: 'maas-hesaplama-siteleri-neden-farkli-editorial.webp',
     alt: 'Maaş hesaplama sonuçlarını belgeler ve bilgisayar üzerinden karşılaştıran Türk profesyoneller'
+  },
+  {
+    slug: '2026-yemek-karti-istisnasi',
+    asset: '2026-yemek-karti-istisnasi-editorial.webp',
+    alt: 'Ofiste yemek kartı ve öğle yemeği yan hakkını değerlendiren Türk çalışan',
+    encoded: true
+  },
+  {
+    slug: '2026-sgk-tavani',
+    asset: '2026-sgk-tavani-editorial.webp',
+    alt: 'SGK tavanı ve bordro maliyetlerini hesaplayan Türk profesyonel',
+    encoded: true
+  },
+  {
+    slug: '100000-tl-brut-maas-neti-2026',
+    asset: '100000-tl-brut-maas-neti-2026-editorial.webp',
+    alt: 'Brüt maaşın yıl içindeki net değişimini bordro ekranından inceleyen Türk çalışan',
+    encoded: true
+  },
+  {
+    slug: 'prim-ikramiye-net-maasi-neden-dusurur',
+    asset: 'prim-ikramiye-net-maasi-neden-dusurur-editorial.webp',
+    alt: 'Prim ve ikramiyenin net maaşa etkisini hesaplayan Türk çalışan',
+    encoded: true
+  },
+  {
+    slug: 'kidem-tazminatina-dahil-odemeler',
+    asset: 'kidem-tazminatina-dahil-odemeler-editorial.webp',
+    alt: 'Kıdem tazminatına dahil ödeme kalemlerini iş hukuku notlarıyla inceleyen Türk profesyonel',
+    encoded: true
+  },
+  {
+    slug: 'ev-ofis-destegi-vergi',
+    asset: 'ev-ofis-destegi-vergi-editorial.webp',
+    alt: 'Evden çalışma desteği ve vergi etkisini bilgisayar başında değerlendiren Türk çalışan',
+    encoded: true
+  },
+  {
+    slug: 'mental-saglik-yan-haklari-burnout',
+    asset: 'mental-saglik-yan-haklari-burnout-editorial.webp',
+    alt: 'Mental sağlık ve çalışan wellbeing yan haklarını değerlendiren Türk profesyonel',
+    encoded: true
+  },
+  {
+    slug: 'sirket-destekli-spor-wellness',
+    asset: 'sirket-destekli-spor-wellness-editorial.webp',
+    alt: 'Şirket destekli spor ve wellness yan haklarını değerlendiren Türk çalışan',
+    encoded: true
+  },
+  {
+    slug: 'yasam-evresine-gore-yan-haklar',
+    asset: 'yasam-evresine-gore-yan-haklar-editorial.webp',
+    alt: 'Aile yaşam evresine göre yan hak seçeneklerini değerlendiren Türk çalışan ve çocuğu',
+    encoded: true
   }
 ]);
 
@@ -67,6 +122,19 @@ function replaceAttribute(attributes, name, value) {
   return pattern.test(attributes)
     ? attributes.replace(pattern, `${name}="${value}"`)
     : `${attributes} ${name}="${value}"`;
+}
+
+async function materializeAsset(post, assetDir) {
+  const destination = join(assetDir, post.asset);
+  if (!post.encoded) {
+    await cp(join(directDir, post.asset), destination);
+    return;
+  }
+
+  const encoded = await readFile(join(encodedDir, `${post.asset}.b64`), 'utf8');
+  const bytes = Buffer.from(encoded.trim(), 'base64');
+  if (!bytes.length) throw new Error(`Encoded editorial image is empty: ${post.asset}`);
+  await writeFile(destination, bytes);
 }
 
 function updateHero(html, post) {
@@ -130,7 +198,7 @@ export async function applyBlogImages(dist) {
   await mkdir(assetDir, { recursive: true });
 
   for (const post of blogImageAssignments) {
-    await cp(join(sourceDir, post.asset), join(assetDir, post.asset));
+    await materializeAsset(post, assetDir);
 
     const articlePath = join(dist, 'blog', post.slug, 'index.html');
     const articleHtml = await readFile(articlePath, 'utf8');
