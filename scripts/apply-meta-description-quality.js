@@ -2,7 +2,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
 const MIN_LENGTH = 105;
-const TARGET_MAX = 175;
+const TARGET_MAX = 158;
 
 const normalize = (value = '') => String(value)
   .replace(/&amp;/gi, '&')
@@ -73,7 +73,7 @@ function routeSpecificDescription(route, h1, current) {
     ['/sozluk/', 'Maaş, bordro, gelir vergisi, SGK ve çalışan yan haklarıyla ilgili temel kavramların güncel ve anlaşılır açıklamalarını Maaşım.net sözlüğünde inceleyin.'],
     ['/metodoloji/', 'Maaşım.net hesap motorunun kullandığı 2026 verilerini, vergi ve SGK varsayımlarını, formülleri, yuvarlama yöntemini ve doğrulama yaklaşımını inceleyin.']
   ]);
-  if (fixed.has(route)) return fixed.get(route);
+  if (fixed.has(route)) return trimAtWord(fixed.get(route));
 
   if (/^\/blog\//.test(route)) {
     const suffix = ' Güncel kaynaklar, örnekler ve Maaşım.net hesaplama araçlarıyla konunun maaş ve çalışma hayatına etkisini inceleyin.';
@@ -86,13 +86,13 @@ function routeSpecificDescription(route, h1, current) {
     return trimAtWord(`${h1 || 'Maaş senaryosu'} için 2026 vergi ve SGK parametreleriyle aylık ve yıllık net maaş etkilerini karşılaştırın; bordro değişimini ayrıntılı inceleyin.`);
   }
   if (/iletisim/.test(route)) {
-    return 'Maaşım.net ile iletişime geçin; maaş hesaplama, bordro verileri, içerik düzeltmeleri ve site geri bildirimleriyle ilgili mesajınızı güvenli biçimde iletin.';
+    return trimAtWord('Maaşım.net ile iletişime geçin; maaş hesaplama, bordro verileri, içerik düzeltmeleri ve site geri bildirimleriyle ilgili mesajınızı güvenli biçimde iletin.');
   }
   if (/gizlilik|privacy/.test(route)) {
-    return 'Maaşım.net gizlilik yaklaşımını, kişisel verilerin hangi amaçlarla işlendiğini, saklama ve güvenlik ilkelerini ve kullanıcı haklarını bu sayfada inceleyin.';
+    return trimAtWord('Maaşım.net gizlilik yaklaşımını, kişisel verilerin hangi amaçlarla işlendiğini, saklama ve güvenlik ilkelerini ve kullanıcı haklarını bu sayfada inceleyin.');
   }
   if (/cerez|cookie/.test(route)) {
-    return 'Maaşım.net çerez politikasını, zorunlu ve isteğe bağlı çerez kategorilerini, ölçüm amaçlarını ve çerez tercihlerinizi nasıl değiştireceğinizi inceleyin.';
+    return trimAtWord('Maaşım.net çerez politikasını, zorunlu ve isteğe bağlı çerez kategorilerini, ölçüm amaçlarını ve çerez tercihlerinizi nasıl değiştireceğinizi inceleyin.');
   }
 
   const lead = current || `${h1 || 'Bu sayfa'} hakkında güncel bilgi`;
@@ -126,9 +126,10 @@ export async function applyMetaDescriptionQuality(distDir) {
     const current = existingDescription(html);
     let description = current;
 
-    if (description.length < MIN_LENGTH) {
+    if (description.length < MIN_LENGTH || description.length > TARGET_MAX) {
       description = routeSpecificDescription(route, h1, description);
     }
+    description = trimAtWord(description);
 
     if (description !== current) {
       html = setDescription(html, description);
