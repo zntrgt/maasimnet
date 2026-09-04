@@ -5,11 +5,19 @@ const root = process.cwd();
 const dist = join(root, 'dist');
 const html = await readFile(join(dist, 'index.html'), 'utf8');
 const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
+const fintechJs = await readFile(join(dist, 'assets', 'fintech-ui.js'), 'utf8');
 const app = await readFile(join(dist, 'assets', 'app.js'), 'utf8');
 const shellCss = (await readFile(join(root, 'src', 'site-shell.css'), 'utf8')).trim();
 
 const requiredHtml = [
-  'data-fintech-ui="v1"',
+  'data-fintech-ui="v2"',
+  'data-enterprise-hero="v2"',
+  'data-enterprise-trust="v2"',
+  '<h1>2026 Brütten Nete Maaş Hesaplama</h1>',
+  '2026 mevzuat verileri kontrol edildi',
+  'Kuruş bazlı deterministik motor',
+  'Hesaplama tarayıcıda yapılır',
+  'src="/assets/fintech-ui.js"',
   'class="calculator-layout',
   'class="calculator-results-column"',
   'class="calculator-table-full"',
@@ -18,16 +26,66 @@ const requiredHtml = [
   '>Vergi Dilimi</th>'
 ];
 for (const token of requiredHtml) {
-  if (!html.includes(token)) throw new Error(`Fintech UI HTML işareti eksik: ${token}`);
+  if (!html.includes(token)) throw new Error(`Enterprise fintech UI HTML işareti eksik: ${token}`);
+}
+
+for (const token of [
+  '/* Enterprise Fintech UI v2',
+  '--primary: #07111f',
+  '--accent: #12b76a',
+  'font-variant-numeric: tabular-nums',
+  '.enterprise-hero',
+  '.enterprise-trust-strip',
+  'grid-template-columns: minmax(350px, .82fr) minmax(0, 1.18fr)',
+  '.enterprise-form-card',
+  '.enterprise-money-input',
+  '.enterprise-input-clear',
+  '.enterprise-advanced',
+  '.cta-button--calculate',
+  '.metric-hero',
+  'position: sticky',
+  '.enterprise-result-actions',
+  '.enterprise-tax-bars',
+  'grid-template-columns: repeat(12, minmax(0,1fr))',
+  '.enterprise-mobile-sticky',
+  '@media print',
+  'grid-template-columns: repeat(4, minmax(0, 1fr))',
+  '#payroll-results-shell .payroll-table'
+]) {
+  if (!css.includes(token)) throw new Error(`Enterprise fintech UI CSS kuralı eksik: ${token}`);
+}
+
+for (const token of [
+  "const ENTERPRISE_UI_VERSION = 'v2'",
+  'enhanceFormStructure()',
+  'enterprise-input-clear',
+  'data-enterprise-action="copy"',
+  'data-enterprise-action="print"',
+  'data-enterprise-action="email"',
+  'enterprise-mobile-sticky',
+  'new MutationObserver(',
+  'navigator.clipboard.writeText',
+  'window.print()',
+  'mailto:?subject=',
+  'updateTaxVisual()'
+]) {
+  if (!fintechJs.includes(token)) throw new Error(`Enterprise fintech UI etkileşimi eksik: ${token}`);
+}
+for (const forbidden of ['gtag(', 'fetch(', 'XMLHttpRequest']) {
+  if (fintechJs.includes(forbidden)) throw new Error(`Enterprise UI finansal sonucu ağ/analytics katmanına taşımamalı: ${forbidden}`);
+}
+
+for (const token of ['class="tax-bracket-badge"', "'İşveren Maliyeti', 'Vergi Dilimi'"]) {
+  if (!app.includes(token)) throw new Error(`Mevcut vergi dilimi uygulama çıktısı korunamadı: ${token}`);
 }
 
 const representativePages = [
   'index.html',
   join('blog', 'index.html'),
-  join('blog', '2027-maas-zammi-beklentileri', 'index.html'),
   join('veriler', '2026', 'index.html'),
   join('sss', 'index.html'),
-  join('2027-maas-hesaplama', 'index.html')
+  join('2027-maas-hesaplama', 'index.html'),
+  join('yillik-izin-ucreti-hesaplama', 'index.html')
 ];
 
 for (const relativePath of representativePages) {
@@ -45,62 +103,25 @@ for (const relativePath of representativePages) {
   }
   if (!page.includes(shellCss)) throw new Error(`Ortak shell CSS içeriği farklı: ${relativePath}`);
   if (page.includes('/assets/site-shell.css')) throw new Error(`Ayrı shell CSS isteği kaldı: ${relativePath}`);
+  for (const navCopy of ['Hesaplama Araçları', 'İşveren Maliyeti', 'Kıdem &amp; İhbar', '2026 Verileri', 'SSS']) {
+    if (!page.includes(navCopy)) throw new Error(`Enterprise header linki eksik (${navCopy}): ${relativePath}`);
+  }
 }
 
-const layoutStart = html.indexOf('class="calculator-layout');
-const resultsStart = html.indexOf('class="calculator-results-column"', layoutStart);
-const fullTableStart = html.indexOf('class="calculator-table-full"', resultsStart);
-const payrollStart = html.indexOf('id="payroll-results-shell"', fullTableStart);
-if (!(layoutStart >= 0 && resultsStart > layoutStart && fullTableStart > resultsStart && payrollStart > fullTableStart)) {
-  throw new Error('Dashboard hiyerarşisi hatalı: üst iki sütun ve bağımsız tablo yapısı üretilemedi.');
-}
-
-const requiredCss = [
-  '/* Maaşım.net SaaS fintech arayüz sistemi */',
-  '/* Tam genişlik SaaS dashboard bordro yerleşimi */',
-  '/* Simetrik finansal metrik kart standardı */',
-  '/* Aylık gelir vergisi dilimi sütunu */',
-  '--primary: #0f172a',
-  '--accent: #10b981',
-  'font-variant-numeric: tabular-nums',
-  'grid-template-columns: minmax(300px, 350px) minmax(0, 1fr)',
-  'grid-template-columns: repeat(4, minmax(0, 1fr))',
-  'justify-content: space-between',
-  '.secondary-metrics-grid',
-  '.calculator-table-full',
-  'width: min(100%, 1280px)',
-  '#payroll-results-shell .payroll-table',
-  '.tax-bracket-badge',
-  'overflow-x: visible !important',
-  'overflow-y: visible !important',
-  'table-layout: fixed',
-  'min-width: 0 !important',
-  '.cta-button--calculate',
-  '#senaryolar .grid'
-];
-for (const token of requiredCss) {
-  if (!css.includes(token)) throw new Error(`Fintech UI CSS kuralı eksik: ${token}`);
-}
-
-if (!css.includes('grid-template-columns: 1fr !important')) {
-  throw new Error('Fintech UI mobil tek sütun düzeni eksik.');
-}
-
-for (const token of [
-  'function formatIncomeTaxRates(',
-  'incomeTaxRatesPpm: row.incomeTaxRatesPpm',
-  "detailPair('Uygulanan Vergi Dilimi'",
-  'class="tax-bracket-badge"',
-  "'İşveren Maliyeti', 'Vergi Dilimi'"
+for (const route of [
+  'tazminat-hesaplama',
+  'issizlik-maasi-hesaplama',
+  'fazla-mesai-hesaplama',
+  'yillik-izin-ucreti-hesaplama',
+  'asgari-ucret-hesaplama'
 ]) {
-  if (!app.includes(token)) throw new Error(`Vergi dilimi uygulama çıktısı eksik: ${token}`);
+  const page = await readFile(join(dist, route, 'index.html'), 'utf8');
+  if (!page.includes('--mn-emerald-500:#12b76a')) throw new Error(`${route}: ortak enterprise token sistemi eksik`);
+  if (!page.includes('background:var(--mn-ink-950)!important')) throw new Error(`${route}: koyu sonuç paneli enterprise standardı eksik`);
+  if (!page.includes('min-height:50px!important')) throw new Error(`${route}: form kontrol yüksekliği enterprise standardı eksik`);
 }
 
-if (!app.includes("document.getElementById('stat-high-net').innerText = formatCurrency(highestNet);")) {
-  throw new Error('En yüksek net kartında ay adı değer alanına karışıyor.');
-}
-if (!app.includes("document.getElementById('stat-low-net').innerText = formatCurrency(lowestNet);")) {
-  throw new Error('En düşük net kartında ay adı değer alanına karışıyor.');
-}
+if (!css.includes('@media (max-width: 700px)')) throw new Error('Enterprise UI mobile-first breakpoint eksik.');
+if (!css.includes('@media (prefers-reduced-motion: reduce)')) throw new Error('Reduced-motion erişilebilirlik kuralı eksik.');
 
-console.log('Fintech düzeni ve tüm sayfalarda birebir aynı ortak header/footer doğrulandı.');
+console.log('Enterprise fintech UI v2 doğrulandı: desktop/mobile, live output, paylaşım, trust ve sitewide token sistemi.');

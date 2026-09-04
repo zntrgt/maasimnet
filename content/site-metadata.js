@@ -9,11 +9,11 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-04',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.16.0-annual-leave-minimum-wage-calculators'
+  releaseVersion: '1.17.0-enterprise-fintech-ui-v2'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
-  '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-08-01' }),
+  '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-04' }),
   '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-08-01' }),
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),

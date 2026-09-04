@@ -66,7 +66,7 @@ for (const file of [
   'overtime-engine.js','overtime-calculator.js','overtime-calculator.css',
   'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
   'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
-  'site-shell.css','site-shell.js'
+  'fintech-ui.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await fixCalculatorAnalyticsInputReset(distDir);
