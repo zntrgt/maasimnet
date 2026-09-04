@@ -1,0 +1,55 @@
+/*
+  Strict-Transport-Security: max-age=2592000; includeSubDomains
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+
+/assets/*.js
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=604800, stale-while-revalidate=2592000
+
+/assets/*.mjs
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=604800, stale-while-revalidate=2592000
+
+/assets/*.css
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=604800, stale-while-revalidate=2592000
+
+/assets/*.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=604800, stale-while-revalidate=2592000
+
+/assets/*.webp
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=2592000, stale-while-revalidate=2592000
+
+/assets/*.avif
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=2592000, stale-while-revalidate=2592000
+
+/assets/*.png
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=2592000, stale-while-revalidate=2592000
+
+/assets/*.jpg
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=2592000, stale-while-revalidate=2592000
+
+/assets/*.jpeg
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=2592000, stale-while-revalidate=2592000
+
+/assets/*.svg
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+  CDN-Cache-Control: public, s-maxage=2592000, stale-while-revalidate=2592000
+
+/*.xml
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  CDN-Cache-Control: public, s-maxage=86400, stale-while-revalidate=604800
+
+/*.txt
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  CDN-Cache-Control: public, s-maxage=86400, stale-while-revalidate=604800
