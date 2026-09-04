@@ -36,6 +36,7 @@ function setupLayoutDebug() {
     const data = {
       innerWidth: window.innerWidth,
       clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
       outerWidth: window.outerWidth,
       dpr: window.devicePixelRatio,
       vvWidth: vv ? Math.round(vv.width * 100) / 100 : null,
@@ -58,11 +59,79 @@ function setupLayoutDebug() {
   window.setInterval(update, 500);
 }
 
+function isIosWebKit() {
+  const ua = navigator.userAgent || '';
+  const platform = navigator.platform || '';
+  const touchMac = platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  return /iPhone|iPad|iPod/.test(ua) || touchMac;
+}
+
+function setupIosViewportRecovery(input) {
+  if (!input || !isIosWebKit() || !window.visualViewport) return;
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+  if (!viewportMeta) return;
+
+  const originalContent = viewportMeta.getAttribute('content') || 'width=device-width, initial-scale=1';
+  const baselineClientWidth = document.documentElement.clientWidth;
+  let interactionUntil = 0;
+  let recovering = false;
+
+  const markInteraction = () => {
+    interactionUntil = Date.now() + 1800;
+  };
+
+  const needsRecovery = () => {
+    if (recovering || Date.now() > interactionUntil) return false;
+    const scale = window.visualViewport?.scale || 1;
+    const clientWidth = document.documentElement.clientWidth;
+    const stableLayout = Math.abs(clientWidth - baselineClientWidth) <= 2;
+    const visualExpanded = window.innerWidth > clientWidth * 1.08;
+    return stableLayout && visualExpanded && scale < 0.92;
+  };
+
+  const recover = () => {
+    if (!needsRecovery()) return;
+    recovering = true;
+    const normalized = originalContent
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .filter((part) => !/^initial-scale=/i.test(part) && !/^minimum-scale=/i.test(part) && !/^maximum-scale=/i.test(part));
+    viewportMeta.setAttribute('content', [...normalized, 'initial-scale=1', 'minimum-scale=1', 'maximum-scale=1'].join(', '));
+    window.requestAnimationFrame(() => {
+      window.setTimeout(() => {
+        viewportMeta.setAttribute('content', originalContent);
+        recovering = false;
+      }, 140);
+    });
+  };
+
+  const scheduleRecovery = () => {
+    for (const delay of [0, 80, 180, 320, 600]) window.setTimeout(recover, delay);
+  };
+
+  input.addEventListener('focus', () => {
+    markInteraction();
+    scheduleRecovery();
+  });
+  input.addEventListener('input', () => {
+    markInteraction();
+    scheduleRecovery();
+  });
+  input.addEventListener('blur', () => {
+    markInteraction();
+    scheduleRecovery();
+  });
+  window.visualViewport.addEventListener('resize', recover, { passive: true });
+}
+
 function setupMobileStickyUx() {
   const sticky = qs('.enterprise-mobile-sticky');
   const result = qs('.metric-hero');
   const input = qs('#input-salary');
   if (!sticky || !result || !input) return;
+
+  setupIosViewportRecovery(input);
 
   let resultVisible = false;
   const refresh = () => {
