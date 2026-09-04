@@ -25,6 +25,7 @@ import { addSalaryRaiseCalculator } from './add-salary-raise-calculator.js';
 import { addWorktimeCalculators } from './add-worktime-calculators.js';
 import { applyWorktimeFreshness } from './apply-worktime-freshness.js';
 import { addHistoricalPayrollCalculators } from './add-historical-payroll-calculators.js';
+import { addHistoricalGrossToNetPages } from './add-historical-brutten-nete-pages.js';
 import { applyHistoricalPayrollFreshness } from './apply-historical-payroll-freshness.js';
 import { addContactPage } from './add-contact-page.js';
 import { addEditorialAuthority } from './add-editorial-authority.js';
@@ -35,6 +36,7 @@ import { applySharedShell } from './apply-shared-shell.js';
 import { applyCalculatorDiscovery } from './apply-calculator-discovery.js';
 import { applyTierCDiscovery } from './apply-tier-c-discovery.js';
 import { applyHistoricalPayrollDiscovery } from './apply-historical-payroll-discovery.js';
+import { applyHistoricalGrossToNetDiscovery } from './apply-historical-brutten-nete-discovery.js';
 import { applyCalculatorHubFreshness } from './apply-calculator-hub-freshness.js';
 import { applyCalculatorNavLink } from './apply-calculator-nav-link.js';
 import { applyConsentManagement } from './apply-consent-management.js';
@@ -104,6 +106,7 @@ const salaryRaiseResult = await addSalaryRaiseCalculator(distDir);
 const worktimeResult = await addWorktimeCalculators(distDir);
 await applyWorktimeFreshness(distDir);
 const historicalPayrollResult = await addHistoricalPayrollCalculators(distDir);
+const historicalGrossToNetResult = await addHistoricalGrossToNetPages(distDir);
 await applyHistoricalPayrollFreshness(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
@@ -113,6 +116,7 @@ const payrollAudit = await addPayrollTestReport(distDir);
 const calculatorDiscovery = await applyCalculatorDiscovery(distDir);
 const tierCDiscovery = await applyTierCDiscovery(distDir);
 const historicalDiscovery = await applyHistoricalPayrollDiscovery(distDir);
+const historicalGrossToNetDiscovery = await applyHistoricalGrossToNetDiscovery(distDir);
 await applyCalculatorHubFreshness(distDir);
 await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
@@ -154,7 +158,9 @@ const version = {
   salaryRaiseCalculators: salaryRaiseResult.generated,
   worktimeCalculators: worktimeResult.generated,
   historicalPayrollCalculators: historicalPayrollResult.generated,
+  historicalGrossToNetPages: historicalGrossToNetResult.generated,
   historicalPayrollDiscovery: historicalDiscovery.pages,
+  historicalGrossToNetDiscovery: historicalGrossToNetDiscovery.pages,
   tierCDiscovery: tierCDiscovery.tools,
   calculatorDiscovery
 };
@@ -174,7 +180,9 @@ console.log(`asgari ücret hesaplayıcıları: ${minimumWageResult.generated}`);
 console.log(`maaş zam hesaplayıcıları: ${salaryRaiseResult.generated}`);
 console.log(`Tier C çalışma/SGK hesaplayıcıları: ${worktimeResult.generated}`);
 console.log(`tarihsel maaş hesaplayıcıları: ${historicalPayrollResult.generated}`);
+console.log(`tarihsel brütten nete sayfaları: ${historicalGrossToNetResult.generated}`);
 console.log(`tarihsel maaş keşif yüzeyleri: ${historicalDiscovery.pages}`);
+console.log(`tarihsel brütten nete keşif yüzeyleri: ${historicalGrossToNetDiscovery.pages}`);
 console.log(`Tier C hub keşif araçları: ${tierCDiscovery.tools}`);
 console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
