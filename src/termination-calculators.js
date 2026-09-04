@@ -191,15 +191,17 @@ if (typeof document !== 'undefined') {
           incomeExemptionProvided: Boolean(inputValue(form, 'remainingIncomeTaxExemption').trim()),
           stampExemptionProvided: Boolean(inputValue(form, 'remainingStampTaxExemption').trim())
         };
+        const severanceRoot = root.querySelector('[data-severance-results]') || root;
+        const noticeRoot = root.querySelector('[data-notice-results]') || root;
 
         if (type === 'severance') {
-          renderSeverance(root, calculateSeverance(input), taxOptions.stampExemptionProvided);
+          renderSeverance(severanceRoot, calculateSeverance(input), taxOptions.stampExemptionProvided);
         } else if (type === 'notice') {
-          renderNotice(root, calculateNotice(input), taxOptions);
+          renderNotice(noticeRoot, calculateNotice(input), taxOptions);
         } else {
           const result = calculateTerminationPackage(input);
-          renderSeverance(root, result.severance, taxOptions.stampExemptionProvided);
-          renderNotice(root, result.notice, taxOptions);
+          renderSeverance(severanceRoot, result.severance, taxOptions.stampExemptionProvided);
+          renderNotice(noticeRoot, result.notice, taxOptions);
           setText(root, '[data-result="package-gross"]', formatMoney(result.grossTotalKurus));
           setText(root, '[data-result="package-net"]', formatMoney(result.netTotalKurus));
         }
