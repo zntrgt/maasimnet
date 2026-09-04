@@ -1,5 +1,5 @@
 {
-  "version": "2.3.0",
+  "version": "2.4.0",
   "title": "Maaşım.net Search, AI Visibility ve Hesaplama Funnel Dashboard",
   "owner": "Growth / SEO",
   "timezone": "Europe/Istanbul",
@@ -24,14 +24,7 @@
       "measurement_id": "G-988BB5B64E",
       "property_id": "REQUIRED_AT_CONNECTION_TIME",
       "connection_mode": "Looker Studio GA4 connector",
-      "dimensions": [
-        "date",
-        "landingPagePlusQueryString",
-        "sessionDefaultChannelGroup",
-        "sessionSourceMedium",
-        "deviceCategory",
-        "eventName"
-      ],
+      "dimensions": ["date", "landingPagePlusQueryString", "sessionDefaultChannelGroup", "sessionSourceMedium", "deviceCategory", "eventName"],
       "metrics": ["sessions", "activeUsers", "eventCount", "keyEvents"]
     },
     "bing_webmaster_tools": {
@@ -87,25 +80,12 @@
     "calculator_csv_download",
     "termination_calculator_complete",
     "unemployment_calculator_complete",
-    "overtime_calculator_complete"
+    "overtime_calculator_complete",
+    "annual_leave_calculator_complete",
+    "minimum_wage_calculator_complete"
   ],
   "registered_custom_dimensions": [
-    "calculation_direction",
-    "calculator_mode",
-    "scenario_type",
-    "salary_range",
-    "range_version",
-    "salary_change_count",
-    "has_salary_change",
-    "has_employer_change",
-    "start_month",
-    "result_tax_bracket",
-    "effective_deduction_range",
-    "month_number",
-    "override_type",
-    "detail_action",
-    "input_method",
-    "calculator_type"
+    "calculation_direction", "calculator_mode", "scenario_type", "salary_range", "range_version", "salary_change_count", "has_salary_change", "has_employer_change", "start_month", "result_tax_bracket", "effective_deduction_range", "month_number", "override_type", "detail_action", "input_method", "calculator_type"
   ],
   "normalized_fields": {
     "gsc_landing_page_path": "REGEXP_REPLACE(Page, '^https?://[^/]+', '')",
@@ -123,148 +103,72 @@
     "organic_termination_completion_rate": "termination_calculator_complete / organic_termination_landing_sessions",
     "organic_unemployment_completion_rate": "unemployment_calculator_complete / organic_unemployment_landing_sessions",
     "organic_overtime_completion_rate": "overtime_calculator_complete / organic_overtime_landing_sessions",
+    "organic_annual_leave_completion_rate": "annual_leave_calculator_complete / organic_annual_leave_landing_sessions",
+    "organic_minimum_wage_completion_rate": "minimum_wage_calculator_complete / organic_minimum_wage_landing_sessions",
     "google_ai_visibility_change": "current_period_google_generative_ai_impressions vs previous_period_google_generative_ai_impressions",
     "bing_citation_change": "current_period_total_citations vs previous_period_total_citations"
   },
   "pages": [
     {
       "name": "Yönetici Özeti",
-      "scorecards": [
-        "GSC impressions",
-        "GSC clicks",
-        "GSC CTR",
-        "Average position",
-        "Google Generative AI impressions",
-        "Bing AI citations",
-        "Organic landing sessions",
-        "Salary calculations completed",
-        "Termination calculations completed",
-        "Unemployment calculations completed",
-        "Overtime calculations completed",
-        "Organic session to completion rate"
-      ],
-      "charts": [
-        "Daily clicks and organic calculation completions",
-        "Google Generative AI impression trend",
-        "Bing citation trend",
-        "Landing page funnel",
-        "Top landing pages by completed calculation"
-      ]
+      "scorecards": ["GSC impressions", "GSC clicks", "GSC CTR", "Average position", "Google Generative AI impressions", "Bing AI citations", "Organic landing sessions", "Salary calculations completed", "Termination calculations completed", "Unemployment calculations completed", "Overtime calculations completed", "Annual leave calculations completed", "Minimum wage calculations completed", "Organic session to completion rate"],
+      "charts": ["Daily clicks and organic calculation completions", "Google Generative AI impression trend", "Bing citation trend", "Landing page funnel", "Top landing pages by completed calculation"]
     },
     {
       "name": "Sorgu ve Landing Page",
-      "tables": [
-        "Query > landing page: impressions, clicks, CTR, position",
-        "Landing page: organic sessions, salary calculation events, termination, unemployment and overtime calculation completions and completion rate"
-      ],
+      "tables": ["Query > landing page: impressions, clicks, CTR, position", "Landing page: organic sessions and all calculator completion events at landing-page grain"],
       "interaction": "Selecting a query filters the landing page table through its page path; conversion counts remain at landing-page grain."
     },
     {
       "name": "Hesaplayıcı Funnel",
-      "funnel": [
-        "calculator_view",
-        "salary_input_started",
-        "salary_calculation_completed",
-        "salary_results_viewed",
-        "payroll_detail_toggle open",
-        "calculator_csv_download"
-      ],
-      "breakdowns": [
-        "calculation_direction",
-        "salary_range",
-        "scenario_type",
-        "deviceCategory",
-        "landing page"
-      ]
+      "funnel": ["calculator_view", "salary_input_started", "salary_calculation_completed", "salary_results_viewed", "payroll_detail_toggle open", "calculator_csv_download"],
+      "breakdowns": ["calculation_direction", "salary_range", "scenario_type", "deviceCategory", "landing page"]
     },
     {
       "name": "Tazminat Hesaplayıcıları",
-      "scorecards": [
-        "Termination landing sessions",
-        "Termination calculations completed",
-        "Organic termination calculations completed",
-        "Organic termination session to completion rate"
-      ],
-      "tables": [
-        "Termination landing page by sessions, completions and completion rate",
-        "Calculator type by completions and device category"
-      ],
-      "breakdowns": [
-        "calculator_type",
-        "deviceCategory",
-        "landing page",
-        "sessionDefaultChannelGroup"
-      ],
+      "scorecards": ["Termination landing sessions", "Termination calculations completed", "Organic termination calculations completed", "Organic termination session to completion rate"],
+      "tables": ["Termination landing page by sessions, completions and completion rate", "Calculator type by completions and device category"],
+      "breakdowns": ["calculator_type", "deviceCategory", "landing page", "sessionDefaultChannelGroup"],
       "guardrail": "Do not collect or report salary, severance, notice, tax-base or date inputs; only the categorical calculator_type is allowed."
     },
     {
       "name": "İşsizlik Maaşı Hesaplayıcı",
-      "scorecards": [
-        "Unemployment landing sessions",
-        "Unemployment calculations completed",
-        "Organic unemployment calculations completed",
-        "Organic unemployment session to completion rate"
-      ],
-      "tables": [
-        "Unemployment landing page by channel, sessions, completions and completion rate",
-        "Unemployment completion trend by device category"
-      ],
-      "breakdowns": [
-        "deviceCategory",
-        "landing page",
-        "sessionDefaultChannelGroup"
-      ],
+      "scorecards": ["Unemployment landing sessions", "Unemployment calculations completed", "Organic unemployment calculations completed", "Organic unemployment session to completion rate"],
+      "tables": ["Unemployment landing page by channel, sessions, completions and completion rate", "Unemployment completion trend by device category"],
+      "breakdowns": ["deviceCategory", "landing page", "sessionDefaultChannelGroup"],
       "guardrail": "unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs"
     },
     {
       "name": "Fazla Mesai Hesaplayıcı",
-      "scorecards": [
-        "Overtime landing sessions",
-        "Overtime calculations completed",
-        "Organic overtime calculations completed",
-        "Organic overtime session to completion rate"
-      ],
-      "tables": [
-        "Overtime landing page by channel, sessions, completions and completion rate",
-        "Overtime completion trend by device category"
-      ],
-      "breakdowns": [
-        "deviceCategory",
-        "landing page",
-        "sessionDefaultChannelGroup"
-      ],
+      "scorecards": ["Overtime landing sessions", "Overtime calculations completed", "Organic overtime calculations completed", "Organic overtime session to completion rate"],
+      "tables": ["Overtime landing page by channel, sessions, completions and completion rate", "Overtime completion trend by device category"],
+      "breakdowns": ["deviceCategory", "landing page", "sessionDefaultChannelGroup"],
       "guardrail": "overtime_calculator_complete must not contain salary, overtime-hours, tax-base, retirement or disability inputs"
     },
     {
+      "name": "Yıllık İzin Ücreti Hesaplayıcı",
+      "scorecards": ["Annual leave landing sessions", "Annual leave calculations completed", "Organic annual leave session to completion rate"],
+      "tables": ["Annual leave landing page by channel, sessions, completions and completion rate", "Annual leave completion trend by device category"],
+      "breakdowns": ["deviceCategory", "landing page", "sessionDefaultChannelGroup"],
+      "guardrail": "annual_leave_calculator_complete must not contain salary, unused-leave-days, premium-days, tax-base, retirement or disability inputs"
+    },
+    {
+      "name": "Asgari Ücret Hesaplayıcı",
+      "scorecards": ["Minimum wage landing sessions", "Minimum wage calculations completed", "Organic minimum wage session to completion rate"],
+      "tables": ["Minimum wage landing page by channel, sessions, completions and completion rate", "Minimum wage completion trend by device category"],
+      "breakdowns": ["deviceCategory", "landing page", "sessionDefaultChannelGroup"],
+      "guardrail": "minimum_wage_calculator_complete must not contain month-count or any financial input values"
+    },
+    {
       "name": "AI Search Görünürlüğü",
-      "scorecards": [
-        "Google Generative AI impressions",
-        "Bing total citations",
-        "Bing average cited pages",
-        "GA4 AI referral sessions"
-      ],
-      "tables": [
-        "Google Generative AI pages by impressions",
-        "Google Generative AI visibility by country and device",
-        "Bing cited pages by citation count",
-        "Bing grounding queries sample",
-        "AI referral source by sessions and completed calculations"
-      ],
-      "filters": [
-        "GA4 session source/medium contains chatgpt.com",
-        "GA4 session source/medium contains perplexity",
-        "GA4 session source/medium contains gemini",
-        "organic search"
-      ],
+      "scorecards": ["Google Generative AI impressions", "Bing total citations", "Bing average cited pages", "GA4 AI referral sessions"],
+      "tables": ["Google Generative AI pages by impressions", "Google Generative AI visibility by country and device", "Bing cited pages by citation count", "Bing grounding queries sample", "AI referral source by sessions and completed calculations"],
+      "filters": ["GA4 session source/medium contains chatgpt.com", "GA4 session source/medium contains perplexity", "GA4 session source/medium contains gemini", "organic search"],
       "note": "Google/Bing native AI visibility and GA4 referral traffic are parallel measurements; do not merge them into a single attributed conversion metric."
     },
     {
       "name": "İçerik Performansı",
-      "tables": [
-        "Content landing pages by organic sessions and calculator transitions",
-        "Content pages by Google Generative AI impressions",
-        "Content pages by Bing citation count"
-      ],
+      "tables": ["Content landing pages by organic sessions and calculator transitions", "Content pages by Google Generative AI impressions", "Content pages by Bing citation count"],
       "breakdowns": ["topic cluster", "landing page", "device", "country"]
     },
     {
@@ -277,6 +181,8 @@
         "termination_calculator_complete must contain only an allowlisted calculator_type and no financial input values",
         "unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs",
         "overtime_calculator_complete must not contain salary, overtime-hours, tax-base, retirement or disability inputs",
+        "annual_leave_calculator_complete must not contain salary, unused-leave-days, premium-days, tax-base, retirement or disability inputs",
+        "minimum_wage_calculator_complete must not contain month-count or any financial input values",
         "GSC and GA4 dates use Europe/Istanbul reporting context",
         "Google Generative AI impressions must not be labeled clicks or sessions",
         "Bing citations must not be labeled rankings",
