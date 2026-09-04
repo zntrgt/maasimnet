@@ -9,7 +9,7 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-04',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.15.0-overtime-calculator'
+  releaseVersion: '1.16.0-annual-leave-minimum-wage-calculators'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
@@ -27,6 +27,8 @@ const PAGE_OVERRIDES = Object.freeze({
   '/ihbar-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/issizlik-maasi-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/fazla-mesai-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/yillik-izin-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/asgari-ucret-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
@@ -40,7 +42,9 @@ export const INDEXABLE_STATIC_PATHS = Object.freeze([
   '/kidem-tazminati-hesaplama/',
   '/ihbar-tazminati-hesaplama/',
   '/issizlik-maasi-hesaplama/',
-  '/fazla-mesai-hesaplama/'
+  '/fazla-mesai-hesaplama/',
+  '/yillik-izin-ucreti-hesaplama/',
+  '/asgari-ucret-hesaplama/'
 ]);
 
 export function normalizeSitePath(pathname = '/') {
@@ -60,7 +64,8 @@ export function getPageMetadata(pathname = '/') {
   const isPayrollDataPage = path === '/veriler/2026/' || path.startsWith('/veriler/2026/');
   const isBlogPage = path === '/blog/' || path.startsWith('/blog/');
   const isTerminationCalculator = ['/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/'].includes(path);
-  const isWorkerRightsCalculator = ['/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/'].includes(path);
+  const isWorkerRightsCalculator = ['/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/'].includes(path);
+  const isMinimumWageCalculator = path === '/asgari-ucret-hesaplama/';
   const isCalculatorHub = path === '/hesaplama-araclari/';
 
   const familyModifiedAt = isPayrollDataPage ? SITE_METADATA.payrollDataReviewedAt : isBlogPage ? SITE_METADATA.blogReviewedAt : SITE_METADATA.defaultModifiedAt;
@@ -68,7 +73,7 @@ export function getPageMetadata(pathname = '/') {
     path,
     publishedAt: override.publishedAt || SITE_METADATA.defaultPublishedAt,
     modifiedAt: override.modifiedAt || familyModifiedAt,
-    reviewedAt: isPayrollDataPage || isTerminationCalculator || isWorkerRightsCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
+    reviewedAt: isPayrollDataPage || isTerminationCalculator || isWorkerRightsCalculator || isMinimumWageCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
       ? SITE_METADATA.payrollDataReviewedAt
       : isBlogPage ? SITE_METADATA.blogReviewedAt : undefined
   };

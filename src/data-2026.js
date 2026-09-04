@@ -11,6 +11,12 @@ export const DATA_2026 = Object.freeze({
       url: 'https://www.csgb.gov.tr/tr/poco-pages/asgari-ucret/',
       publishedAt: '2025-12-23'
     }),
+    annualLeave: Object.freeze({
+      institution: 'Çalışma ve Sosyal Güvenlik Bakanlığı',
+      documentTitle: 'İş Kanunu Sıkça Sorulan Sorular – Yıllık Ücretli İzin',
+      legalBasis: '4857 sayılı İş Kanunu m.53-61; özellikle m.59',
+      url: 'https://www.csgb.gov.tr/sikca-sorulan-sorular/calisma-genel-mudurlugu/%C4%B1s-kanunu/'
+    }),
     unemployment: Object.freeze({
       institution: 'Türkiye İş Kurumu (İŞKUR)',
       documentTitle: 'İşsizlik Sigortası Hizmetleri',

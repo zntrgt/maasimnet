@@ -19,6 +19,8 @@ import { addOfferComparison } from './add-offer-comparison.js';
 import { addTerminationCalculators } from './add-termination-calculators.js';
 import { addUnemploymentCalculator } from './add-unemployment-calculator.js';
 import { addOvertimeCalculator } from './add-overtime-calculator.js';
+import { addAnnualLeaveCalculator } from './add-annual-leave-calculator.js';
+import { addMinimumWageCalculator } from './add-minimum-wage-calculator.js';
 import { addContactPage } from './add-contact-page.js';
 import { addEditorialAuthority } from './add-editorial-authority.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
@@ -61,7 +63,10 @@ for (const file of [
   'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
   'estimate-2027.js','offer-comparison.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
   'unemployment-engine.js','unemployment-calculator.js','unemployment-calculator.css',
-  'overtime-engine.js','overtime-calculator.js','overtime-calculator.css','site-shell.css','site-shell.js'
+  'overtime-engine.js','overtime-calculator.js','overtime-calculator.css',
+  'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
+  'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
+  'site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await fixCalculatorAnalyticsInputReset(distDir);
@@ -82,6 +87,8 @@ await addOfferComparison(distDir);
 const terminationResult = await addTerminationCalculators(distDir);
 const unemploymentResult = await addUnemploymentCalculator(distDir);
 const overtimeResult = await addOvertimeCalculator(distDir);
+const annualLeaveResult = await addAnnualLeaveCalculator(distDir);
+const minimumWageResult = await addMinimumWageCalculator(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 const editorialAuthorityResult = await addEditorialAuthority(distDir);
@@ -122,6 +129,8 @@ const version = {
   terminationCalculators: terminationResult.generated,
   unemploymentCalculators: unemploymentResult.generated,
   overtimeCalculators: overtimeResult.generated,
+  annualLeaveCalculators: annualLeaveResult.generated,
+  minimumWageCalculators: minimumWageResult.generated,
   calculatorDiscovery
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
@@ -135,6 +144,8 @@ console.log(`blog konu kümeleri: ${topicClusterResult.clusters}`);
 console.log(`tazminat hesaplayıcıları: ${terminationResult.generated}`);
 console.log(`işsizlik maaşı hesaplayıcıları: ${unemploymentResult.generated}`);
 console.log(`fazla mesai hesaplayıcıları: ${overtimeResult.generated}`);
+console.log(`yıllık izin ücreti hesaplayıcıları: ${annualLeaveResult.generated}`);
+console.log(`asgari ücret hesaplayıcıları: ${minimumWageResult.generated}`);
 console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);

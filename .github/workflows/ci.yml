@@ -72,6 +72,12 @@ jobs:
       - name: Verify overtime calculator
         run: npm run verify:overtime-calculator
 
+      - name: Verify annual leave pay calculator
+        run: npm run verify:annual-leave-calculator
+
+      - name: Verify minimum wage calculator
+        run: npm run verify:minimum-wage-calculator
+
       - name: Verify calculator discovery and SEO internal linking
         run: npm run verify:calculator-discovery
 

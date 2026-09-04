@@ -8,7 +8,9 @@ const salaryAnalyticsSource = await readFile(join(root, 'src', 'calculator-analy
 const terminationAnalyticsSource = await readFile(join(root, 'src', 'termination-calculators.js'), 'utf8');
 const unemploymentAnalyticsSource = await readFile(join(root, 'src', 'unemployment-calculator.js'), 'utf8');
 const overtimeAnalyticsSource = await readFile(join(root, 'src', 'overtime-calculator.js'), 'utf8');
-const analyticsSources = `${salaryAnalyticsSource}\n${terminationAnalyticsSource}\n${unemploymentAnalyticsSource}\n${overtimeAnalyticsSource}`;
+const annualLeaveAnalyticsSource = await readFile(join(root, 'src', 'annual-leave-calculator.js'), 'utf8');
+const minimumWageAnalyticsSource = await readFile(join(root, 'src', 'minimum-wage-calculator.js'), 'utf8');
+const analyticsSources = `${salaryAnalyticsSource}\n${terminationAnalyticsSource}\n${unemploymentAnalyticsSource}\n${overtimeAnalyticsSource}\n${annualLeaveAnalyticsSource}\n${minimumWageAnalyticsSource}`;
 const googleTagsSource = await readFile(join(root, 'scripts', 'apply-google-tags.js'), 'utf8');
 const readme = await readFile(join(root, 'analytics', 'README.md'), 'utf8');
 
@@ -24,16 +26,17 @@ if (spec.ga4_events.includes('termination_calculator_complete')) {
   for (const type of ['combined', 'severance', 'notice']) if (!terminationAnalyticsSource.includes(`'${type}'`)) failures.push(`Tazminat calculator_type allowlist değeri eksik: ${type}`);
 }
 
-if (spec.ga4_events.includes('unemployment_calculator_complete')) {
-  if (!unemploymentAnalyticsSource.includes("'unemployment_calculator_complete'")) failures.push('İşsizlik maaşı completion eventi dashboard sözleşmesinde var fakat UI analytics kodunda yok.');
-  if (!/gtag\(\s*['"]event['"]\s*,\s*['"]unemployment_calculator_complete['"]\s*\)/.test(unemploymentAnalyticsSource)) failures.push('İşsizlik maaşı completion eventi finansal/eligibility payload olmadan gönderilmeli.');
-  if (!JSON.stringify(spec).includes('unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs')) failures.push('İşsizlik maaşı analytics veri minimizasyonu guardrail metni eksik.');
-}
-
-if (spec.ga4_events.includes('overtime_calculator_complete')) {
-  if (!overtimeAnalyticsSource.includes("'overtime_calculator_complete'")) failures.push('Fazla mesai completion eventi dashboard sözleşmesinde var fakat UI analytics kodunda yok.');
-  if (!/gtag\(\s*['"]event['"]\s*,\s*['"]overtime_calculator_complete['"]\s*\)/.test(overtimeAnalyticsSource)) failures.push('Fazla mesai completion eventi finansal/form payload olmadan gönderilmeli.');
-  if (!JSON.stringify(spec).includes('overtime_calculator_complete must not contain salary, overtime-hours, tax-base, retirement or disability inputs')) failures.push('Fazla mesai analytics veri minimizasyonu guardrail metni eksik.');
+for (const [eventName, source, guardrail] of [
+  ['unemployment_calculator_complete', unemploymentAnalyticsSource, 'unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs'],
+  ['overtime_calculator_complete', overtimeAnalyticsSource, 'overtime_calculator_complete must not contain salary, overtime-hours, tax-base, retirement or disability inputs'],
+  ['annual_leave_calculator_complete', annualLeaveAnalyticsSource, 'annual_leave_calculator_complete must not contain salary, unused-leave-days, premium-days, tax-base, retirement or disability inputs'],
+  ['minimum_wage_calculator_complete', minimumWageAnalyticsSource, 'minimum_wage_calculator_complete must not contain month-count or any financial input values']
+]) {
+  if (!spec.ga4_events.includes(eventName)) continue;
+  if (!source.includes(`'${eventName}'`)) failures.push(`${eventName} dashboard sözleşmesinde var fakat UI analytics kodunda yok.`);
+  const escaped = eventName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (!new RegExp(`gtag\\(\\s*['\"]event['\"]\\s*,\\s*['\"]${escaped}['\"]\\s*\\)`).test(source)) failures.push(`${eventName} payload olmadan gönderilmeli.`);
+  if (!JSON.stringify(spec).includes(guardrail)) failures.push(`${eventName} veri minimizasyonu guardrail metni eksik.`);
 }
 
 const measurementId = spec.sources.google_analytics_4.measurement_id;
@@ -76,7 +79,9 @@ for (const readmeCopy of [
 for (const forbidden of [
   'exact_salary','salary_amount','gross_salary_value','net_salary_value','severance_amount','notice_amount','previous_tax_base',
   'unemployment_pek','unemployment_premium_days','termination_reason','application_delay_days','eligibility_status',
-  'overtime_salary','overtime_hours','overtime_tax_base','overtime_retired','overtime_disability'
+  'overtime_salary','overtime_hours','overtime_tax_base','overtime_retired','overtime_disability',
+  'annual_leave_salary','annual_leave_days','annual_leave_premium_days','annual_leave_tax_base',
+  'minimum_wage_month_count','minimum_wage_amount'
 ]) if (JSON.stringify(spec).includes(`"${forbidden}"`)) failures.push(`Dashboard exact/sensitive calculator input alanı içermemeli: ${forbidden}`);
 
 if (failures.length) throw new Error(`Growth dashboard doğrulaması başarısız:\n${failures.join('\n')}`);

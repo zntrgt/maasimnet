@@ -30,22 +30,7 @@ Google Generative AI Performance ve Bing AI Performance ise ayrı görünürlük
 
 ### Google Search Console — Generative AI Performance
 
-Google’ın Search Console içindeki özel Generative AI Performance raporu aşağıdaki görünürlüğü izler:
-
-- AI Overviews
-- AI Mode
-
-Raporun doğrulanmış alanları:
-
-- Impressions
-- Page
-- Country
-- Device
-- Date
-
-Google, bu görünürlüğün 31 Ağustos 2026 itibarıyla dünya genelinde kullanıma açıldığını belirtiyor. Düşük hacimli property'lerde veri görünmemesi mümkündür.
-
-Bu rapor **AI tıklaması veya AI dönüşümü raporu değildir**. Dedicated raporda gösterilmeyen click/session metrikleri türetilmemelidir.
+Google’ın Search Console içindeki özel Generative AI Performance raporu AI Overviews ve AI Mode görünürlüğünü izler. Doğrulanmış alanlar Impressions, Page, Country, Device ve Date'tir. Dedicated raporda gösterilmeyen click/session metrikleri türetilmemelidir.
 
 Resmî dokümantasyon: `https://support.google.com/webmasters/answer/16984139`
 
@@ -61,22 +46,7 @@ Bağlantı kuralı: Search Console native raporu veya export edilmiş rapor veri
 
 ### Bing Webmaster Tools — AI Performance
 
-Bing AI Performance public preview aşağıdaki AI yüzeylerindeki citation görünürlüğünü ölçer:
-
-- Microsoft Copilot
-- Bing AI-generated summaries
-- select partner integrations
-
-Ana metrik ve boyutlar:
-
-- Total citations
-- Average cited pages
-- Page-level citations
-- Grounding queries
-- Date
-- Page
-
-`Total citations` kaynak gösterim sayısıdır; ranking değildir. `Grounding queries` tam arama talebi datası değil, AI retrieval sürecinde kullanılan ifadelerin örneklemidir.
+Bing AI Performance public preview Microsoft Copilot, Bing AI-generated summaries ve desteklenen partner yüzeylerindeki citation görünürlüğünü ölçer. Ana metrikler Total citations, Average cited pages ve Page-level citations; boyutlar Date, Page ve Grounding queries'dir.
 
 Resmî dokümantasyon: `https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview`
 
@@ -103,7 +73,7 @@ Aşağıdaki event parametreleri GA4 Admin → Data display → Custom definitio
 | Giriş yöntemi | `input_method` |
 | Tazminat hesaplayıcı türü | `calculator_type` |
 
-`calculator_type` yalnız `combined`, `severance` veya `notice` değerlerinden birini almalıdır. Exact maaş, kıdem, ihbar veya kümülatif vergi matrahı tutarı özel boyut olarak kaydedilmemelidir.
+`calculator_type` yalnız `combined`, `severance` veya `notice` değerlerinden birini almalıdır. Exact maaş, kıdem, ihbar, PEK, mesai saati, kullanılmayan izin günü, asgari ücret dönem seçimi veya kümülatif vergi matrahı özel boyut olarak kaydedilmemelidir.
 
 ## 3. Ana funnel eventleri
 
@@ -116,13 +86,17 @@ Maaş hesaplama funnel'ı:
 5. `payroll_detail_toggle` (`detail_action = open`)
 6. `calculator_csv_download`
 
-Tazminat hesaplayıcıları için ana sonuç eventi:
+Diğer hesaplayıcıların ana sonuç eventleri:
 
 - `termination_calculator_complete` (`calculator_type = combined | severance | notice`)
+- `unemployment_calculator_complete`
+- `overtime_calculator_complete`
+- `annual_leave_calculator_complete`
+- `minimum_wage_calculator_complete`
 
-`salary_calculation_completed`, `salary_results_viewed` ve `termination_calculator_complete` GA4 içinde key event olarak işaretlenmelidir.
+`salary_calculation_completed`, `salary_results_viewed`, `termination_calculator_complete`, `unemployment_calculator_complete`, `overtime_calculator_complete`, `annual_leave_calculator_complete` ve `minimum_wage_calculator_complete` GA4 içinde key event olarak işaretlenmelidir.
 
-Tazminat eventi yalnız Cookiebot istatistik izni verildiğinde gönderilir ve finansal giriş değerlerini içermez.
+Bu completion eventlerinin tümü yalnız Cookiebot istatistik izni verildiğinde gönderilir. Tazminat eventindeki allowlist `calculator_type` dışında yeni çalışan-hakları eventleri **payload göndermez**. Maaş, PEK, prim günü, fesih nedeni, mesai saati, kullanılmayan izin günü, kümülatif vergi matrahı, emeklilik/engellilik bilgisi, ay sayısı veya hesap sonucu GA4 parametresi olarak gönderilmemelidir.
 
 ## 4. Normalize edilmiş landing page alanları
 
@@ -152,41 +126,15 @@ Google Generative AI report ve Bing AI Performance verileri, desteklenen ortak g
 
 ### A. Google Generative AI visibility
 
-Kaynak: Search Console Generative AI Performance.
-
-Ana KPI:
-
-- Generative AI impressions
-- AI görünürlüğü alan sayfa sayısı
-- Sayfa bazında impression trendi
-- Ülke ve cihaz kırılımı
-
-Bu metrikler **görünürlük** ölçer.
+Kaynak: Search Console Generative AI Performance. Ana KPI'lar Generative AI impressions, görünür sayfa sayısı, sayfa bazında trend ve ülke/cihaz kırılımıdır. Bu metrikler **görünürlük** ölçer.
 
 ### B. Bing AI citation visibility
 
-Kaynak: Bing Webmaster Tools AI Performance.
-
-Ana KPI:
-
-- Total citations
-- Average cited pages
-- En çok cite edilen URL'ler
-- Grounding query örnekleri
-- Citation trendi
-
-Bu metrikler **kaynak gösterilme** ölçer.
+Kaynak: Bing Webmaster Tools AI Performance. Ana KPI'lar Total citations, Average cited pages, cite edilen URL'ler ve Grounding query örnekleridir. Citation ranking değildir.
 
 ### C. GA4 AI referral traffic
 
-Session source/medium filtreleriyle:
-
-- `chatgpt.com`
-- Perplexity
-- Gemini
-- diğer doğrulanmış AI referral kaynakları
-
-Bu metrikler yalnız **siteye gerçekten tıklayıp gelen oturumları** ölçer. Citation veya AI impression'ın tamamını temsil etmez.
+Session source/medium filtreleriyle `chatgpt.com`, Perplexity, Gemini ve diğer doğrulanmış AI referral kaynakları izlenebilir. Bunlar yalnız **siteye gerçekten tıklayıp gelen oturumları** ölçer.
 
 Bu üç sinyal tek bir “AI traffic” sayısında birleştirilmemelidir.
 
@@ -194,114 +142,43 @@ Bu üç sinyal tek bir “AI traffic” sayısında birleştirilmemelidir.
 
 ### Yönetici Özeti
 
-Scorecard'lar:
-
-- GSC gösterim
-- GSC tıklama
-- GSC CTR
-- Ortalama pozisyon
-- Google Generative AI impressions
-- Bing total citations
-- Organik landing session
-- Tamamlanan maaş hesaplaması
-- Tamamlanan tazminat hesaplaması
-- Organik session → hesaplama tamamlama oranı
+GSC gösterim/tıklama/CTR/pozisyon, Google AI impressions, Bing citations, organik landing session ve her hesaplayıcı ailesinin tamamlanan hesaplama sayıları birlikte izlenir.
 
 ### Sorgu ve Landing Page
 
-Sol tablo:
-
-- Query
-- Landing page
-- Impressions
-- Clicks
-- CTR
-- Average position
-
-Sağ tablo:
-
-- Landing page
-- Organic sessions
-- `salary_input_started`
-- `salary_calculation_completed`
-- `termination_calculator_complete`
-- İlgili landing page için completion rate
-
-Query tablosundan yapılan seçim landing page tablosunu sayfa yolu üzerinden filtrelemelidir.
+Sol tablo GSC Query → Landing page → Impressions/Clicks/CTR/Position gösterir. Sağ tablo landing page düzeyinde organik sessions ve hesaplayıcı completion eventlerini gösterir. Query seçimi yalnız ilgili landing page'i filtreler; sayfa dönüşüm sayısı her sorguya kopyalanmaz.
 
 ### Hesaplayıcı Funnel
 
-Kırılımlar:
-
-- `calculation_direction`
-- `salary_range`
-- `scenario_type`
-- device category
-- landing page
-
-Oranlar:
-
-```text
-Input start rate = salary_input_started / organic landing sessions
-Completion rate = salary_calculation_completed / salary_input_started
-Results view rate = salary_results_viewed / salary_calculation_completed
-CSV download rate = calculator_csv_download / salary_results_viewed
-```
+Ana maaş funnel'ı `calculator_view → salary_input_started → salary_calculation_completed → salary_results_viewed` olarak izlenir. CSV ve detay etkileşimleri ikincil eventlerdir.
 
 ### Tazminat Hesaplayıcıları
 
-Bu sayfa üç tazminat aracını ayrı bir ürün ailesi olarak izler:
+`/tazminat-hesaplama/`, `/kidem-tazminati-hesaplama/`, `/ihbar-tazminati-hesaplama/` landing session, completion ve `calculator_type` kırılımıyla izlenir. Finansal giriş değerleri rapora taşınmaz.
 
-- `/tazminat-hesaplama/`
-- `/kidem-tazminati-hesaplama/`
-- `/ihbar-tazminati-hesaplama/`
+### İşsizlik Maaşı Hesaplayıcı
 
-Ana KPI'lar:
+`/issizlik-maasi-hesaplama/` için landing sessions, `unemployment_calculator_complete`, organik completion rate, device ve channel kırılımı izlenir. PEK, prim günü, fesih nedeni, başvuru gecikmesi veya eligibility girdileri event parametresi değildir.
 
-- termination landing sessions
-- `termination_calculator_complete`
-- organic termination completions
-- organic termination session → completion rate
+### Fazla Mesai Hesaplayıcı
 
-Kırılımlar:
+`/fazla-mesai-hesaplama/` için landing sessions, `overtime_calculator_complete`, organik completion rate, device ve channel kırılımı izlenir. Maaş, mesai saati, vergi matrahı, emeklilik veya engellilik girdileri event parametresi değildir.
 
-- `calculator_type`
-- device category
-- landing page
-- session default channel group
+### Yıllık İzin Ücreti Hesaplayıcı
 
-Bu raporda maaş, kıdem/ihbar tutarı, tarih veya kümülatif vergi matrahı gibi finansal girişler boyut ya da metrik olarak kullanılmamalıdır.
+`/yillik-izin-ucreti-hesaplama/` için landing sessions, `annual_leave_calculator_complete`, organik completion rate, device ve channel kırılımı izlenir. Son brüt ücret, kullanılmayan izin günü, fesih ayı prim günü, vergi matrahı, emeklilik veya engellilik girdileri gönderilmez.
+
+### Asgari Ücret Hesaplayıcı
+
+`/asgari-ucret-hesaplama/` için landing sessions, `minimum_wage_calculator_complete`, organik completion rate, device ve channel kırılımı izlenir. Dönem seçimi veya herhangi bir finansal değer event parametresi olarak gönderilmez.
 
 ### AI Search Görünürlüğü
 
-Ayrı kartlar ve tablolar:
-
-- Google Generative AI impressions
-- Google AI görünür sayfalar
-- Bing total citations
-- Bing average cited pages
-- Bing cited page listesi
-- Bing grounding query örnekleri
-- GA4 AI referral sessions
-- AI referral → tamamlanan hesaplama
-
-Google/Bing native visibility ile GA4 referral data yan yana gösterilebilir fakat tek attributed conversion metriğinde birleştirilmez.
+Google Generative AI impressions, Bing citations ve GA4 AI referral sessions yan yana gösterilebilir fakat tek attributed conversion metriğinde birleştirilmez.
 
 ### İçerik Performansı
 
-İçerikleri konu kümesi bazında karşılaştır:
-
-- 2026 Maaş, Vergi ve Bordro
-- Kariyer, Zam ve Ücret Kararları
-- Yan Haklar ve Çalışan Finansal Sağlığı
-
-Her küme için:
-
-- organik landing session
-- hesaplayıcıya geçiş
-- Google Generative AI impressions
-- Bing citations
-- AI referral sessions
+Konu kümesi bazında organik landing session, hesaplayıcıya geçiş, Google Generative AI impressions, Bing citations ve AI referral sessions izlenir.
 
 ### Veri Kalitesi
 
@@ -309,6 +186,7 @@ Her küme için:
 - Exact maaş event parametresi bulunmamalı.
 - `salary_range` ile birlikte `range_version` gelmeli.
 - `termination_calculator_complete` yalnız allowlist `calculator_type` taşımalı ve finansal giriş değeri taşımamalı.
+- İşsizlik, fazla mesai, yıllık izin ve asgari ücret completion eventleri form/finansal payload taşımamalı.
 - Tarih ve saat raporlaması `Europe/Istanbul` bağlamında yorumlanmalı.
 - Google Generative AI impressions click/session diye etiketlenmemeli.
 - Bing citations ranking diye etiketlenmemeli.
