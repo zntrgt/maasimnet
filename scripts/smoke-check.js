@@ -190,6 +190,6 @@ try {
   console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, kullanıcı girdisi koruması, ortak shell, 2026/2027 ve tazminat hesaplayıcıları doğrulandı.`);
 } finally {
   await new Promise((resolvePromise, rejectPromise) => {
-    server.close((error) => error ? rejectPromise(error) : resolvePromise);
+    server.close((error) => error ? rejectPromise(error) : resolvePromise());
   });
 }
