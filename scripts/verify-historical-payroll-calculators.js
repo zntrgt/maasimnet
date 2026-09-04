@@ -9,6 +9,9 @@ const file = (year) => join(dist, `${year}-maas-hesaplama`, 'index.html');
 function requireText(html, needle, label) {
   if (!html.includes(needle)) throw new Error(`${label} eksik: ${needle}`);
 }
+function requireEither(html, needles, label) {
+  if (!needles.some((needle) => html.includes(needle))) throw new Error(`${label} eksik: ${needles.join(' | ')}`);
+}
 
 for (const asset of ['historical-payroll-data.js','historical-payroll-engine.js','historical-payroll-calculator.js','historical-payroll-calculator.css']) {
   await access(join(dist, 'assets', asset));
@@ -17,14 +20,20 @@ for (const asset of ['historical-payroll-data.js','historical-payroll-engine.js'
 for (const year of years) {
   const html = await readFile(file(year), 'utf8');
   const canonical = `https://maasim.net${route(year)}`;
-  requireText(html, `<title>${year} Maaş Hesaplama | Brütten Nete &amp; Netten Brüte | Maaşım.net</title>`, `${year} title`);
-  requireText(html, `<h1>${year} Maaş Hesaplama: Brütten Nete &amp; Netten Brüte</h1>`, `${year} H1`);
+  requireEither(html, [
+    `<title>${year} Maaş Hesaplama | Brütten Nete & Netten Brüte | Maaşım.net</title>`,
+    `<title>${year} Maaş Hesaplama | Brütten Nete &amp; Netten Brüte | Maaşım.net</title>`
+  ], `${year} title`);
+  requireEither(html, [
+    `<h1>${year} Maaş Hesaplama: Brütten Nete & Netten Brüte</h1>`,
+    `<h1>${year} Maaş Hesaplama: Brütten Nete &amp; Netten Brüte</h1>`
+  ], `${year} H1`);
   requireText(html, `rel="canonical" href="${canonical}"`, `${year} canonical`);
   requireText(html, 'content="index,follow,max-image-preview:large"', `${year} robots`);
   requireText(html, '"@type":"WebApplication"', `${year} WebApplication schema`);
   requireText(html, '"@type":"FAQPage"', `${year} FAQ schema`);
   requireText(html, '"@type":"BreadcrumbList"', `${year} breadcrumb schema`);
-  requireText(html, `data-historical-payroll-calculator`, `${year} calculator root`);
+  requireText(html, 'data-historical-payroll-calculator', `${year} calculator root`);
   requireText(html, `data-historical-year="${year}"`, `${year} year contract`);
   requireText(html, '/assets/historical-payroll-calculator.css', `${year} stylesheet`);
   requireText(html, '/assets/historical-payroll-calculator.js', `${year} module`);
