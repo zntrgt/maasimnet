@@ -78,6 +78,9 @@ jobs:
       - name: Verify minimum wage calculator
         run: npm run verify:minimum-wage-calculator
 
+      - name: Verify salary raise calculator
+        run: npm run verify:salary-raise-calculator
+
       - name: Verify calculator discovery and SEO internal linking
         run: npm run verify:calculator-discovery
 
