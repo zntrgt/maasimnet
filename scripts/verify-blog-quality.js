@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { indexableBlogPosts, blogOutputPath } from '../content/blog-manifest.js';
+import { blogImageAssignments } from './apply-blog-images.js';
 
 const dist = join(process.cwd(), 'dist');
 const failures = [];
@@ -12,21 +13,20 @@ const originalDataSlugs = new Set([
   'netten-brute-maas-neden-aylik-degisir',
   '100000-tl-brut-maas-neti-2026',
   'prim-ikramiye-net-maasi-neden-dusurur',
-  'is-teklifinin-yillik-degeri'
+  'is-teklifinin-yillik-degeri',
+  '2026-sgk-tavani',
+  'is-degisikliginde-vergi-matrahi',
+  '2026-yemek-karti-istisnasi'
 ]);
 
-const editorialImages = new Map([
-  ['is-yerinde-finansal-saglik', 'is-yerinde-finansal-saglik-editorial.webp'],
-  ['2027-maas-zammi-beklentileri', '2027-maas-zammi-beklentileri-editorial.webp'],
-  ['maas-zam-gorusmesi-nasil-yapilir', 'maas-zam-gorusmesi-editorial.webp'],
-  ['is-teklifinin-yillik-degeri', 'is-teklifinin-yillik-degeri-editorial.webp'],
-  ['isveren-katkili-bes', 'isveren-katkili-bes-editorial.webp'],
-  ['esnek-yan-hak-butcesi', 'esnek-yan-hak-butcesi-editorial.webp'],
-  ['is-degisikliginde-vergi-matrahi', 'is-degisikliginde-vergi-matrahi-editorial.webp'],
-  ['2026-maas-vergi-dilimleri', '2026-maas-vergi-dilimleri-editorial.webp'],
-  ['netten-brute-maas-neden-aylik-degisir', 'netten-brute-maas-neden-aylik-degisir-editorial.webp'],
-  ['maas-hesaplama-siteleri-neden-farkli', 'maas-hesaplama-siteleri-neden-farkli-editorial.webp']
-]);
+const editorialImages = new Map(blogImageAssignments.map(({ slug, asset }) => [slug, asset]));
+
+if (editorialImages.size !== indexableBlogPosts.length) {
+  failures.push(`Editoryal görsel kapsamı eksik: ${editorialImages.size}/${indexableBlogPosts.length}`);
+}
+for (const post of indexableBlogPosts) {
+  if (!editorialImages.has(post.slug)) failures.push(`${post.slug}: editoryal görsel eşlemesi yok`);
+}
 
 const strip = (html) => html
   .replace(/<script[\s\S]*?<\/script>/gi, ' ')
@@ -129,10 +129,17 @@ for (const post of indexableBlogPosts) {
     checks.push([html.includes('href="/hesaplama-metodolojisi/"'), 'özgün hesaplama metodoloji bağlantısı yok']);
   }
 
-  if (editorialImages.has(post.slug)) {
-    const asset = editorialImages.get(post.slug);
+  const asset = editorialImages.get(post.slug);
+  if (asset) {
     checks.push([html.includes(`/assets/${asset}`), `konuya özel editoryal görsel kullanılmıyor (${asset})`]);
     checks.push([ogImage.endsWith(`/assets/${asset}`), `og:image konuya özel editoryal görselle eşleşmiyor (${asset})`]);
+    try {
+      const bytes = await readFile(join(dist, 'assets', asset));
+      checks.push([bytes.length >= 1000, `editoryal WebP dosyası boş veya bozuk (${asset})`]);
+      checks.push([bytes.subarray(0, 4).toString('ascii') === 'RIFF', `editoryal asset WebP/RIFF değil (${asset})`]);
+    } catch {
+      checks.push([false, `editoryal asset dist içinde bulunamadı (${asset})`]);
+    }
   }
 
   for (const [ok, message] of checks) {
@@ -163,4 +170,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${indexableBlogPosts.length} içerik; ${originalDataSlugs.size} yüksek niyetli blogda özgün hesaplama, ${editorialImages.size} blogda konuya özel görsel doğrulandı.`);
+console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${indexableBlogPosts.length} içerik; ${originalDataSlugs.size} yüksek niyetli blogda özgün hesaplama, ${editorialImages.size}/${indexableBlogPosts.length} blogda konuya özel görsel doğrulandı.`);
