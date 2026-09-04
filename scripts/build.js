@@ -59,7 +59,7 @@ await applyMetricCardStandard(distDir);
 await applyTaxBracketColumn(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await renderBlog(distDir);
-await applyBlogImages(distDir);
+const blogImageResult = await applyBlogImages(distDir);
 const originalDataResult = await applyBlogOriginalData(distDir);
 const secondaryOriginalDataResult = await applyBlogOriginalDataSecondary(distDir);
 await add2027EstimateCalculator(distDir);
@@ -90,12 +90,14 @@ const version = {
   calculationEngine: payrollAudit.engineVersion,
   payrollAudit: `${payrollAudit.passed}/${payrollAudit.total}`,
   metaDescriptionsReviewed: metaDescriptionResult.scanned,
-  proprietaryDataBlogs
+  proprietaryDataBlogs,
+  editorialBlogImages: blogImageResult.applied
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
 console.log(`senaryo sayfaları üretildi: ${scenarioResult.renderedPages}`);
 console.log(`bordro sınır testleri: ${payrollAudit.passed}/${payrollAudit.total}`);
 console.log(`özgün hesaplama/veri içeriği eklenen bloglar: ${proprietaryDataBlogs}`);
+console.log(`konuya özel editoryal görsel uygulanan bloglar: ${blogImageResult.applied}`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
