@@ -8,6 +8,7 @@ import { applyDashboardLayout } from './apply-dashboard-layout.js';
 import { applyMetricCardStandard } from './apply-metric-card-standard.js';
 import { applyTaxBracketColumn } from './apply-tax-bracket-column.js';
 import { renderBlog } from './render-blog.js';
+import { applyEditorialEntityAndClusters } from './apply-editorial-entity-and-clusters.js';
 import { applyBlogImages } from './apply-blog-images.js';
 import { applyBlogOriginalData } from './apply-blog-original-data.js';
 import { applyBlogOriginalDataSecondary } from './apply-blog-original-data-secondary.js';
@@ -62,6 +63,7 @@ await applyMetricCardStandard(distDir);
 await applyTaxBracketColumn(distDir);
 const scenarioResult = await renderScenarioPages(distDir);
 await renderBlog(distDir);
+const topicClusterResult = await applyEditorialEntityAndClusters(distDir);
 const blogImageResult = await applyBlogImages(distDir);
 const originalDataResult = await applyBlogOriginalData(distDir);
 const secondaryOriginalDataResult = await applyBlogOriginalDataSecondary(distDir);
@@ -96,7 +98,8 @@ const version = {
   metaDescriptionsReviewed: metaDescriptionResult.scanned,
   proprietaryDataBlogs,
   editorialBlogImages: blogImageResult.applied,
-  editorialAuthorityPages: editorialAuthorityResult.generated
+  editorialAuthorityPages: editorialAuthorityResult.generated,
+  editorialTopicClusters: topicClusterResult.clusters
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
 console.log('dist hazır:', distDir);
@@ -105,5 +108,6 @@ console.log(`bordro sınır testleri: ${payrollAudit.passed}/${payrollAudit.tota
 console.log(`özgün hesaplama/veri içeriği eklenen bloglar: ${proprietaryDataBlogs}`);
 console.log(`konuya özel editoryal görsel uygulanan bloglar: ${blogImageResult.applied}`);
 console.log(`editoryal otorite sayfaları: ${editorialAuthorityResult.generated}`);
+console.log(`blog konu kümeleri: ${topicClusterResult.clusters}`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
