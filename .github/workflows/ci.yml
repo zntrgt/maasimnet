@@ -66,6 +66,9 @@ jobs:
       - name: Verify termination calculators
         run: npm run verify:termination-calculators
 
+      - name: Verify calculator discovery and SEO internal linking
+        run: npm run verify:calculator-discovery
+
       - name: Verify sitewide layout safety
         run: npm run verify:layout
 
