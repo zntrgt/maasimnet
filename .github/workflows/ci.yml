@@ -81,6 +81,9 @@ jobs:
       - name: Verify salary raise calculator
         run: npm run verify:salary-raise-calculator
 
+      - name: Verify 2026 home query ownership
+        run: npm run verify:home-seo-2026
+
       - name: Verify calculator discovery and SEO internal linking
         run: npm run verify:calculator-discovery
 

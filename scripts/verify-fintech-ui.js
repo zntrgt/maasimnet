@@ -13,7 +13,7 @@ const requiredHtml = [
   'data-fintech-ui="v2"',
   'data-enterprise-hero="v2"',
   'data-enterprise-trust="v2"',
-  '<h1>2026 Brütten Nete Maaş Hesaplama</h1>',
+  '<h1>Maaş Hesaplama 2026: Brütten Nete &amp; Netten Brüte</h1>',
   '2026 mevzuat verileri kontrol edildi',
   'Kuruş bazlı deterministik motor',
   'Hesaplama tarayıcıda yapılır',
