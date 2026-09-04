@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "title": "Maaşım.net Search, AI Visibility ve Hesaplama Funnel Dashboard",
   "owner": "Growth / SEO",
   "timezone": "Europe/Istanbul",
@@ -85,7 +85,8 @@
     "calculator_mode_change",
     "payroll_detail_toggle",
     "calculator_csv_download",
-    "termination_calculator_complete"
+    "termination_calculator_complete",
+    "unemployment_calculator_complete"
   ],
   "registered_custom_dimensions": [
     "calculation_direction",
@@ -119,6 +120,7 @@
     "detail_engagement_rate": "payroll_detail_toggle_open / salary_results_viewed",
     "csv_download_rate": "calculator_csv_download / salary_results_viewed",
     "organic_termination_completion_rate": "termination_calculator_complete / organic_termination_landing_sessions",
+    "organic_unemployment_completion_rate": "unemployment_calculator_complete / organic_unemployment_landing_sessions",
     "google_ai_visibility_change": "current_period_google_generative_ai_impressions vs previous_period_google_generative_ai_impressions",
     "bing_citation_change": "current_period_total_citations vs previous_period_total_citations"
   },
@@ -135,6 +137,7 @@
         "Organic landing sessions",
         "Salary calculations completed",
         "Termination calculations completed",
+        "Unemployment calculations completed",
         "Organic session to completion rate"
       ],
       "charts": [
@@ -149,7 +152,7 @@
       "name": "Sorgu ve Landing Page",
       "tables": [
         "Query > landing page: impressions, clicks, CTR, position",
-        "Landing page: organic sessions, salary calculation events, termination calculation completions and completion rate"
+        "Landing page: organic sessions, salary calculation events, termination and unemployment calculation completions and completion rate"
       ],
       "interaction": "Selecting a query filters the landing page table through its page path; conversion counts remain at landing-page grain."
     },
@@ -192,6 +195,25 @@
       "guardrail": "Do not collect or report salary, severance, notice, tax-base or date inputs; only the categorical calculator_type is allowed."
     },
     {
+      "name": "İşsizlik Maaşı Hesaplayıcı",
+      "scorecards": [
+        "Unemployment landing sessions",
+        "Unemployment calculations completed",
+        "Organic unemployment calculations completed",
+        "Organic unemployment session to completion rate"
+      ],
+      "tables": [
+        "Unemployment landing page by channel, sessions, completions and completion rate",
+        "Unemployment completion trend by device category"
+      ],
+      "breakdowns": [
+        "deviceCategory",
+        "landing page",
+        "sessionDefaultChannelGroup"
+      ],
+      "guardrail": "unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs"
+    },
+    {
       "name": "AI Search Görünürlüğü",
       "scorecards": [
         "Google Generative AI impressions",
@@ -231,6 +253,7 @@
         "No exact salary amount may be collected",
         "salary_range must include range_version",
         "termination_calculator_complete must contain only an allowlisted calculator_type and no financial input values",
+        "unemployment_calculator_complete must not contain PEK, premium-day, termination-reason, application-delay or eligibility inputs",
         "GSC and GA4 dates use Europe/Istanbul reporting context",
         "Google Generative AI impressions must not be labeled clicks or sessions",
         "Bing citations must not be labeled rankings",
