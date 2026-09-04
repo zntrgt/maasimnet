@@ -104,13 +104,17 @@ test('unused monthly tax exemptions reduce notice taxes but cannot exceed 2026 m
   assert.equal(result.stampTaxKurus, 59_938);
 });
 
-test('combined package applies the remaining stamp exemption only once', () => {
+test('combined package caps and applies the remaining stamp exemption only once', () => {
   const result = calculateTerminationPackage({
     startIso: '2022-01-01',
     endIso: '2026-09-01',
     baseGrossKurus: 6_000_000,
-    remainingStampTaxExemptionKurus: 25_070
+    remainingStampTaxExemptionKurus: 1_000_000
   });
   assert.equal(result.severance.stampTaxExemptionAppliedKurus, 25_070);
   assert.equal(result.notice.stampTaxExemptionAppliedKurus, 0);
+  assert.equal(
+    result.severance.stampTaxExemptionAppliedKurus + result.notice.stampTaxExemptionAppliedKurus,
+    25_070
+  );
 });
