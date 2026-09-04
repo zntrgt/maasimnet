@@ -15,6 +15,49 @@ function hasUsableResult() {
   return inputValue > 0 && netValue > 0;
 }
 
+function rectWidth(selector) {
+  const node = qs(selector);
+  return node ? Math.round(node.getBoundingClientRect().width * 100) / 100 : null;
+}
+
+function setupLayoutDebug() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('layoutdebug') !== '1') return;
+
+  const panel = document.createElement('pre');
+  panel.setAttribute('data-layout-debug', '1');
+  panel.style.cssText = 'position:fixed;left:8px;right:8px;top:8px;z-index:99999;margin:0;padding:10px;border-radius:10px;background:rgba(0,0,0,.88);color:#7CFF9B;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;pointer-events:none;';
+  document.body.appendChild(panel);
+
+  const update = () => {
+    const vv = window.visualViewport;
+    const form = qs('#hesaplayici')?.firstElementChild;
+    const card = form?.firstElementChild;
+    const data = {
+      innerWidth: window.innerWidth,
+      clientWidth: document.documentElement.clientWidth,
+      outerWidth: window.outerWidth,
+      dpr: window.devicePixelRatio,
+      vvWidth: vv ? Math.round(vv.width * 100) / 100 : null,
+      vvScale: vv ? Math.round(vv.scale * 1000) / 1000 : null,
+      body: Math.round(document.body.getBoundingClientRect().width * 100) / 100,
+      main: rectWidth('main'),
+      calculator: rectWidth('#hesaplayici'),
+      formColumn: form ? Math.round(form.getBoundingClientRect().width * 100) / 100 : null,
+      formCard: card ? Math.round(card.getBoundingClientRect().width * 100) / 100 : null,
+      result: rectWidth('.metric-hero'),
+      media700: window.matchMedia(MOBILE_QUERY).matches,
+      media900: window.matchMedia('(max-width: 900px)').matches
+    };
+    panel.textContent = Object.entries(data).map(([key, value]) => `${key}: ${value}`).join('\n');
+  };
+
+  update();
+  window.addEventListener('resize', update, { passive: true });
+  window.visualViewport?.addEventListener('resize', update, { passive: true });
+  window.setInterval(update, 500);
+}
+
 function setupMobileStickyUx() {
   const sticky = qs('.enterprise-mobile-sticky');
   const result = qs('.metric-hero');
@@ -55,5 +98,10 @@ function setupMobileStickyUx() {
   refresh();
 }
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupMobileStickyUx, { once: true });
-else setupMobileStickyUx();
+function initializeMobileUx() {
+  setupMobileStickyUx();
+  setupLayoutDebug();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeMobileUx, { once: true });
+else initializeMobileUx();
