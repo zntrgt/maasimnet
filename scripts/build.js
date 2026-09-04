@@ -22,6 +22,8 @@ import { addOvertimeCalculator } from './add-overtime-calculator.js';
 import { addAnnualLeaveCalculator } from './add-annual-leave-calculator.js';
 import { addMinimumWageCalculator } from './add-minimum-wage-calculator.js';
 import { addSalaryRaiseCalculator } from './add-salary-raise-calculator.js';
+import { addWorktimeCalculators } from './add-worktime-calculators.js';
+import { applyWorktimeFreshness } from './apply-worktime-freshness.js';
 import { addContactPage } from './add-contact-page.js';
 import { addEditorialAuthority } from './add-editorial-authority.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
@@ -29,6 +31,7 @@ import { addHomeFreshness } from './add-home-freshness.js';
 import { addPayrollTestReport } from './add-payroll-test-report.js';
 import { applySharedShell } from './apply-shared-shell.js';
 import { applyCalculatorDiscovery } from './apply-calculator-discovery.js';
+import { applyTierCDiscovery } from './apply-tier-c-discovery.js';
 import { applyCalculatorHubFreshness } from './apply-calculator-hub-freshness.js';
 import { applyCalculatorNavLink } from './apply-calculator-nav-link.js';
 import { applyConsentManagement } from './apply-consent-management.js';
@@ -39,6 +42,7 @@ import { applyContentDates } from './apply-content-dates.js';
 import { applyLighthouseFixes } from './apply-lighthouse-fixes.js';
 import { applyAccessibilityPolish } from './apply-accessibility-polish.js';
 import { applyFintechUi } from './apply-fintech-ui.js';
+import { applyContrastGuard } from './apply-contrast-guard.js';
 import { mergeCriticalCss } from './merge-critical-css.js';
 import { inlineHomeCss } from './inline-home-css.js';
 import { fixCalculatorAnalyticsInputReset } from './fix-calculator-analytics-input-reset.js';
@@ -68,6 +72,7 @@ for (const file of [
   'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
   'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
   'salary-raise-engine.js','salary-raise-calculator.js','salary-raise-calculator.css',
+  'worktime-engines.js','worktime-calculators.js','worktime-calculators.css',
   'fintech-ui.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
@@ -92,12 +97,15 @@ const overtimeResult = await addOvertimeCalculator(distDir);
 const annualLeaveResult = await addAnnualLeaveCalculator(distDir);
 const minimumWageResult = await addMinimumWageCalculator(distDir);
 const salaryRaiseResult = await addSalaryRaiseCalculator(distDir);
+const worktimeResult = await addWorktimeCalculators(distDir);
+await applyWorktimeFreshness(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 const editorialAuthorityResult = await addEditorialAuthority(distDir);
 await addHomeFreshness(distDir);
 const payrollAudit = await addPayrollTestReport(distDir);
 const calculatorDiscovery = await applyCalculatorDiscovery(distDir);
+const tierCDiscovery = await applyTierCDiscovery(distDir);
 await applyCalculatorHubFreshness(distDir);
 await applyConsentManagement(distDir);
 await applyGoogleTags(distDir);
@@ -112,6 +120,7 @@ await applySharedShell(distDir);
 await applyCalculatorNavLink(distDir);
 await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
+await applyContrastGuard(distDir);
 await applyContentDates(distDir);
 const metaDescriptionResult = await applyMetaDescriptionQuality(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
@@ -135,6 +144,8 @@ const version = {
   annualLeaveCalculators: annualLeaveResult.generated,
   minimumWageCalculators: minimumWageResult.generated,
   salaryRaiseCalculators: salaryRaiseResult.generated,
+  worktimeCalculators: worktimeResult.generated,
+  tierCDiscovery: tierCDiscovery.tools,
   calculatorDiscovery
 };
 await writeFile(join(distDir, 'version.json'), JSON.stringify(version, null, 2) + '\n');
@@ -151,6 +162,8 @@ console.log(`fazla mesai hesaplayıcıları: ${overtimeResult.generated}`);
 console.log(`yıllık izin ücreti hesaplayıcıları: ${annualLeaveResult.generated}`);
 console.log(`asgari ücret hesaplayıcıları: ${minimumWageResult.generated}`);
 console.log(`maaş zam hesaplayıcıları: ${salaryRaiseResult.generated}`);
+console.log(`Tier C çalışma/SGK hesaplayıcıları: ${worktimeResult.generated}`);
+console.log(`Tier C hub keşif araçları: ${tierCDiscovery.tools}`);
 console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
