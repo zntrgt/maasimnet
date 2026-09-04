@@ -1,0 +1,110 @@
+# Maaşım.net SEO Keyword Ownership — Eylül 2026
+
+Bu doküman, aynı arama niyetinin birden fazla URL tarafından hedeflenmesini önlemek ve yeni hesaplayıcı yatırım sırasını belirlemek için kullanılır.
+
+## Veri notu
+
+Bu önceliklendirme **kesin aylık arama hacmi değildir**. GSC sorgu verisi ve Google Keyword Planner erişimi olmadan hacim rakamı yazılmaz. Tier sırası; güncel Türkiye SERP yapısı, sorgunun işlem niyeti, dedicated calculator sonuçlarının yoğunluğu, Maaşım.net ürün uyumu ve mevcut içerik kapsaması temel alınarak hazırlanmıştır.
+
+GSC verisi geldikten sonra her satıra 28 günlük impressions, clicks, CTR, average position ve landing page eklenerek sıra yeniden değerlendirilmelidir.
+
+## Tier A — mevcut sitede sahiplenilecek ana sorgular
+
+| Query cluster | Primary owner URL | Secondary wording | Kural |
+|---|---|---|---|
+| maaş hesaplama 2026 | `/` | maaş hesaplama, net maaş hesaplama | Ana sayfa sahiplenir. Ayrı generic maaş URL'si açılmaz. |
+| brütten nete maaş hesaplama | `/` | brüt net maaş, brüt maaş neti | Ana sayfa sahiplenir. |
+| netten brüte maaş hesaplama | `/` | net brüt maaş, net maaştan brüt | Ana sayfa sahiplenir. |
+| kıdem tazminatı hesaplama 2026 | `/kidem-tazminati-hesaplama/` | kıdem hesaplama, kıdem tazminatı ne kadar | Kıdem aracı primary owner. Kombine sayfa bu sorguyu title/H1'da tekrar hedeflemez. |
+| ihbar tazminatı hesaplama 2026 | `/ihbar-tazminati-hesaplama/` | ihbar hesaplama, ihbar süresi hesaplama | İhbar aracı primary owner. |
+| tazminat hesaplama | `/tazminat-hesaplama/` | kıdem ihbar hesaplama, toplam tazminat | Kombine sayfa primary owner. |
+| işveren maliyeti hesaplama | `/isveren-maliyeti-hesaplama/` | maaşın işverene maliyeti | Bu URL primary owner; ana sayfa yalnız contextual destek verir. |
+| vergi dilimi hesaplama 2026 | `/vergi-dilimi-hesaplama/` | gelir vergisi dilimi hesaplama | Bu URL primary owner. |
+| asgari ücret işveren maliyeti 2026 | `/asgari-ucret-isveren-maliyeti/` | asgari ücretin işverene maliyeti | Bu URL primary owner. |
+| emekli çalışan maaş hesaplama | `/emekli-calisan-maas-hesaplama/` | SGDP maaş hesaplama | Bu URL primary owner. |
+| 2027 maaş hesaplama | `/2027-maas-hesaplama/` | 2027 brütten nete tahmin | Tahmin niteliği açıkça korunur; 2026 ana sayfayla karıştırılmaz. |
+
+## Tier B — sıradaki yüksek niyetli hesaplayıcı kümeleri
+
+Bu sayfalar **thin placeholder olarak açılmamalı**. Her biri gerçek çalışan hesap motoru, resmî kaynaklar, formül açıklaması, FAQ ve regression testleri hazır olduğunda yayınlanmalı.
+
+1. `/issizlik-maasi-hesaplama/`
+   - işsizlik maaşı hesaplama 2026
+   - işsizlik ödeneği hesaplama
+   - kaç ay işsizlik maaşı alırım
+   - ihtiyaç: son 4 ay prime esas kazanç + 600/900/1080 prim günü + son 120 gün + fesih nedeni
+
+2. `/fazla-mesai-hesaplama/`
+   - fazla mesai hesaplama 2026
+   - mesai ücreti hesaplama
+   - saatlik fazla mesai ücreti
+   - ihtiyaç: aylık brüt/saatlik brüt + %50/%25 katsayı + vergi matrahı/bordro etkisi
+
+3. `/yillik-izin-ucreti-hesaplama/`
+   - yıllık izin ücreti hesaplama 2026
+   - kullanılmayan izin parası hesaplama
+   - yıllık izin hesaplama
+   - ihtiyaç: fesih tarihi + son çıplak brüt + kullanılmayan gün + SGK/GV/DV kesintileri
+
+4. `/asgari-ucret-hesaplama/`
+   - asgari ücret hesaplama 2026
+   - net asgari ücret / brüt asgari ücret
+   - işveren maliyeti URL'sinden ayrışmalı; çalışan neti ve kesintileri primary intent olmalı
+
+5. `/maas-zam-hesaplama/`
+   - maaş zam hesaplama
+   - yüzde zam hesaplama maaş
+   - eski maaş / yeni maaş / zam oranı üç yönlü çözüm
+
+## Tier C — long-tail genişleme
+
+- resmi tatil mesai ücreti hesaplama
+- hafta tatili ücreti hesaplama
+- saatlik ücret hesaplama
+- günlük maaş hesaplama
+- eksik gün maaş hesaplama
+- part time maaş hesaplama
+- SGK prim hesaplama
+- kümülatif vergi matrahı hesaplama
+- yıllık net gelir hesaplama
+
+## İç link mimarisi
+
+### Global
+
+- Header: `Araçlar` → `/hesaplama-araclari/`
+- Header: `Tazminat` → `/tazminat-hesaplama/`
+- Footer: hub + üç tazminat aracı korunur.
+
+### Ana sayfa
+
+Ana maaş hesaplayıcısına zarar vermeden, içerik akışında görünür bir `Diğer hesaplama araçları` modülü bulunur. En yüksek destek verilen URL'ler:
+
+- `/tazminat-hesaplama/`
+- `/kidem-tazminati-hesaplama/`
+- `/ihbar-tazminati-hesaplama/`
+- `/isveren-maliyeti-hesaplama/`
+- `/vergi-dilimi-hesaplama/`
+- `/2027-maas-hesaplama/`
+
+### Konu sayfaları
+
+`/veriler/2026/`, `/hesaplama-metodolojisi/`, `/sss/`, `/sozluk/`, `/senaryolar/` sayfaları maaş + tazminat araçlarına bağlamsal link verir.
+
+`/blog/kidem-tazminatina-dahil-odemeler/` doğrudan kıdem, ihbar ve kombine tazminat araçlarına link verir.
+
+### Tazminat cluster
+
+- Kıdem → İhbar → Kombine sayfalar karşılıklı linklenir.
+- Her sayfanın title/H1 ve ana açıklaması kendi primary query'sini sahiplenir.
+- `tazminat hesaplama` generic sorgusu kombine sayfaya, `kıdem tazminatı hesaplama` kıdem sayfasına, `ihbar tazminatı hesaplama` ihbar sayfasına gider.
+
+## GSC sonrası karar kuralları
+
+28 günlük sorgu verisi geldiğinde:
+
+- Impressions yüksek, position 4–15, CTR düşük → title/meta/intro ve rich result iyileştir.
+- Impressions yüksek, position 15–40 → içerik derinliği + internal link + özgün hesap örneği artır.
+- İki URL aynı query'de impressions alıyorsa → query ownership/cannibalization kontrolü yap.
+- Calculator landing page organik session yüksek ama completion düşükse → SEO değil UX/form friksiyonu öncelik olur.
+- Yeni calculator yatırımı, Tier B içinde impressions proxy + SERP rekabeti + ürün motoru doğruluğu üçlüsüyle seçilir.
