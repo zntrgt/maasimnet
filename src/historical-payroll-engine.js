@@ -82,9 +82,11 @@ function calculateHistoricalMonth({
   const payableStampTaxKurus = Math.max(0, calculatedStampTaxKurus - minimumWageStampTaxExemptionKurus);
   let netKurus = grossKurus - employeeSgkKurus - employeeUnemploymentKurus - payableIncomeTaxKurus - payableStampTaxKurus;
 
-  // 2020-2021'de gelir vergisi tarifesi nedeniyle asgari ücretlinin neti Ocak referansının altına
-  // düştüğünde uygulanan ilave AGİ korumasını yalnız tam asgari ücret senaryosunda modeller.
-  if (data.agiEnabled && grossKurus === period.minimumGrossKurus && netKurus < period.referenceMinimumNetKurus) {
+  // GVK 32'nin yürürlükte olduğu 2020-2021 döneminde, tarife ilerlemesi nedeniyle net ücretin
+  // yalnız kendisi için AGİ hesaplanan asgari ücretlinin referans netinin altına düşmesi halinde
+  // fark ilave AGİ olarak tamamlanır. Bu koruma yalnız tam asgari ücretle sınırlı değildi;
+  // bu nedenle standart tam süreli ücret varsayımında brüt ücret asgari ücret veya üzerindeyse uygulanır.
+  if (data.agiEnabled && grossKurus >= period.minimumGrossKurus && netKurus < period.referenceMinimumNetKurus) {
     supplementalAgiKurus = Math.min(payableIncomeTaxKurus, period.referenceMinimumNetKurus - netKurus);
     payableIncomeTaxKurus -= supplementalAgiKurus;
     netKurus += supplementalAgiKurus;
@@ -96,6 +98,7 @@ function calculateHistoricalMonth({
     month: monthIndex,
     grossKurus,
     minimumGrossKurus: period.minimumGrossKurus,
+    referenceMinimumNetKurus: period.referenceMinimumNetKurus,
     sgkCeilingKurus: period.sgkCeilingKurus,
     sgkBaseKurus,
     employeeSgkKurus,
