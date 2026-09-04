@@ -9,11 +9,12 @@ export const SITE_METADATA = Object.freeze({
   releaseModifiedAt: '2026-09-04',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
-  releaseVersion: '1.12.0-termination-search-expansion'
+  releaseVersion: '1.13.0-calculator-discovery-architecture'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-08-01' }),
+  '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-08-01' }),
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),
   '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
@@ -31,6 +32,7 @@ const PAGE_OVERRIDES = Object.freeze({
 });
 
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
+  '/hesaplama-araclari/',
   '/test-raporu/',
   '/tazminat-hesaplama/',
   '/kidem-tazminati-hesaplama/',
@@ -63,6 +65,7 @@ export function getPageMetadata(pathname = '/') {
     '/kidem-tazminati-hesaplama/',
     '/ihbar-tazminati-hesaplama/'
   ].includes(path);
+  const isCalculatorHub = path === '/hesaplama-araclari/';
 
   const familyModifiedAt = isPayrollDataPage
     ? SITE_METADATA.payrollDataReviewedAt
@@ -74,7 +77,7 @@ export function getPageMetadata(pathname = '/') {
     path,
     publishedAt: override.publishedAt || SITE_METADATA.defaultPublishedAt,
     modifiedAt: override.modifiedAt || familyModifiedAt,
-    reviewedAt: isPayrollDataPage || isTerminationCalculator || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
+    reviewedAt: isPayrollDataPage || isTerminationCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
       ? SITE_METADATA.payrollDataReviewedAt
       : isBlogPage
         ? SITE_METADATA.blogReviewedAt
