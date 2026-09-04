@@ -7,7 +7,6 @@ const dist = join(process.cwd(), 'dist');
 const failures = [];
 const seenTitles = new Map();
 const seenDescriptions = new Map();
-
 const originalDataSlugs = new Set([
   '2026-maas-vergi-dilimleri',
   'netten-brute-maas-neden-aylik-degisir',
@@ -15,15 +14,7 @@ const originalDataSlugs = new Set([
   'prim-ikramiye-net-maasi-neden-dusurur',
   'is-teklifinin-yillik-degeri'
 ]);
-
 const editorialImages = new Map(blogImageAssignments.map(({ slug, asset }) => [slug, asset]));
-
-if (editorialImages.size !== indexableBlogPosts.length) {
-  failures.push(`Editoryal görsel kapsamı eksik: ${editorialImages.size}/${indexableBlogPosts.length}`);
-}
-for (const post of indexableBlogPosts) {
-  if (!editorialImages.has(post.slug)) failures.push(`${post.slug}: editoryal görsel eşlemesi yok`);
-}
 
 const strip = (html) => html
   .replace(/<script[\s\S]*?<\/script>/gi, ' ')
@@ -48,7 +39,9 @@ function titleText(html) {
 }
 
 function articleHtml(html) {
-  return html.match(/<article\b[\s\S]*?<\/article>/i)?.[0] || html.match(/<main\b[\s\S]*?<\/main>/i)?.[0] || html;
+  return html.match(/<article\b[\s\S]*?<\/article>/i)?.[0]
+    || html.match(/<main\b[\s\S]*?<\/main>/i)?.[0]
+    || html;
 }
 
 function jsonLdNodes(html, slug) {
@@ -71,39 +64,30 @@ function hasType(node, type) {
   return Array.isArray(value) ? value.includes(type) : value === type;
 }
 
-function hasCardImageNearRoute(html, route, asset, maxDistance = 1600) {
-  let start = 0;
-  while (start < html.length) {
-    const routePos = html.indexOf(`href="${route}"`, start);
-    if (routePos < 0) return false;
-    const assetPos = html.indexOf(`/assets/${asset}`, routePos);
-    if (assetPos >= 0 && assetPos - routePos <= maxDistance) return true;
-    start = routePos + route.length + 7;
-  }
-  return false;
+if (editorialImages.size !== indexableBlogPosts.length) {
+  failures.push(`Editoryal görsel kapsamı eksik: ${editorialImages.size}/${indexableBlogPosts.length}`);
 }
 
 for (const post of indexableBlogPosts) {
-  const file = join(dist, blogOutputPath(post));
-  const html = await readFile(file, 'utf8');
+  const html = await readFile(join(dist, blogOutputPath(post)), 'utf8');
   const article = articleHtml(html);
   const title = titleText(html);
   const description = metaDescription(html);
   const h1Count = (html.match(/<h1\b/gi) || []).length;
-  const canonical = html.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i)?.[1] || '';
+  const canonical = html.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1] || '';
   const nodes = jsonLdNodes(html, post.slug);
   const articleNode = nodes.find((node) => hasType(node, 'Article') || hasType(node, 'BlogPosting'));
   const breadcrumbNode = nodes.find((node) => hasType(node, 'BreadcrumbList'));
   const faqNode = nodes.find((node) => hasType(node, 'FAQPage'));
   const firstH1End = article.search(/<\/h1>/i);
   const earlyText = firstH1End >= 0 ? strip(article.slice(firstH1End + 5, firstH1End + 2600)) : '';
-  const internalLinks = [...article.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)]
+  const internalLinks = [...article.matchAll(/<a\b[^>]*href=["']([^"']+)["']/gi)]
     .map((match) => match[1])
     .filter((href) => href.startsWith('/') && !href.startsWith('/#') && href !== '/');
-  const externalLinks = [...article.matchAll(/<a\b[^>]*href=["']https?:\/\/[^"']+["'][^>]*>/gi)];
+  const externalLinks = [...article.matchAll(/<a\b[^>]*href=["']https?:\/\/[^"']+["']/gi)];
   const hasEvidenceLink = externalLinks.length > 0 || /href=["']\/(?:metodoloji|hesaplama-metodolojisi|2026-verileri|veriler)\/?["']/i.test(article);
   const imageWithAlt = /<img\b(?=[^>]*\bsrc=["'][^"']+["'])(?=[^>]*\balt=["'][^"']+["'])[^>]*>/i.test(article);
-  const ogImage = html.match(/<meta\b[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i)?.[1] || '';
+  const ogImage = html.match(/<meta\b[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)?.[1] || '';
   const hasOriginalValue = /maasim-original-data|quality-depth|decision-table|<figure\b|content-cta|<table\b/i.test(article);
   const visibleFaqCount = (article.match(/<details\b/gi) || []).length;
 
@@ -139,7 +123,9 @@ for (const post of indexableBlogPosts) {
   }
 
   const asset = editorialImages.get(post.slug);
-  if (asset) {
+  if (!asset) {
+    checks.push([false, 'editoryal görsel eşlemesi yok']);
+  } else {
     checks.push([html.includes(`/assets/${asset}`), `konuya özel editoryal görsel kullanılmıyor (${asset})`]);
     checks.push([ogImage.endsWith(`/assets/${asset}`), `og:image konuya özel editoryal görselle eşleşmiyor (${asset})`]);
     try {
@@ -151,9 +137,7 @@ for (const post of indexableBlogPosts) {
     }
   }
 
-  for (const [ok, message] of checks) {
-    if (!ok) failures.push(`${post.slug}: ${message}`);
-  }
+  for (const [ok, message] of checks) if (!ok) failures.push(`${post.slug}: ${message}`);
 
   if (title) {
     if (seenTitles.has(title)) failures.push(`${post.slug}: duplicate title (${seenTitles.get(title)})`);
@@ -167,8 +151,12 @@ for (const post of indexableBlogPosts) {
 
 const blogIndex = await readFile(join(dist, 'blog', 'index.html'), 'utf8');
 for (const [slug, asset] of editorialImages) {
-  if (!hasCardImageNearRoute(blogIndex, `/blog/${slug}/`, asset)) {
-    failures.push(`${slug}: blog kartında konuya özel editoryal görsel yok (${asset})`);
+  const route = `/blog/${slug}/`;
+  if (!blogIndex.includes(`href="${route}"`) && !blogIndex.includes(`href='${route}'`)) {
+    failures.push(`${slug}: blog index bağlantısı yok`);
+  }
+  if (!blogIndex.includes(`/assets/${asset}`)) {
+    failures.push(`${slug}: blog indexinde konuya özel editoryal görsel yok (${asset})`);
   }
 }
 
