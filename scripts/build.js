@@ -47,6 +47,7 @@ import { applyContentDates } from './apply-content-dates.js';
 import { applyLighthouseFixes } from './apply-lighthouse-fixes.js';
 import { applyAccessibilityPolish } from './apply-accessibility-polish.js';
 import { applyFintechUi } from './apply-fintech-ui.js';
+import { applyMobileCalculatorUx } from './apply-mobile-calculator-ux.js';
 import { applyContrastGuard } from './apply-contrast-guard.js';
 import { mergeCriticalCss } from './merge-critical-css.js';
 import { inlineHomeCss } from './inline-home-css.js';
@@ -79,7 +80,7 @@ for (const file of [
   'salary-raise-engine.js','salary-raise-calculator.js','salary-raise-calculator.css',
   'worktime-engines.js','worktime-calculators.js','worktime-calculators.css',
   'historical-payroll-data.js','historical-payroll-engine.js','historical-payroll-calculator.js','historical-payroll-calculator.css',
-  'fintech-ui.js','site-shell.css','site-shell.js'
+  'fintech-ui.js','mobile-calculator-ux.js','site-shell.css','site-shell.js'
 ]) await cp(join(sourceDir, file), join(assetsDir, file));
 
 await fixCalculatorAnalyticsInputReset(distDir);
@@ -124,6 +125,7 @@ await removeInternalCopy(distDir);
 await applyLighthouseFixes(distDir);
 await applyAccessibilityPolish(distDir);
 await applyFintechUi(distDir);
+await applyMobileCalculatorUx(distDir);
 await apply2027QueryOwnership(distDir);
 await applyBlogImages(distDir);
 await normalizeBlogIndexImages(distDir);
