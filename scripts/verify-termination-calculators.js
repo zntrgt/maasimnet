@@ -16,8 +16,8 @@ for (const [route, h1, type, cta] of pages) {
   assert.match(html, new RegExp(`data-termination-calculator="${type}"`), `${route}: doğru hesaplayıcı tipi bulunmalı`);
   assert.match(html, /\/assets\/termination-calculators\.js/, `${route}: hesaplayıcı JS asseti bulunmalı`);
   assert.match(html, /\/assets\/termination-calculators\.css/, `${route}: hesaplayıcı CSS asseti bulunmalı`);
-  assert.match(html, /\/assets\/humanized-ux\.js\?v=3/, `${route}: humanized UX scripti cache-busted yüklenmeli`);
-  assert.match(html, /\/assets\/humanized-termination\.css\?v=3/, `${route}: humanized termination CSS cache-busted yüklenmeli`);
+  assert.match(html, /\/assets\/humanized-ux\.js\?v=4/, `${route}: humanized UX scripti cache-busted yüklenmeli`);
+  assert.match(html, /\/assets\/humanized-termination\.css\?v=4/, `${route}: humanized termination CSS cache-busted yüklenmeli`);
   assert.match(html, /"@type":"WebApplication"/, `${route}: WebApplication schema bulunmalı`);
   assert.match(html, /"@type":"FAQPage"/, `${route}: FAQPage schema bulunmalı`);
   assert.match(html, /csgb\.gov\.tr/i, `${route}: ÇSGB resmî kaynak bağlantısı bulunmalı`);
