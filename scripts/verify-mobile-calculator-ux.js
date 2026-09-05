@@ -5,12 +5,15 @@ const dist = join(process.cwd(), 'dist');
 const html = await readFile(join(dist, 'index.html'), 'utf8');
 const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
 const js = await readFile(join(dist, 'assets', 'mobile-calculator-ux.js'), 'utf8');
+const humanizedJs = await readFile(join(dist, 'assets', 'humanized-ux.js'), 'utf8');
 
 for (const token of [
   'src="/assets/mobile-calculator-ux.js"',
   'data-fintech-ui="v2"',
   'id="input-salary"',
-  'class="calculator-results-column"'
+  'class="calculator-results-column"',
+  'onclick="calculateAndShowPayroll()"',
+  'humanized-ux.js?v=3'
 ]) if (!html.includes(token)) throw new Error(`Mobile UX HTML contract eksik: ${token}`);
 
 const mainTag = html.match(/<main\b[^>]*>/i)?.[0] || '';
@@ -48,6 +51,17 @@ for (const token of [
   'inputValue > 0 && netValue > 0'
 ]) if (!js.includes(token)) throw new Error(`Mobile UX JS contract eksik: ${token}`);
 
+for (const token of [
+  "typeof window.calculateAndShowPayroll === 'function'",
+  'window.calculateAndShowPayroll();',
+  "qs('#input-salary')?.blur();",
+  "{ capture: true }"
+]) if (!humanizedJs.includes(token)) throw new Error(`Mobile hesaplama aksiyonu eksik: ${token}`);
+
+if (humanizedJs.includes("primary.removeAttribute('onclick')")) {
+  throw new Error('Humanized UX ana calculateAndShowPayroll onclick davranışını silemez.');
+}
+
 for (const forbiddenCss of [
   '--mobile-visual-viewport-width',
   'width:100vw!important',
@@ -72,4 +86,4 @@ for (const forbiddenJs of [
   if (js.includes(forbiddenJs)) throw new Error(`Mobile UX yasaklı davranış içeriyor: ${forbiddenJs}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: document overflow clip; geniş bordro tablosu inline-size containment içinde scroll ediyor; iOS input odak güvenliği 16px+; viewport meta runtime değiştirilmiyor.');
+console.log('Mobile calculator UX doğrulandı: gerçek calculateAndShowPayroll aksiyonu korunuyor; mobil CTA klavyeyi kapatıp sonucu odaklıyor; iOS input ve overflow güvenliği korunuyor.');
