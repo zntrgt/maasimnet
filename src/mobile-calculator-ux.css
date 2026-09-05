@@ -9,6 +9,16 @@
   body[data-fintech-ui="v2"]{
     overflow-x:clip;
   }
+  body[data-fintech-ui="v2"] main,
+  body[data-fintech-ui="v2"] #hesaplayici,
+  body[data-fintech-ui="v2"] .calculator-layout,
+  body[data-fintech-ui="v2"] .calculator-results-column,
+  body[data-fintech-ui="v2"] .metric-hero,
+  body[data-fintech-ui="v2"] .metric-card{
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
   body[data-fintech-ui="v2"] .enterprise-form-card input:not(#input-salary),
   body[data-fintech-ui="v2"] .enterprise-form-card select,
   body[data-fintech-ui="v2"] .enterprise-form-card textarea{
@@ -16,6 +26,33 @@
   }
   body[data-fintech-ui="v2"] .enterprise-money-input #input-salary{
     font-size:clamp(28px,8.5vw,36px)!important;
+  }
+
+  /* Metric info popovers must never widen the document on iOS Safari. */
+  body[data-fintech-ui="v2"] .metric-info{
+    max-width:100%!important;
+  }
+  body[data-fintech-ui="v2"] .metric-popover{
+    left:auto!important;
+    right:0!important;
+    width:min(350px,calc(100vw - 40px))!important;
+    max-width:calc(100vw - 40px)!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+  }
+
+  /* Screen-reader-only text may have a huge intrinsic scrollWidth; isolate it from layout. */
+  body[data-fintech-ui="v2"] .enterprise-tax-a11y{
+    position:fixed!important;
+    inset:auto!important;
+    left:-9999px!important;
+    top:0!important;
+    width:1px!important;
+    height:1px!important;
+    max-width:1px!important;
+    overflow:hidden!important;
+    white-space:normal!important;
+    clip-path:inset(50%)!important;
   }
 
   /* Keep wide payroll content scrollable inside its own shell; never let it widen the document. */
@@ -99,9 +136,7 @@
     font-weight:850!important;
   }
   body.enterprise-input-active .enterprise-mobile-sticky{
-    transform:translateY(calc(100% + 28px))!important;
-    opacity:0!important;
-    pointer-events:none!important;
+    display:none!important;
   }
 }
 
