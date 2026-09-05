@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const VERSION = 'v1';
-const ASSET_VERSION = '5';
+const ASSET_VERSION = '4';
 const SCRIPT_SRC = `/assets/humanized-ux.js?v=${ASSET_VERSION}`;
 const HOME_CSS = `/assets/humanized-ux.css?v=${ASSET_VERSION}`;
 const TERMINATION_CSS = `/assets/humanized-termination.css?v=${ASSET_VERSION}`;
