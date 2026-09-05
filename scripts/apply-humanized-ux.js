@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const VERSION = 'v1';
-const ASSET_VERSION = '4';
+const ASSET_VERSION = '5';
 const SCRIPT_SRC = `/assets/humanized-ux.js?v=${ASSET_VERSION}`;
 const HOME_CSS = `/assets/humanized-ux.css?v=${ASSET_VERSION}`;
 const TERMINATION_CSS = `/assets/humanized-termination.css?v=${ASSET_VERSION}`;
@@ -34,6 +34,21 @@ function addScript(html) {
 function patchHumanizedRuntime(js) {
   let output = js;
 
+  output = output.replace(
+    "const MOBILE_QUERY = '(max-width: 700px)';",
+    "const MOBILE_QUERY = '(max-width: 700px)';\nlet homeResultCommitted = false;"
+  );
+
+  const usableResultPattern = /function hasUsableHomeResult\(\) \{[\s\S]*?\n\}/;
+  if (!usableResultPattern.test(output)) {
+    throw new Error('Humanized runtime usable result bloğu bulunamadı.');
+  }
+  output = output.replace(usableResultPattern, `function hasUsableHomeResult() {
+  const inputValue = currentSalaryValue();
+  const netValue = parseCurrency(qs('#stat-avg-net')?.textContent);
+  return homeResultCommitted && inputValue > 0 && netValue > 0;
+}`);
+
   const primaryPattern = /function configurePrimaryAction\(\) \{[\s\S]*?\n\}\n\nfunction ensureMobileCta/;
   if (!primaryPattern.test(output)) {
     throw new Error('Humanized runtime primary action bloğu bulunamadı.');
@@ -49,6 +64,10 @@ function patchHumanizedRuntime(js) {
       return;
     }
     if (window.matchMedia(MOBILE_QUERY).matches) qs('#input-salary')?.blur();
+    window.setTimeout(() => {
+      homeResultCommitted = true;
+      refreshHomeState();
+    }, 0);
   }, { capture: true });
 }
 
@@ -68,6 +87,8 @@ function ensureMobileCta`);
     qs('#input-salary')?.blur();
     if (typeof window.calculateAndShowPayroll === 'function') {
       window.calculateAndShowPayroll();
+      homeResultCommitted = true;
+      refreshHomeState();
       return;
     }
     qs('.cta-button--calculate')?.click();
@@ -100,6 +121,17 @@ function refreshHomeState`);
 
 function initializeHomeUx`);
 
+  const inputListenerPattern = /  const input = qs\('#input-salary'\);\n  input\?\.addEventListener\('input', \(\) => \{\n    if \(currentSalaryValue\(\) > 0\) clearSalaryError\(\);\n    refreshHomeState\(\);\n  \}\);/;
+  if (!inputListenerPattern.test(output)) {
+    throw new Error('Humanized runtime input state bloğu bulunamadı.');
+  }
+  output = output.replace(inputListenerPattern, `  const input = qs('#input-salary');
+  input?.addEventListener('input', () => {
+    if (currentSalaryValue() > 0) clearSalaryError();
+    else homeResultCommitted = false;
+    refreshHomeState();
+  });`);
+
   const observerPattern = /  const payrollBody = qs\('#payroll-body'\);\n  if \(payrollBody\) \{\n    new MutationObserver\(\(\) => \{\n      humanizeSalaryJourney\(\);\n      refreshHomeState\(\);\n    \}\)\.observe\(payrollBody, \{ childList: true, subtree: true, characterData: true \}\);\n  \}\n\n  refreshHomeState\(\);/;
   if (!observerPattern.test(output)) {
     throw new Error('Humanized runtime payroll observer bloğu bulunamadı.');
@@ -123,14 +155,14 @@ function initializeHomeUx`);
   if (output.includes("primary.removeAttribute('onclick')")) {
     throw new Error('Humanized runtime ana hesaplama onclick davranışını hâlâ siliyor.');
   }
-  if (!output.includes("typeof window.calculateAndShowPayroll === 'function'")) {
-    throw new Error('Humanized runtime mobil CTA orijinal hesaplama akışına bağlı değil.');
-  }
-  if (!output.includes("const resultValue = qs('#stat-avg-net');")) {
-    throw new Error('Humanized runtime sonuç değişimini gözlemlemiyor.');
-  }
-  if (!output.includes('empty.hidden = valid;')) {
-    throw new Error('Humanized runtime empty state görünürlüğünü sonuçla eşlemiyor.');
+  for (const token of [
+    "let homeResultCommitted = false;",
+    'return homeResultCommitted && inputValue > 0 && netValue > 0;',
+    'homeResultCommitted = true;',
+    'empty.hidden = valid;',
+    "const resultValue = qs('#stat-avg-net');"
+  ]) {
+    if (!output.includes(token)) throw new Error(`Humanized runtime deterministik sonuç state işareti eksik: ${token}`);
   }
 
   return output;
@@ -273,5 +305,5 @@ export async function applyHumanizedUx(distDir) {
     await writeFile(pagePath, html, 'utf8');
   }
 
-  console.log('Humanized UX v1 uygulandı: kritik copy, empty state ve orijinal hesaplama aksiyonu korunuyor.');
+  console.log('Humanized UX v1 uygulandı: gerçek hesaplama aksiyonu sonuç stateini deterministik olarak açıyor.');
 }
