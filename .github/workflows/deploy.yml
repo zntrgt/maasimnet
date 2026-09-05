@@ -188,7 +188,7 @@ jobs:
           }
 
           assert_response 'https://maasim.net/' '200' 'max-age=0'
-          assert_response 'https://maasim.net/assets/app.js' '200' 'max-age=86400'
+          assert_response 'https://maasim.net/assets/app.js' '200' 'max-age=0'
           assert_response 'https://maasim.net/assets/sirket-destekli-spor-wellness-editorial.webp' '200' 'max-age=2592000'
           assert_response 'https://maasim.net/sitemap.xml' '200' 'max-age=3600'
           assert_response 'https://maasim.net/api/contact' '405' 'no-store'
