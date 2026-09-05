@@ -17,6 +17,14 @@ for (const asset of ['historical-payroll-data.js','historical-payroll-engine.js'
   await access(join(dist, 'assets', asset));
 }
 
+const historicalCss = await readFile(join(dist, 'assets', 'historical-payroll-calculator.css'), 'utf8');
+requireText(
+  historicalCss,
+  'font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+  'historical calculator shared Inter font stack'
+);
+requireText(historicalCss, 'font-variant-numeric:tabular-nums lining-nums', 'historical calculator numeric typography');
+
 for (const year of years) {
   const html = await readFile(file(year), 'utf8');
   const canonical = `https://maasim.net${route(year)}`;
@@ -74,4 +82,4 @@ for (const forbidden of ['fetch(', 'XMLHttpRequest', 'navigator.sendBeacon', 'gt
   if (client.includes(forbidden)) throw new Error(`Tarihsel hesaplayıcı finansal girdiyi ağ/analytics katmanına gönderebilecek ifade içeriyor: ${forbidden}`);
 }
 
-console.log(`Tarihsel maaş hesaplayıcı sözleşmesi doğrulandı: ${years.length} yıl; motor + SEO + discovery + sitemap + privacy.`);
+console.log(`Tarihsel maaş hesaplayıcı sözleşmesi doğrulandı: ${years.length} yıl; motor + SEO + typography + discovery + sitemap + privacy.`);
