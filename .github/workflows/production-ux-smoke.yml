@@ -52,7 +52,7 @@ jobs:
             local body="$1"
             local token="$2"
             local label="$3"
-            if ! grep -Fq "$token" <<< "$body"; then
+            if ! grep -Fq -- "$token" <<< "$body"; then
               echo "::error::Canlı UX doğrulaması başarısız: $label eksik ($token)"
               exit 1
             fi
@@ -63,7 +63,7 @@ jobs:
             local body="$1"
             local token="$2"
             local label="$3"
-            if grep -Fq "$token" <<< "$body"; then
+            if grep -Fq -- "$token" <<< "$body"; then
               echo "::error::Canlı UX doğrulaması başarısız: $label beklenmeyen içerik taşıyor ($token)"
               exit 1
             fi
