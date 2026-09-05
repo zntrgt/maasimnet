@@ -43,7 +43,7 @@ for (const token of [
 ]) if (!css.includes(token)) throw new Error(`Mobile UX CSS contract eksik: ${token}`);
 
 for (const token of [
-  "const MOBILE_QUERY = '(max-width: 700px)'",
+  "const MOBILE_CALCULATOR_QUERY = '(max-width: 700px)'",
   'hasUsableResult()',
   "sticky.classList.toggle('is-visible', shouldShow)",
   'new IntersectionObserver(',
@@ -53,6 +53,10 @@ for (const token of [
   "window.visualViewport?.addEventListener('resize', refresh",
   'inputValue > 0 && netValue > 0'
 ]) if (!js.includes(token)) throw new Error(`Mobile UX JS contract eksik: ${token}`);
+
+if (js.includes("const MOBILE_QUERY = '(max-width: 700px)'")) {
+  throw new Error('Mobile runtime global MOBILE_QUERY sabitini tekrar tanımlayamaz; humanized runtime ile lexical çakışma yaratır.');
+}
 
 for (const token of [
   "typeof window.calculateAndShowPayroll === 'function'",
@@ -92,4 +96,4 @@ for (const forbiddenJs of [
   if (js.includes(forbiddenJs)) throw new Error(`Mobile UX yasaklı davranış içeriyor: ${forbiddenJs}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: revisioned runtime + gerçek calculateAndShowPayroll aksiyonu korunuyor; sonuç üretildiğinde empty state kapanıyor; mobil CTA klavyeyi kapatıp sonucu odaklıyor; iOS input ve overflow güvenliği korunuyor.');
+console.log('Mobile calculator UX doğrulandı: media-query global çakışması yok; revisioned runtime + gerçek calculateAndShowPayroll aksiyonu korunuyor; sonuç üretildiğinde empty state kapanıyor; mobil CTA klavyeyi kapatıp sonucu odaklıyor; iOS input ve overflow güvenliği korunuyor.');
