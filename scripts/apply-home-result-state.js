@@ -68,7 +68,7 @@ function patchApp(source) {
   setCommittedResultState(true);
   return true;
 }`,
-    'CTA sonrası kesin sonuç state'i'
+    'CTA sonrası kesin sonuç state'
   );
 
   app = replaceRequired(
