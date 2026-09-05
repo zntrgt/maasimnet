@@ -5,6 +5,15 @@ import { DATA_2026 } from '../src/data-2026.js';
 const UI_VERSION = 'v2';
 const CSS_MARKER = '/* Enterprise Fintech UI v2';
 const SCRIPT_SRC = '/assets/fintech-ui.js';
+const FIRST_PAINT_MARKER = 'data-fintech-first-paint="v2"';
+const FIRST_PAINT_STYLE = `<style ${FIRST_PAINT_MARKER}>
+body[data-fintech-ui="v2"] #hesaplayici>div:first-child>div:first-child{background:#fff!important;color:#0b1728!important;border:1px solid #dfe5ec!important;border-radius:30px!important;box-shadow:0 10px 28px rgba(7,17,31,.055)!important}
+body[data-fintech-ui="v2"] #hesaplayici>div:first-child>div:first-child label{color:#475569!important}
+body[data-fintech-ui="v2"] #hesaplayici #input-salary,body[data-fintech-ui="v2"] #hesaplayici select{background:#fff!important;color:#07111f!important;border-color:#cfd7e1!important}
+body[data-fintech-ui="v2"] #hesaplayici #btn-mode-gross,body[data-fintech-ui="v2"] #hesaplayici #btn-mode-net{color:#526071!important}
+body[data-fintech-ui="v2"] #hesaplayici #btn-mode-gross[aria-pressed="true"],body[data-fintech-ui="v2"] #hesaplayici #btn-mode-net[aria-pressed="true"]{background:#fff!important;color:#07111f!important}
+body[data-fintech-ui="v2"] #hesaplayici>div:first-child>div:first-child .text-sm{color:#0b1728!important}
+</style>`;
 
 function replaceHomeHero(html) {
   const mainStart = html.search(/<main\b/i);
@@ -46,6 +55,11 @@ function normalizeMainWidthOwnership(html) {
   });
 }
 
+function addFirstPaintStyle(html) {
+  if (html.includes(FIRST_PAINT_MARKER)) return html;
+  return html.replace(/<\/head>/i, `${FIRST_PAINT_STYLE}</head>`);
+}
+
 function addInteractionScript(html) {
   if (html.includes(SCRIPT_SRC)) return html;
   return html.replace(/<\/body>/i, `<script src="${SCRIPT_SRC}" defer></script></body>`);
@@ -68,6 +82,7 @@ export async function applyFintechUi(distDir) {
   html = replaceHomeHero(html);
   html = markBody(html);
   html = normalizeMainWidthOwnership(html);
+  html = addFirstPaintStyle(html);
   html = addInteractionScript(html);
 
   if (!styles.includes(CSS_MARKER)) styles += `\n${fintechCss}\n`;
@@ -75,5 +90,5 @@ export async function applyFintechUi(distDir) {
   await writeFile(indexPath, html);
   await writeFile(stylesPath, styles);
 
-  console.log('Enterprise fintech UI v2 uygulandı: hero + trust + live output + native main width ownership.');
+  console.log('Enterprise fintech UI v2 uygulandı: hero + trust + first-paint shell + live output + native main width ownership.');
 }
