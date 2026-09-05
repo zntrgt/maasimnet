@@ -6,6 +6,7 @@ const dist = join(root, 'dist');
 const html = await readFile(join(dist, 'index.html'), 'utf8');
 const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
 const fintechJs = await readFile(join(dist, 'assets', 'fintech-ui.js'), 'utf8');
+const humanizedJs = await readFile(join(dist, 'assets', 'humanized-ux.js'), 'utf8');
 const app = await readFile(join(dist, 'assets', 'app.js'), 'utf8');
 const shellCss = (await readFile(join(root, 'src', 'site-shell.css'), 'utf8')).trim();
 
@@ -25,6 +26,18 @@ const requiredHtml = [
 ];
 for (const token of requiredHtml) {
   if (!html.includes(token)) throw new Error(`Enterprise fintech UI HTML işareti eksik: ${token}`);
+}
+
+if (html.includes('class="human-quick-amounts"')) {
+  throw new Error('Hızlı maaş tutarları statik HTML içinde bırakılmış; click listener bağlanmadan görünür hale gelebilir.');
+}
+for (const token of [
+  'function ensureQuickAmounts()',
+  "quick.addEventListener('click'",
+  'data-human-amount',
+  "input.dispatchEvent(new Event('input', { bubbles: true }))"
+]) {
+  if (!humanizedJs.includes(token)) throw new Error(`Hızlı maaş tutarı etkileşimi eksik: ${token}`);
 }
 
 for (const token of [
@@ -122,4 +135,4 @@ for (const route of [
 if (!css.includes('@media (max-width: 700px)')) throw new Error('Enterprise UI mobile-first breakpoint eksik.');
 if (!css.includes('@media (prefers-reduced-motion: reduce)')) throw new Error('Reduced-motion erişilebilirlik kuralı eksik.');
 
-console.log('Enterprise fintech UI v2 doğrulandı: desktop/mobile, humanized hero, live output, paylaşım, trust ve sitewide token sistemi.');
+console.log('Enterprise fintech UI v2 doğrulandı: desktop/mobile, humanized hero, hızlı tutar etkileşimi, live output, paylaşım, trust ve sitewide token sistemi.');
