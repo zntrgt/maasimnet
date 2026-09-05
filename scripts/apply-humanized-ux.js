@@ -52,15 +52,9 @@ function staticHomeMarkup(html) {
   );
 
   const inputPattern = /<input\b(?=[^>]*\bid=["']input-salary["'])[^>]*>/i;
-  if (inputPattern.test(output) && !output.includes('class="human-quick-amounts"')) {
+  if (inputPattern.test(output) && !output.includes('id="human-salary-feedback"')) {
     output = output.replace(inputPattern, (input) => `${input}
-      <p class="human-field-feedback" id="human-salary-feedback" aria-live="polite"></p>
-      <div class="human-quick-amounts" aria-label="Hızlı maaş tutarları">
-        <button type="button" data-human-amount="50000">50 bin</button>
-        <button type="button" data-human-amount="75000">75 bin</button>
-        <button type="button" data-human-amount="100000">100 bin</button>
-        <button type="button" data-human-amount="150000">150 bin</button>
-      </div>`);
+      <p class="human-field-feedback" id="human-salary-feedback" aria-live="polite"></p>`);
   }
 
   output = output.replace(
