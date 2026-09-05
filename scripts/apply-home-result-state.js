@@ -1,5 +1,8 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { DATA_2026 } from '../src/data-2026.js';
+
+const MINIMUM_GROSS_TL = DATA_2026.payroll.minimumGrossKurus / 100;
 
 function replaceRequired(source, pattern, replacement, label) {
   if (typeof pattern === 'string') {
@@ -105,6 +108,68 @@ function patchHumanizedRuntime(source) {
     'humanized state tek kaynağa bağlama'
   );
 
+  js = replaceRequired(
+    js,
+    /function updateTaxInsight\(\) \{[\s\S]*?\n\}\n\nfunction humanizeSalaryJourney/,
+    `function updateTaxInsight() {
+  const insight = qs('.human-tax-insight');
+  if (!insight || !hasUsableHomeResult()) {
+    if (insight) insight.hidden = true;
+    return;
+  }
+
+  const rows = readPayrollRows();
+  if (!rows.length) {
+    insight.hidden = true;
+    return;
+  }
+
+  const title = qs('[data-human-tax-title]', insight);
+  const copy = qs('[data-human-tax-copy]', insight);
+  const rate = qs('[data-human-tax-rate]', insight);
+  const salary = currentSalaryValue();
+  const minimumGross = ${MINIMUM_GROSS_TL};
+  const belowMinimumGross = isGrossMode() && salary > 0 && salary < minimumGross;
+  const netValues = rows.map((row) => row.net).filter((value) => Number.isFinite(value));
+  const netRange = netValues.length ? Math.max(...netValues) - Math.min(...netValues) : 0;
+
+  if (belowMinimumGross) {
+    const monthlyNet = rows[0]?.net || parseCurrency(qs('#stat-avg-net')?.textContent);
+    if (title) title.textContent = 'Bu tutarda aylık netin değişmiyor';
+    if (rate) rate.textContent = `2026 brüt asgari ücret: ${'${formatTry(minimumGross)}'}`;
+    if (copy) copy.textContent = `${'${formatTry(salary)}'} brüt, tam zamanlı çalışma için 2026 brüt asgari ücretin altında. Asgari ücret vergi istisnası nedeniyle ödenecek gelir ve damga vergisi sıfırda kaldığından Ocak–Aralık netin ${'${formatTry(monthlyNet)}'} olarak aynı kalıyor.`;
+    insight.hidden = false;
+    return;
+  }
+
+  const transitionIndex = rows.findIndex((row, index) => index > 0 && row.rate && rows[index - 1]?.rate && row.rate !== rows[index - 1].rate);
+  if (transitionIndex < 1) {
+    insight.hidden = true;
+    return;
+  }
+
+  const previous = rows[transitionIndex - 1];
+  const current = rows[transitionIndex];
+  const difference = Math.max(0, previous.net - current.net);
+
+  if (title) title.textContent = `${'${current.month}'} ayında vergi dilimin değişiyor`;
+  if (rate) rate.textContent = `%${'${previous.rate}'} → %${'${current.rate}'}`;
+  if (copy) {
+    if (netRange < 0.01) {
+      copy.textContent = 'Vergi dilimi eşiği değişse de asgari ücret vergi istisnası bu hesapta aylık netini etkilemiyor; bu yüzden 12 aylık netin aynı kalıyor.';
+    } else {
+      copy.textContent = difference > 0
+        ? `Net maaşın bir önceki aya göre yaklaşık ${'${formatTry(difference)}'} daha düşük.`
+        : 'Vergi oranındaki değişimin aylık netine etkisini 12 aylık görünümde görebilirsin.';
+    }
+  }
+  insight.hidden = false;
+}
+
+function humanizeSalaryJourney`,
+    'değişmeyen net için açıklayıcı vergi insightı'
+  );
+
   const initAnchor = `  const input = qs('#input-salary');`;
   js = replaceRequired(
     js,
@@ -112,6 +177,15 @@ function patchHumanizedRuntime(source) {
     `  document.addEventListener('maasim:calculation-state', refreshHomeState);\n\n${initAnchor}`,
     'humanized app-state event listener'
   );
+
+  for (const token of [
+    `const minimumGross = ${MINIMUM_GROSS_TL};`,
+    'Bu tutarda aylık netin değişmiyor',
+    'tam zamanlı çalışma için 2026 brüt asgari ücretin altında',
+    'Vergi dilimi eşiği değişse de asgari ücret vergi istisnası'
+  ]) {
+    if (!js.includes(token)) throw new Error(`Değişmeyen net açıklaması eksik: ${token}`);
+  }
 
   return js;
 }
@@ -144,5 +218,5 @@ export async function applyHomeResultState(distDir) {
   await writeFile(humanizedPath, patchHumanizedRuntime(await readFile(humanizedPath, 'utf8')), 'utf8');
   await writeFile(fintechPath, patchFintechRuntime(await readFile(fintechPath, 'utf8')), 'utf8');
 
-  console.log('Ana hesaplama sonucu artık app-owned state ile açılıyor; humanized katman yalnız bu state’i tüketiyor.');
+  console.log('Ana hesaplama sonucu app-owned state ile açılıyor; düşük brüt tutarlarda değişmeyen netin nedeni açıkça gösteriliyor.');
 }
