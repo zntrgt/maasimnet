@@ -31,13 +31,16 @@ function assertMeta({ attr, key, content, message }) {
 }
 
 assert.match(html, new RegExp(`<title>${titleHtml.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/title>`), 'Ana sayfa title 2026 maaş hesaplama query ownership ile başlamalı.');
-assert.match(html, /<h1>Maaş Hesaplama 2026: Brütten Nete &amp; Netten Brüte<\/h1>/, 'Ana sayfa H1 exact 2026 maaş hesaplama niyetini sahiplenmeli.');
+assert.match(html, /<h1>Maaşını hesapla<\/h1>/, 'Ana sayfa H1 kullanıcıya doğrudan ve humanize konuşmalı.');
 assertMeta({ attr: 'name', key: 'description', content: description, message: 'Ana sayfa meta description 2026 brüt/net niyetini açıklamalı.' });
 assertMeta({ attr: 'property', key: 'og:title', content: titleText, message: 'OG title ana SEO title ile aynı olmalı.' });
 assertMeta({ attr: 'property', key: 'og:description', content: description, message: 'OG description ana meta description ile aynı olmalı.' });
 assertMeta({ attr: 'name', key: 'twitter:title', content: titleText, message: 'Twitter title ana SEO title ile aynı olmalı.' });
 assertMeta({ attr: 'name', key: 'twitter:description', content: description, message: 'Twitter description ana meta description ile aynı olmalı.' });
-assert.match(html, /Brüt maaşınızı nete, hedef net maaşınızı brüte çevirin; 2026 vergi dilimleri, SGK tavanı, asgari ücret istisnası/, 'Hero lead güncel 2026 bordro bağlamını açıkça vermeli.');
+assert.match(html, /Brütünü nete, netini brüte çevir\. Verginin yıl içinde maaşını nasıl değiştirdiğini de gör\./, 'Hero lead kullanıcı odaklı ve humanize olmalı.');
+assert.match(html, /2026 mevzuatına göre güncel ✓/, 'Hero güncellik mesajını kısa ve görünür vermeli.');
+assert.match(html, /Henüz hesap yapmadın/, 'Ana hesaplayıcı gerçek empty state ile başlamalı.');
+assert.match(html, /Net maaşımı gör/, 'Ana CTA sonuç odaklı olmalı.');
 
 const schemaMatch = html.match(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
 assert.ok(schemaMatch, 'Ana sayfa JSON-LD bulunmalı.');
@@ -55,4 +58,4 @@ assert.equal(page?.name, titleText, 'WebPage adı title ile semantik olarak eşl
 assert.equal(app?.description, description, 'WebApplication açıklaması meta description ile eşleşmeli.');
 assert.equal(page?.description, description, 'WebPage açıklaması meta description ile eşleşmeli.');
 
-console.log('Ana sayfa 2026 SEO query ownership doğrulandı: title + H1 + hero + schema + sosyal metadata tutarlı.');
+console.log('Ana sayfa SEO metadata + humanized hero doğrulandı: title/schema query ownership, görünen H1/lead UX odaklı.');
