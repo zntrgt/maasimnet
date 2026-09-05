@@ -6,6 +6,7 @@ const dist = join(root, 'dist');
 const html = await readFile(join(dist, 'index.html'), 'utf8');
 const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
 const fintechJs = await readFile(join(dist, 'assets', 'fintech-ui.js'), 'utf8');
+const taxTooltipJs = await readFile(join(dist, 'assets', 'tax-chart-tooltips.js'), 'utf8');
 const humanizedJs = await readFile(join(dist, 'assets', 'humanized-ux.js'), 'utf8');
 const app = await readFile(join(dist, 'assets', 'app.js'), 'utf8');
 const shellCss = (await readFile(join(root, 'src', 'site-shell.css'), 'utf8')).trim();
@@ -29,6 +30,9 @@ for (const token of requiredHtml) {
 }
 if (!/src="\/assets\/fintech-ui\.js\?[^\"]*rev=[^\"]+"/.test(html)) {
   throw new Error('Enterprise fintech UI scripti deployment revision taşımıyor.');
+}
+if (!/src="\/assets\/tax-chart-tooltips\.js\?[^\"]*rev=[^\"]+"/.test(html)) {
+  throw new Error('Aylık net grafik tooltip scripti deployment revision taşımıyor.');
 }
 if (!/src="\/assets\/app\.js\?[^\"]*rev=[^\"]+"/.test(html)) {
   throw new Error('Ana hesaplama modülü deployment revision taşımıyor.');
@@ -67,6 +71,9 @@ for (const token of [
   '.enterprise-result-actions',
   '.enterprise-tax-bars',
   'grid-template-columns: repeat(12, minmax(0,1fr))',
+  '/* Monthly net chart tooltips v1 */',
+  '.enterprise-tax-tooltip',
+  '.enterprise-tax-bar[data-tooltip-open="true"] .enterprise-tax-tooltip',
   '.enterprise-mobile-sticky',
   '@media print',
   'grid-template-columns: repeat(4, minmax(0, 1fr))',
@@ -93,6 +100,25 @@ for (const token of [
 }
 for (const forbidden of ['gtag(', 'fetch(', 'XMLHttpRequest']) {
   if (fintechJs.includes(forbidden)) throw new Error(`Enterprise UI finansal sonucu ağ/analytics katmanına taşımamalı: ${forbidden}`);
+}
+
+for (const token of [
+  "const TOOLTIP_VERSION = 'v1'",
+  "bar.setAttribute('tabindex', '0')",
+  "bar.setAttribute('aria-describedby', tooltipId)",
+  'enterprise-tax-tooltip__delta',
+  'differenceText(rows, index)',
+  "container.addEventListener('click'",
+  "container.addEventListener('keydown'",
+  "document.addEventListener('pointerdown'"
+]) {
+  if (!taxTooltipJs.includes(token)) throw new Error(`Aylık net grafik tooltip etkileşimi eksik: ${token}`);
+}
+if (!taxTooltipJs.trim().startsWith('(() => {')) {
+  throw new Error('Aylık net grafik tooltip runtimeı global lexical çakışmaları önlemek için IIFE içinde olmalı.');
+}
+for (const forbidden of ['gtag(', 'fetch(', 'XMLHttpRequest']) {
+  if (taxTooltipJs.includes(forbidden)) throw new Error(`Tooltip runtime finansal sonucu ağ/analytics katmanına taşımamalı: ${forbidden}`);
 }
 
 for (const token of ['class="tax-bracket-badge"', "'İşveren Maliyeti', 'Vergi Dilimi'"]) {
@@ -144,4 +170,4 @@ for (const route of [
 if (!css.includes('@media (max-width: 700px)')) throw new Error('Enterprise UI mobile-first breakpoint eksik.');
 if (!css.includes('@media (prefers-reduced-motion: reduce)')) throw new Error('Reduced-motion erişilebilirlik kuralı eksik.');
 
-console.log('Enterprise fintech UI v2 doğrulandı: revisioned app graph, first-paint beyaz shell, desktop/mobile, humanized hero, hızlı tutar etkileşimi, result-state sync, live output, paylaşım, trust ve sitewide token sistemi.');
+console.log('Enterprise fintech UI v2 doğrulandı: revisioned app graph, first-paint beyaz shell, desktop/mobile, humanized hero, hızlı tutar etkileşimi, aylık net hover/focus/tap tooltipleri, result-state sync, live output, paylaşım, trust ve sitewide token sistemi.');
