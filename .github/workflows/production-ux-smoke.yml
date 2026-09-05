@@ -18,7 +18,7 @@ jobs:
         github.event.workflow_run.conclusion == 'success'
       }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Verify live humanized calculator UX
         env:
@@ -92,4 +92,64 @@ jobs:
           assert_contains "$historical_css" 'font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' 'tarihsel ortak Inter font stack'
           assert_contains "$historical_css" 'font-variant-numeric:tabular-nums lining-nums' 'tarihsel sayısal tipografi'
 
-          echo 'Production humanized UX + mobile calculation action + historical typography smoke başarılı.'
+          echo 'Production markup smoke başarılı.'
+
+      - name: Verify live calculation in Chromium
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          npm exec --yes --package=playwright@1.55.0 -- playwright install chromium
+          npm exec --yes --package=playwright@1.55.0 -- node <<'NODE'
+          const { chromium } = require('playwright');
+
+          const deploySha = process.env.DEPLOY_SHA || Date.now().toString();
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 430, height: 932 } });
+          const consoleErrors = [];
+          page.on('pageerror', (error) => consoleErrors.push(`pageerror: ${error.message}`));
+          page.on('console', (message) => {
+            if (message.type() === 'error') consoleErrors.push(`console: ${message.text()}`);
+          });
+
+          await page.goto(`https://maasim.net/?ux_e2e=${encodeURIComponent(deploySha)}`, {
+            waitUntil: 'networkidle',
+            timeout: 45000
+          });
+
+          const input = page.locator('#input-salary');
+          await input.waitFor({ state: 'visible' });
+
+          const widthBeforeFocus = await page.evaluate(() => ({
+            inner: window.innerWidth,
+            client: document.documentElement.clientWidth,
+            scroll: document.documentElement.scrollWidth,
+            scale: window.visualViewport?.scale ?? 1
+          }));
+
+          await input.click();
+          const widthAfterFocus = await page.evaluate(() => ({
+            inner: window.innerWidth,
+            client: document.documentElement.clientWidth,
+            scroll: document.documentElement.scrollWidth,
+            scale: window.visualViewport?.scale ?? 1
+          }));
+
+          if (widthBeforeFocus.inner !== widthAfterFocus.inner || widthBeforeFocus.client !== widthAfterFocus.client) {
+            throw new Error(`Input focus viewport genişliğini değiştirdi: ${JSON.stringify({ widthBeforeFocus, widthAfterFocus })}`);
+          }
+
+          await input.fill('25000');
+          await page.waitForFunction(() => {
+            const value = document.querySelector('#stat-avg-net')?.textContent || '';
+            return value && !/^\s*0(?:[.,]00)?\s*₺?\s*$/.test(value);
+          }, null, { timeout: 10000 });
+
+          const result = await page.locator('#stat-avg-net').textContent();
+          const emptyStateVisible = await page.locator('.human-empty-state').isVisible().catch(() => false);
+          if (emptyStateVisible) throw new Error(`25.000 girişi sonrası empty state hâlâ görünür. Sonuç: ${result}`);
+          if (consoleErrors.length) throw new Error(`Tarayıcı runtime hataları: ${consoleErrors.join(' | ')}`);
+
+          console.log(`Canlı hesaplama doğrulandı. 25.000 brüt için sonuç: ${result}`);
+          await browser.close();
+          NODE
