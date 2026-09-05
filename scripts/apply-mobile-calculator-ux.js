@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 const STYLE_MARKER = '/* Maaşım.net mobile calculator UX v5';
 const SCRIPT_SRC = '/assets/mobile-calculator-ux.js';
-const VIEWPORT_CONTENT = 'width=device-width, initial-scale=1, viewport-fit=cover';
+const VIEWPORT_CONTENT = 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
 
 function normalizeViewport(html) {
   const viewportPattern = /<meta\b[^>]*name=["']viewport["'][^>]*>/i;
@@ -25,5 +25,5 @@ export async function applyMobileCalculatorUx(distDir) {
 
   await writeFile(stylesPath, styles);
   await writeFile(htmlPath, html);
-  console.log('Mobile calculator UX v5 uygulandı: device-width viewport + compact results + contextual sticky + iOS-safe form width.');
+  console.log('Mobile calculator UX v5 uygulandı: locked device-width viewport + compact results + contextual sticky + iOS-safe form width.');
 }
