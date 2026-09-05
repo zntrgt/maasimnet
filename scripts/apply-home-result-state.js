@@ -136,8 +136,8 @@ function patchHumanizedRuntime(source) {
   if (belowMinimumGross) {
     const monthlyNet = rows[0]?.net || parseCurrency(qs('#stat-avg-net')?.textContent);
     if (title) title.textContent = 'Bu tutarda aylık netin değişmiyor';
-    if (rate) rate.textContent = `2026 brüt asgari ücret: ${'${formatTry(minimumGross)}'}`;
-    if (copy) copy.textContent = `${'${formatTry(salary)}'} brüt, tam zamanlı çalışma için 2026 brüt asgari ücretin altında. Asgari ücret vergi istisnası nedeniyle ödenecek gelir ve damga vergisi sıfırda kaldığından Ocak–Aralık netin ${'${formatTry(monthlyNet)}'} olarak aynı kalıyor.`;
+    if (rate) rate.textContent = '2026 brüt asgari ücret: ' + formatTry(minimumGross);
+    if (copy) copy.textContent = formatTry(salary) + ' brüt, tam zamanlı çalışma için 2026 brüt asgari ücretin altında. Asgari ücret vergi istisnası nedeniyle ödenecek gelir ve damga vergisi sıfırda kaldığından Ocak–Aralık netin ' + formatTry(monthlyNet) + ' olarak aynı kalıyor.';
     insight.hidden = false;
     return;
   }
@@ -152,14 +152,14 @@ function patchHumanizedRuntime(source) {
   const current = rows[transitionIndex];
   const difference = Math.max(0, previous.net - current.net);
 
-  if (title) title.textContent = `${'${current.month}'} ayında vergi dilimin değişiyor`;
-  if (rate) rate.textContent = `%${'${previous.rate}'} → %${'${current.rate}'}`;
+  if (title) title.textContent = current.month + ' ayında vergi dilimin değişiyor';
+  if (rate) rate.textContent = '%' + previous.rate + ' → %' + current.rate;
   if (copy) {
     if (netRange < 0.01) {
       copy.textContent = 'Vergi dilimi eşiği değişse de asgari ücret vergi istisnası bu hesapta aylık netini etkilemiyor; bu yüzden 12 aylık netin aynı kalıyor.';
     } else {
       copy.textContent = difference > 0
-        ? `Net maaşın bir önceki aya göre yaklaşık ${'${formatTry(difference)}'} daha düşük.`
+        ? 'Net maaşın bir önceki aya göre yaklaşık ' + formatTry(difference) + ' daha düşük.'
         : 'Vergi oranındaki değişimin aylık netine etkisini 12 aylık görünümde görebilirsin.';
     }
   }
