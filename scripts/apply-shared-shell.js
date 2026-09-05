@@ -94,7 +94,7 @@ export async function applySharedShell(dist) {
 
     const headerCount = (html.match(/class="site-header"/g) || []).length;
     const footerCount = (html.match(/class="site-footer"/g) || []).length;
-    const themeToggleCount = (html.match(/data-theme-toggle/g) || []).length;
+    const themeToggleCount = (html.match(/<button\b[^>]*\bdata-theme-toggle\b[^>]*>/gi) || []).length;
     const legacyTopCount = (html.match(/<header\b[^>]*class=["'][^"']*\btop\b/gi) || []).length;
 
     if (!html.includes(SHELL_STYLE_MARKER) || !html.includes(THEME_BOOTSTRAP_MARKER) || !html.includes(THEME_RUNTIME_MARKER) || !html.includes(UI_RUNTIME_MARKER) || headerCount !== 1 || footerCount !== 1 || themeToggleCount !== 1 || legacyTopCount !== 0 || !html.includes('data-cookiebot-renew>Çerez Tercihleri')) {
