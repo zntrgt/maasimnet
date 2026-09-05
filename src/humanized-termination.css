@@ -1,0 +1,35 @@
+/* Maaşım.net Humanized Termination UX v1 */
+.termination-page[data-humanized-ux="v1"]{padding-bottom:0}
+.termination-page[data-humanized-ux="v1"] .termination-shell{width:min(1120px,100%)}
+.termination-page[data-humanized-ux="v1"] .termination-hero{max-width:780px;margin-bottom:24px}
+.termination-page[data-humanized-ux="v1"] .termination-eyebrow{padding:0;background:transparent;color:#0f766e;letter-spacing:.035em;text-transform:none}
+.termination-page[data-humanized-ux="v1"] .termination-hero h1{font-size:clamp(36px,5vw,56px);line-height:1.04;letter-spacing:-.045em}
+.termination-page[data-humanized-ux="v1"] .termination-hero>p{max-width:720px;font-size:16px;line-height:1.6}
+.termination-page[data-humanized-ux="v1"] .termination-freshness span{min-height:36px;display:inline-flex;align-items:center}
+.termination-page[data-humanized-ux="v1"] .termination-grid{grid-template-columns:minmax(320px,400px) minmax(0,1fr);gap:22px}
+.termination-page[data-humanized-ux="v1"] .termination-panel,.termination-page[data-humanized-ux="v1"] .termination-results,.termination-page[data-humanized-ux="v1"] .termination-section{border-radius:18px}
+.termination-page[data-humanized-ux="v1"] .termination-panel{padding:22px}
+.termination-page[data-humanized-ux="v1"] .termination-panel h2{font-size:20px}
+.termination-page[data-humanized-ux="v1"] .termination-panel form>p{font-size:13px;line-height:1.55}
+.termination-page[data-humanized-ux="v1"] .termination-field{gap:7px;margin:14px 0}
+.termination-page[data-humanized-ux="v1"] .termination-field label{font-size:12px;letter-spacing:.01em}
+.termination-page[data-humanized-ux="v1"] .termination-field input{min-height:52px;padding:0 14px;border-radius:12px;font-size:16px}
+.termination-page[data-humanized-ux="v1"] .termination-options{border-radius:14px}
+.termination-page[data-humanized-ux="v1"] .termination-options summary{min-height:56px;display:grid;align-content:center;gap:2px;padding:11px 14px;list-style:none}
+.termination-page[data-humanized-ux="v1"] .termination-options summary::-webkit-details-marker{display:none}
+.termination-page[data-humanized-ux="v1"] .termination-options summary span{color:#334155;font-size:13px;font-weight:850}
+.termination-page[data-humanized-ux="v1"] .termination-options summary small{color:#64748b;font-size:10px;font-weight:600}
+.termination-page[data-humanized-ux="v1"] .termination-options__body{padding:4px 14px 14px}
+.termination-page[data-humanized-ux="v1"] .termination-submit{min-height:54px;padding:0 16px;border-radius:12px;background:#07111f;font-size:15px}
+.termination-page[data-humanized-ux="v1"] .termination-submit:hover{background:#0f766e}
+.termination-page[data-humanized-ux="v1"] .termination-help{border-radius:12px}
+.termination-page[data-humanized-ux="v1"] .termination-results[hidden]::before{content:'Bilgilerini gir, tahmini tazminatını burada görelim.'}
+.termination-page[data-humanized-ux="v1"] .termination-result-grid{gap:10px}
+.termination-page[data-humanized-ux="v1"] .termination-result{border-radius:15px;padding:15px}
+.termination-page[data-humanized-ux="v1"] .termination-result span{text-transform:none;letter-spacing:.02em}
+.termination-page[data-humanized-ux="v1"] .termination-result--primary{grid-column:1/-1;background:#07111f;border-color:#07111f}
+.termination-page[data-humanized-ux="v1"] .termination-result--primary span{color:rgba(255,255,255,.58)}
+.termination-page[data-humanized-ux="v1"] .termination-result--primary strong{color:#fff;font-size:clamp(30px,4vw,40px)}
+.termination-page[data-humanized-ux="v1"] .termination-formula{border-radius:15px}
+@media(max-width:900px){.termination-page[data-humanized-ux="v1"] .termination-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.termination-page[data-humanized-ux="v1"]{padding-bottom:84px}.termination-page[data-humanized-ux="v1"] .termination-shell{padding:26px 14px 56px}.termination-page[data-humanized-ux="v1"] .termination-hero{margin-bottom:20px}.termination-page[data-humanized-ux="v1"] .termination-hero h1{margin:12px 0;font-size:36px}.termination-page[data-humanized-ux="v1"] .termination-hero>p{font-size:15px;line-height:1.55}.termination-page[data-humanized-ux="v1"] .termination-freshness{gap:6px}.termination-page[data-humanized-ux="v1"] .termination-panel,.termination-page[data-humanized-ux="v1"] .termination-results{padding:16px}.termination-page[data-humanized-ux="v1"] .termination-section{padding:20px}.termination-page[data-humanized-ux="v1"] .termination-result--primary strong{font-size:30px}}
