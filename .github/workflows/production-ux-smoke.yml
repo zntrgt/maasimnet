@@ -26,8 +26,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          fetch_page() {
+          fetch_live() {
             local url="$1"
+            local separator='?'
+            [[ "$url" == *'?'* ]] && separator='&'
             curl \
               --fail \
               --silent \
@@ -37,11 +39,14 @@ jobs:
               --max-time 20 \
               -H 'Cache-Control: no-cache' \
               -H 'Pragma: no-cache' \
-              "${url}?ux_smoke=${DEPLOY_SHA}"
+              "${url}${separator}ux_smoke=${DEPLOY_SHA}"
           }
 
-          home="$(fetch_page 'https://maasim.net/')"
-          termination="$(fetch_page 'https://maasim.net/tazminat-hesaplama/')"
+          home="$(fetch_live 'https://maasim.net/')"
+          termination="$(fetch_live 'https://maasim.net/tazminat-hesaplama/')"
+          historical_2025="$(fetch_live 'https://maasim.net/2025-maas-hesaplama/')"
+          humanized_js="$(fetch_live 'https://maasim.net/assets/humanized-ux.js?v=2')"
+          historical_css="$(fetch_live 'https://maasim.net/assets/historical-payroll-calculator.css?v=2')"
 
           assert_contains() {
             local body="$1"
@@ -54,12 +59,32 @@ jobs:
             echo "Canlı UX doğrulandı: $label"
           }
 
+          assert_not_contains() {
+            local body="$1"
+            local token="$2"
+            local label="$3"
+            if grep -Fq "$token" <<< "$body"; then
+              echo "::error::Canlı UX doğrulaması başarısız: $label beklenmeyen içerik taşıyor ($token)"
+              exit 1
+            fi
+            echo "Canlı UX doğrulandı: $label"
+          }
+
           assert_contains "$home" '<h1>Maaşını hesapla</h1>' 'ana H1'
           assert_contains "$home" 'Henüz hesap yapmadın' 'ana empty state'
           assert_contains "$home" 'Net maaşımı gör' 'ana sonuç CTA'
           assert_contains "$home" 'humanized-ux.js?v=2' 'cache-busted humanized JS'
+          assert_not_contains "$home" 'class="human-quick-amounts"' 'hazır tutarlar statik ve listenersız render edilmiyor'
+          assert_contains "$humanized_js" 'function ensureQuickAmounts()' 'hazır tutar component üreticisi'
+          assert_contains "$humanized_js" "quick.addEventListener('click'" 'hazır tutar click listener'
+          assert_contains "$humanized_js" "input.dispatchEvent(new Event('input', { bubbles: true }))" 'hazır tutar input event akışı'
+
           assert_contains "$termination" '<h1>Tazminatını hesapla</h1>' 'tazminat H1'
           assert_contains "$termination" 'Toplam tazminatımı gör' 'tazminat CTA'
           assert_contains "$termination" 'Düzenli yan hakların var mı?' 'tazminat progressive disclosure'
 
-          echo 'Production humanized UX body smoke başarılı.'
+          assert_contains "$historical_2025" 'historical-payroll-calculator.css?v=2' '2025 tarihsel font stylesheet sürümü'
+          assert_contains "$historical_css" 'font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' 'tarihsel ortak Inter font stack'
+          assert_contains "$historical_css" 'font-variant-numeric:tabular-nums lining-nums' 'tarihsel sayısal tipografi'
+
+          echo 'Production humanized UX + historical typography smoke başarılı.'
