@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const VERSION = 'v1';
-const ASSET_VERSION = '2';
+const ASSET_VERSION = '3';
 const SCRIPT_SRC = `/assets/humanized-ux.js?v=${ASSET_VERSION}`;
 const HOME_CSS = `/assets/humanized-ux.css?v=${ASSET_VERSION}`;
 const TERMINATION_CSS = `/assets/humanized-termination.css?v=${ASSET_VERSION}`;
@@ -29,6 +29,61 @@ function addStylesheet(html, href) {
 function addScript(html) {
   if (html.includes(SCRIPT_SRC)) return html;
   return html.replace(/<\/body>/i, `<script src="${SCRIPT_SRC}" defer></script></body>`);
+}
+
+function patchHumanizedRuntime(js) {
+  let output = js;
+
+  const primaryPattern = /function configurePrimaryAction\(\) \{[\s\S]*?\n\}\n\nfunction ensureMobileCta/;
+  if (!primaryPattern.test(output)) {
+    throw new Error('Humanized runtime primary action bloğu bulunamadı.');
+  }
+  output = output.replace(primaryPattern, `function configurePrimaryAction() {
+  const primary = qs('.cta-button--calculate');
+  if (!primary || primary.dataset.humanAction === HUMANIZED_UX_VERSION) return;
+  primary.dataset.humanAction = HUMANIZED_UX_VERSION;
+  primary.addEventListener('click', (event) => {
+    if (!validateSalary()) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+    if (window.matchMedia(MOBILE_QUERY).matches) qs('#input-salary')?.blur();
+  }, { capture: true });
+}
+
+function ensureMobileCta`);
+
+  const mobilePattern = /function setupHomeMobileCta\(\) \{[\s\S]*?\n\}\n\nfunction refreshHomeState/;
+  if (!mobilePattern.test(output)) {
+    throw new Error('Humanized runtime mobil CTA bloğu bulunamadı.');
+  }
+  output = output.replace(mobilePattern, `function setupHomeMobileCta() {
+  const sticky = ensureMobileCta({ label: salaryModeCopy().cta });
+  const button = qs('[data-human-home-cta]', sticky);
+  if (!button || button.dataset.bound === 'true') return;
+  button.dataset.bound = 'true';
+  button.addEventListener('click', () => {
+    if (!validateSalary()) return;
+    qs('#input-salary')?.blur();
+    if (typeof window.calculateAndShowPayroll === 'function') {
+      window.calculateAndShowPayroll();
+      return;
+    }
+    qs('.cta-button--calculate')?.click();
+  });
+}
+
+function refreshHomeState`);
+
+  if (output.includes("primary.removeAttribute('onclick')")) {
+    throw new Error('Humanized runtime ana hesaplama onclick davranışını hâlâ siliyor.');
+  }
+  if (!output.includes("typeof window.calculateAndShowPayroll === 'function'")) {
+    throw new Error('Humanized runtime mobil CTA orijinal hesaplama akışına bağlı değil.');
+  }
+
+  return output;
 }
 
 function staticHomeMarkup(html) {
@@ -151,6 +206,11 @@ function patchTermination(html) {
 }
 
 export async function applyHumanizedUx(distDir) {
+  const runtimePath = join(distDir, 'assets', 'humanized-ux.js');
+  let runtimeJs = await readFile(runtimePath, 'utf8');
+  runtimeJs = patchHumanizedRuntime(runtimeJs);
+  await writeFile(runtimePath, runtimeJs, 'utf8');
+
   const homePath = join(distDir, 'index.html');
   let homeHtml = await readFile(homePath, 'utf8');
   homeHtml = patchHome(homeHtml);
@@ -163,5 +223,5 @@ export async function applyHumanizedUx(distDir) {
     await writeFile(pagePath, html, 'utf8');
   }
 
-  console.log('Humanized UX v1 uygulandı: kritik copy ve empty state statik HTML + etkileşim katmanı.');
+  console.log('Humanized UX v1 uygulandı: kritik copy, empty state ve orijinal hesaplama aksiyonu korunuyor.');
 }
