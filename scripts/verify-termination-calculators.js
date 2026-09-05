@@ -4,25 +4,29 @@ import { join } from 'node:path';
 
 const dist = join(process.cwd(), 'dist');
 const pages = [
-  ['/tazminat-hesaplama/', 'Tazminat Hesaplama 2026', 'combined'],
-  ['/kidem-tazminati-hesaplama/', 'Kıdem Tazminatı Hesaplama 2026', 'severance'],
-  ['/ihbar-tazminati-hesaplama/', 'İhbar Tazminatı Hesaplama 2026', 'notice']
+  ['/tazminat-hesaplama/', 'Tazminatını hesapla', 'combined', 'Toplam tazminatımı gör'],
+  ['/kidem-tazminati-hesaplama/', 'Kıdem tazminatını hesapla', 'severance', 'Kıdemimi hesapla'],
+  ['/ihbar-tazminati-hesaplama/', 'İhbar tazminatını hesapla', 'notice', 'İhbarımı hesapla']
 ];
 
-for (const [route, h1, type] of pages) {
+for (const [route, h1, type, cta] of pages) {
   const html = await readFile(join(dist, route.replace(/^\/+|\/+$/g, ''), 'index.html'), 'utf8');
-  assert.match(html, new RegExp(`<h1>${h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`), `${route}: doğru H1 bulunmalı`);
+  assert.match(html, new RegExp(`<h1>${h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`), `${route}: humanized H1 bulunmalı`);
+  assert.match(html, new RegExp(`>${cta.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/button>`), `${route}: sonuç odaklı CTA bulunmalı`);
   assert.match(html, new RegExp(`data-termination-calculator="${type}"`), `${route}: doğru hesaplayıcı tipi bulunmalı`);
   assert.match(html, /\/assets\/termination-calculators\.js/, `${route}: hesaplayıcı JS asseti bulunmalı`);
   assert.match(html, /\/assets\/termination-calculators\.css/, `${route}: hesaplayıcı CSS asseti bulunmalı`);
+  assert.match(html, /\/assets\/humanized-ux\.js\?v=2/, `${route}: humanized UX scripti cache-busted yüklenmeli`);
+  assert.match(html, /\/assets\/humanized-termination\.css\?v=2/, `${route}: humanized termination CSS cache-busted yüklenmeli`);
   assert.match(html, /"@type":"WebApplication"/, `${route}: WebApplication schema bulunmalı`);
   assert.match(html, /"@type":"FAQPage"/, `${route}: FAQPage schema bulunmalı`);
   assert.match(html, /csgb\.gov\.tr/i, `${route}: ÇSGB resmî kaynak bağlantısı bulunmalı`);
   assert.match(html, /gib\.gov\.tr/i, `${route}: GİB resmî kaynak bağlantısı bulunmalı`);
   assert.match(html, /name="annualRegularBenefits"/i, `${route}: yıllık düzenli prim/ikramiye alanı bulunmalı`);
   assert.match(html, /name="remainingStampTaxExemption"/i, `${route}: kullanılmamış damga vergisi istisnası alanı bulunmalı`);
+  assert.doesNotMatch(html, /<details class="termination-options" open>/i, `${route}: yan haklar default açık olmamalı`);
   assert.doesNotMatch(html, /ozelge\/23157/i, `${route}: ilgisiz eski GİB özelge bağlantısı bulunmamalı`);
-  assert.match(html, /ozelge\/21388/i, `${route}: aynı ay tazminat/vergi istisnası için doğru GİB kaynağı bulunmalı`);
+  assert.match(html, /ozelge\/21388/i, `${route}: aynı ay tazminat\/vergi istisnası için doğru GİB kaynağı bulunmalı`);
   if (type !== 'severance') {
     assert.match(html, /name="previousTaxBase"/i, `${route}: kümülatif vergi matrahı alanı bulunmalı`);
     assert.match(html, /name="remainingIncomeTaxExemption"/i, `${route}: kullanılmamış gelir vergisi istisnası alanı bulunmalı`);
@@ -59,4 +63,4 @@ assert.match(css, /termination-page \*,\.termination-page \*::before,\.terminati
 assert.match(css, /\.termination-grid>\*\{min-width:0;max-width:100%\}/, 'Grid çocukları konteyner dışına taşmamalı');
 assert.match(css, /\.termination-field input\{[^}]*width:100%;max-width:100%;min-width:0/, 'Form inputları kendi kolonuna sığmalı');
 
-console.log(`Tazminat hesaplayıcı doğrulaması başarılı: ${pages.length} sayfa, doğru kaynaklar, yıllık yan hak payı, formül, scoped sonuçlar, layout güvenliği ve consent-gated analytics.`);
+console.log(`Tazminat hesaplayıcı doğrulaması başarılı: ${pages.length} sayfa, humanized copy, doğru kaynaklar, formül, scoped sonuçlar, layout güvenliği ve consent-gated analytics.`);
