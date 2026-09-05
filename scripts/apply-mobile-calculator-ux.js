@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const STYLE_MARKER = '/* Maaşım.net mobile calculator UX v1';
+const STYLE_MARKER = '/* Maaşım.net mobile calculator UX v5';
 const SCRIPT_SRC = '/assets/mobile-calculator-ux.js';
 
 export async function applyMobileCalculatorUx(distDir) {
@@ -16,5 +16,5 @@ export async function applyMobileCalculatorUx(distDir) {
 
   await writeFile(stylesPath, styles);
   await writeFile(htmlPath, html);
-  console.log('Mobile calculator UX v1 uygulandı: compact results + contextual sticky + iOS-safe form width.');
+  console.log('Mobile calculator UX v5 uygulandı: compact results + contextual sticky + iOS-safe form width.');
 }
