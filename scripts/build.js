@@ -56,6 +56,7 @@ import { fixCalculatorAnalyticsInputReset } from './fix-calculator-analytics-inp
 import { applyCalculatorFlowFixes } from './apply-calculator-flow-fixes.js';
 import { applyEmptyInitialCalculatorState } from './apply-empty-initial-calculator-state.js';
 import { applyMetaDescriptionQuality } from './apply-meta-description-quality.js';
+import { applyAssetRevision } from './apply-asset-revision.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -139,11 +140,13 @@ await applyContrastGuard(distDir);
 await applyContentDates(distDir);
 const metaDescriptionResult = await applyMetaDescriptionQuality(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
+const assetRevision = await applyAssetRevision(distDir);
 const proprietaryDataBlogs = originalDataResult.enhanced + secondaryOriginalDataResult.enhanced;
 
 const version = {
   version: SITE_METADATA.releaseVersion,
   builtAt: new Date().toISOString(),
+  assetRevision,
   contentModifiedAt: SITE_METADATA.releaseModifiedAt,
   payrollDataReviewedAt: SITE_METADATA.payrollDataReviewedAt,
   historicalPayrollReviewedAt: SITE_METADATA.historicalPayrollReviewedAt,
@@ -191,3 +194,4 @@ console.log(`Tier C hub keşif araçları: ${tierCDiscovery.tools}`);
 console.log(`hesaplama araçları keşif mimarisi: ${calculatorDiscovery.tools} araç, ${calculatorDiscovery.contextualPages} bağlamsal yüzey`);
 console.log(`meta description taraması: ${metaDescriptionResult.scanned} sayfa, ${metaDescriptionResult.changed} güncelleme`);
 console.log(`sitemap URL sayısı: ${sitemapResult.urlCount}`);
+console.log(`frontend asset revision: ${assetRevision}`);
