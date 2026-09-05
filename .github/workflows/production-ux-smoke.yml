@@ -124,74 +124,79 @@ jobs:
           node <<'NODE'
           const { chromium } = require('playwright');
 
-          const deploySha = process.env.DEPLOY_SHA || Date.now().toString();
-          const browser = await chromium.launch({ headless: true });
+          (async () => {
+            const deploySha = process.env.DEPLOY_SHA || Date.now().toString();
+            const browser = await chromium.launch({ headless: true });
 
-          async function verifyViewport(name, viewport, verifyFocusWidth = false) {
-            const context = await browser.newContext({ viewport });
-            const page = await context.newPage();
-            const runtimeErrors = [];
+            async function verifyViewport(name, viewport, verifyFocusWidth = false) {
+              const context = await browser.newContext({ viewport });
+              const page = await context.newPage();
+              const runtimeErrors = [];
 
-            page.on('pageerror', (error) => runtimeErrors.push(`pageerror: ${error.message}`));
-            page.on('console', (message) => {
-              if (message.type() === 'error') runtimeErrors.push(`console: ${message.text()}`);
-            });
+              page.on('pageerror', (error) => runtimeErrors.push(`pageerror: ${error.message}`));
+              page.on('console', (message) => {
+                if (message.type() === 'error') runtimeErrors.push(`console: ${message.text()}`);
+              });
 
-            await page.goto(`https://maasim.net/?ux_e2e=${encodeURIComponent(deploySha)}&viewport=${name}`, {
-              waitUntil: 'domcontentloaded',
-              timeout: 45000
-            });
+              await page.goto(`https://maasim.net/?ux_e2e=${encodeURIComponent(deploySha)}&viewport=${name}`, {
+                waitUntil: 'domcontentloaded',
+                timeout: 45000
+              });
 
-            const input = page.locator('#input-salary');
-            await input.waitFor({ state: 'visible', timeout: 15000 });
-            await page.waitForFunction(() => typeof window.calculateAndShowPayroll === 'function', null, { timeout: 15000 });
+              const input = page.locator('#input-salary');
+              await input.waitFor({ state: 'visible', timeout: 15000 });
+              await page.waitForFunction(() => typeof window.calculateAndShowPayroll === 'function', null, { timeout: 15000 });
 
-            if (verifyFocusWidth) {
-              const widthBeforeFocus = await page.evaluate(() => ({
-                inner: window.innerWidth,
-                client: document.documentElement.clientWidth,
-                scroll: document.documentElement.scrollWidth,
-                scale: window.visualViewport?.scale ?? 1
-              }));
+              if (verifyFocusWidth) {
+                const widthBeforeFocus = await page.evaluate(() => ({
+                  inner: window.innerWidth,
+                  client: document.documentElement.clientWidth,
+                  scroll: document.documentElement.scrollWidth,
+                  scale: window.visualViewport?.scale ?? 1
+                }));
 
-              await input.click();
+                await input.click();
 
-              const widthAfterFocus = await page.evaluate(() => ({
-                inner: window.innerWidth,
-                client: document.documentElement.clientWidth,
-                scroll: document.documentElement.scrollWidth,
-                scale: window.visualViewport?.scale ?? 1
-              }));
+                const widthAfterFocus = await page.evaluate(() => ({
+                  inner: window.innerWidth,
+                  client: document.documentElement.clientWidth,
+                  scroll: document.documentElement.scrollWidth,
+                  scale: window.visualViewport?.scale ?? 1
+                }));
 
-              if (widthBeforeFocus.inner !== widthAfterFocus.inner || widthBeforeFocus.client !== widthAfterFocus.client) {
-                throw new Error(`${name}: input focus viewport genişliğini değiştirdi: ${JSON.stringify({ widthBeforeFocus, widthAfterFocus })}`);
+                if (widthBeforeFocus.inner !== widthAfterFocus.inner || widthBeforeFocus.client !== widthAfterFocus.client) {
+                  throw new Error(`${name}: input focus viewport genişliğini değiştirdi: ${JSON.stringify({ widthBeforeFocus, widthAfterFocus })}`);
+                }
               }
+
+              await input.fill('25000');
+              const calculateButton = page.locator('button[onclick="calculateAndShowPayroll()"]');
+              await calculateButton.waitFor({ state: 'visible', timeout: 10000 });
+              await calculateButton.click();
+
+              await page.waitForFunction(() => {
+                const value = document.querySelector('#stat-avg-net')?.textContent || '';
+                const numeric = Number(value.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.'));
+                return Number.isFinite(numeric) && numeric > 0;
+              }, null, { timeout: 10000 });
+
+              const result = await page.locator('#stat-avg-net').textContent();
+              const emptyStateVisible = await page.locator('.human-empty-state').isVisible().catch(() => false);
+              if (emptyStateVisible) throw new Error(`${name}: 25.000 girişi ve CTA tıklaması sonrası empty state hâlâ görünür. Sonuç: ${result}`);
+              if (runtimeErrors.length) throw new Error(`${name}: tarayıcı runtime hataları: ${runtimeErrors.join(' | ')}`);
+
+              console.log(`${name}: canlı hesaplama doğrulandı. 25.000 brüt için sonuç: ${result}`);
+              await context.close();
             }
 
-            await input.fill('25000');
-            const calculateButton = page.locator('button[onclick="calculateAndShowPayroll()"]');
-            await calculateButton.waitFor({ state: 'visible', timeout: 10000 });
-            await calculateButton.click();
-
-            await page.waitForFunction(() => {
-              const value = document.querySelector('#stat-avg-net')?.textContent || '';
-              const numeric = Number(value.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.'));
-              return Number.isFinite(numeric) && numeric > 0;
-            }, null, { timeout: 10000 });
-
-            const result = await page.locator('#stat-avg-net').textContent();
-            const emptyStateVisible = await page.locator('.human-empty-state').isVisible().catch(() => false);
-            if (emptyStateVisible) throw new Error(`${name}: 25.000 girişi ve CTA tıklaması sonrası empty state hâlâ görünür. Sonuç: ${result}`);
-            if (runtimeErrors.length) throw new Error(`${name}: tarayıcı runtime hataları: ${runtimeErrors.join(' | ')}`);
-
-            console.log(`${name}: canlı hesaplama doğrulandı. 25.000 brüt için sonuç: ${result}`);
-            await context.close();
-          }
-
-          try {
-            await verifyViewport('mobile', { width: 430, height: 932 }, true);
-            await verifyViewport('desktop', { width: 1440, height: 1000 }, false);
-          } finally {
-            await browser.close();
-          }
+            try {
+              await verifyViewport('mobile', { width: 430, height: 932 }, true);
+              await verifyViewport('desktop', { width: 1440, height: 1000 }, false);
+            } finally {
+              await browser.close();
+            }
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
           NODE
