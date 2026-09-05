@@ -1,0 +1,65 @@
+name: Production UX smoke
+
+on:
+  workflow_run:
+    workflows: ["Deploy to Cloudflare"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-ux:
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        github.event.workflow_run.conclusion == 'success'
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify live humanized calculator UX
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+
+          fetch_page() {
+            local url="$1"
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --location \
+              --connect-timeout 10 \
+              --max-time 20 \
+              -H 'Cache-Control: no-cache' \
+              -H 'Pragma: no-cache' \
+              "${url}?ux_smoke=${DEPLOY_SHA}"
+          }
+
+          home="$(fetch_page 'https://maasim.net/')"
+          termination="$(fetch_page 'https://maasim.net/tazminat-hesaplama/')"
+
+          assert_contains() {
+            local body="$1"
+            local token="$2"
+            local label="$3"
+            if ! grep -Fq "$token" <<< "$body"; then
+              echo "::error::Canlı UX doğrulaması başarısız: $label eksik ($token)"
+              exit 1
+            fi
+            echo "Canlı UX doğrulandı: $label"
+          }
+
+          assert_contains "$home" '<h1>Maaşını hesapla</h1>' 'ana H1'
+          assert_contains "$home" 'Henüz hesap yapmadın' 'ana empty state'
+          assert_contains "$home" 'Net maaşımı gör' 'ana sonuç CTA'
+          assert_contains "$home" 'humanized-ux.js?v=2' 'cache-busted humanized JS'
+          assert_contains "$termination" '<h1>Tazminatını hesapla</h1>' 'tazminat H1'
+          assert_contains "$termination" 'Toplam tazminatımı gör' 'tazminat CTA'
+          assert_contains "$termination" 'Düzenli yan hakların var mı?' 'tazminat progressive disclosure'
+
+          echo 'Production humanized UX body smoke başarılı.'
