@@ -20,13 +20,40 @@ function rectWidth(selector) {
   return node ? Math.round(node.getBoundingClientRect().width * 100) / 100 : null;
 }
 
+function nodeLabel(node) {
+  if (!node || node.nodeType !== 1) return 'unknown';
+  const id = node.id ? `#${node.id}` : '';
+  const classes = [...node.classList].slice(0, 3).map((name) => `.${name}`).join('');
+  return `${node.tagName.toLowerCase()}${id}${classes}`.slice(0, 92);
+}
+
+function findOverflowOffenders() {
+  const clientWidth = document.documentElement.clientWidth;
+  return [...document.querySelectorAll('body *')]
+    .filter((node) => !node.hasAttribute('data-layout-debug'))
+    .map((node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        node,
+        left: Math.round(rect.left),
+        right: Math.round(rect.right),
+        width: Math.round(rect.width),
+        scroll: Math.round(node.scrollWidth || 0),
+        client: Math.round(node.clientWidth || 0)
+      };
+    })
+    .filter((item) => item.right > clientWidth + 2 || item.left < -2 || item.scroll > item.client + 2)
+    .sort((a, b) => Math.max(b.right - clientWidth, b.scroll - b.client) - Math.max(a.right - clientWidth, a.scroll - a.client))
+    .slice(0, 6);
+}
+
 function setupLayoutDebug() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('layoutdebug') !== '1') return;
 
   const panel = document.createElement('pre');
   panel.setAttribute('data-layout-debug', '1');
-  panel.style.cssText = 'position:fixed;left:8px;right:8px;top:8px;z-index:99999;margin:0;padding:10px;border-radius:10px;background:rgba(0,0,0,.88);color:#7CFF9B;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;pointer-events:none;';
+  panel.style.cssText = 'position:fixed;left:8px;right:8px;top:8px;z-index:99999;margin:0;padding:10px;max-height:46vh;overflow:auto;border-radius:10px;background:rgba(0,0,0,.9);color:#7CFF9B;font:10px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;pointer-events:none;';
   document.body.appendChild(panel);
 
   const update = () => {
@@ -50,13 +77,17 @@ function setupLayoutDebug() {
       media700: window.matchMedia(MOBILE_QUERY).matches,
       media900: window.matchMedia('(max-width: 900px)').matches
     };
-    panel.textContent = Object.entries(data).map(([key, value]) => `${key}: ${value}`).join('\n');
+    const offenders = findOverflowOffenders();
+    const offenderLines = offenders.length
+      ? offenders.map((item, index) => `overflow${index + 1}: ${nodeLabel(item.node)} | L${item.left} R${item.right} W${item.width} SW${item.scroll}/CW${item.client}`)
+      : ['overflow: none'];
+    panel.textContent = `${Object.entries(data).map(([key, value]) => `${key}: ${value}`).join('\n')}\n---\n${offenderLines.join('\n')}`;
   };
 
   update();
   window.addEventListener('resize', update, { passive: true });
   window.visualViewport?.addEventListener('resize', update, { passive: true });
-  window.setInterval(update, 500);
+  window.setInterval(update, 350);
 }
 
 function setupMobileStickyUx() {
