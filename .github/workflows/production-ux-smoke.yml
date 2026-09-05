@@ -45,7 +45,7 @@ jobs:
           home="$(fetch_live 'https://maasim.net/')"
           termination="$(fetch_live 'https://maasim.net/tazminat-hesaplama/')"
           historical_2025="$(fetch_live 'https://maasim.net/2025-maas-hesaplama/')"
-          humanized_js="$(fetch_live 'https://maasim.net/assets/humanized-ux.js?v=3')"
+          humanized_js="$(fetch_live 'https://maasim.net/assets/humanized-ux.js?v=4')"
           historical_css="$(fetch_live 'https://maasim.net/assets/historical-payroll-calculator.css?v=2')"
 
           assert_contains() {
@@ -90,7 +90,7 @@ jobs:
           assert_matches "$home" 'src="/assets/app\.js\?[^\"]*rev=[^\"]+"' 'revisioned ana hesaplama modülü'
           assert_matches "$home" 'src="/assets/fintech-ui\.js\?[^\"]*rev=[^\"]+"' 'revisioned fintech runtime'
           assert_matches "$home" 'src="/assets/mobile-calculator-ux\.js\?[^\"]*rev=[^\"]+"' 'revisioned mobil runtime'
-          assert_contains "$home" 'humanized-ux.js?v=3' 'cache-busted humanized JS'
+          assert_contains "$home" 'humanized-ux.js?v=4' 'cache-busted humanized JS'
           assert_not_contains "$home" 'class="human-quick-amounts"' 'hazır tutarlar statik ve listenersız render edilmiyor'
           assert_contains "$humanized_js" 'function ensureQuickAmounts()' 'hazır tutar component üreticisi'
           assert_contains "$humanized_js" "quick.addEventListener('click'" 'hazır tutar click listener'
@@ -98,6 +98,9 @@ jobs:
           assert_contains "$humanized_js" "typeof window.calculateAndShowPayroll === 'function'" 'mobil CTA gerçek hesaplama fonksiyonuna bağlı'
           assert_contains "$humanized_js" 'window.calculateAndShowPayroll();' 'mobil CTA gerçek hesaplamayı çağırıyor'
           assert_contains "$humanized_js" "qs('#input-salary')?.blur();" 'mobil hesaplama öncesi klavye kapanıyor'
+          assert_contains "$humanized_js" "const resultValue = qs('#stat-avg-net');" 'sonuç değeri state observer ile izleniyor'
+          assert_contains "$humanized_js" 'empty.hidden = valid;' 'empty state sonuç görünürlüğüyle eşleniyor'
+          assert_contains "$humanized_js" '.observe(resultValue, { childList: true, subtree: true, characterData: true });' 'sonuç değişim observerı aktif'
           assert_not_contains "$humanized_js" "primary.removeAttribute('onclick')" 'humanized katman orijinal hesaplama aksiyonunu silmiyor'
 
           assert_contains "$termination" '<h1>Tazminatını hesapla</h1>' 'tazminat H1'
@@ -178,6 +181,12 @@ jobs:
                 const value = document.querySelector('#stat-avg-net')?.textContent || '';
                 const numeric = Number(value.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.'));
                 return Number.isFinite(numeric) && numeric > 0;
+              }, null, { timeout: 10000 });
+
+              await page.waitForFunction(() => {
+                const empty = document.querySelector('.human-empty-state');
+                const hero = document.querySelector('.metric-hero');
+                return Boolean(empty && hero && empty.hidden && !hero.classList.contains('is-human-empty') && hero.classList.contains('has-human-result'));
               }, null, { timeout: 10000 });
 
               const result = await page.locator('#stat-avg-net').textContent();
