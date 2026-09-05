@@ -1,4 +1,4 @@
-const MOBILE_QUERY = '(max-width: 700px)';
+const MOBILE_CALCULATOR_QUERY = '(max-width: 700px)';
 
 function qs(selector, root = document) { return root.querySelector(selector); }
 function parseCurrency(value) {
@@ -74,7 +74,7 @@ function setupLayoutDebug() {
       formColumn: form ? Math.round(form.getBoundingClientRect().width * 100) / 100 : null,
       formCard: card ? Math.round(card.getBoundingClientRect().width * 100) / 100 : null,
       result: rectWidth('.metric-hero'),
-      media700: window.matchMedia(MOBILE_QUERY).matches,
+      media700: window.matchMedia(MOBILE_CALCULATOR_QUERY).matches,
       media900: window.matchMedia('(max-width: 900px)').matches
     };
     const offenders = findOverflowOffenders();
@@ -98,7 +98,7 @@ function setupMobileStickyUx() {
 
   let resultVisible = false;
   const refresh = () => {
-    const mobile = window.matchMedia(MOBILE_QUERY).matches;
+    const mobile = window.matchMedia(MOBILE_CALCULATOR_QUERY).matches;
     const shouldShow = mobile && hasUsableResult() && !resultVisible && document.activeElement !== input;
     sticky.classList.toggle('is-visible', shouldShow);
     sticky.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
