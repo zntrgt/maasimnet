@@ -3,8 +3,8 @@ import { join } from 'node:path';
 
 const TITLE = 'Maaş Hesaplama 2026 | Brütten Nete & Netten Brüte';
 const DESCRIPTION = 'Maaş hesaplama 2026: brüt maaşınızı nete, hedef net maaşınızı brüte çevirin. Güncel vergi dilimleri, SGK ve işveren maliyetini 12 aylık bordroda görün.';
-const H1 = 'Maaş Hesaplama 2026: Brütten Nete & Netten Brüte';
-const LEAD = 'Brüt maaşınızı nete, hedef net maaşınızı brüte çevirin; 2026 vergi dilimleri, SGK tavanı, asgari ücret istisnası ve işveren maliyetini 12 aylık bordroda birlikte görün.';
+const H1 = 'Maaşını hesapla';
+const LEAD = 'Brütünü nete, netini brüte çevir. Verginin yıl içinde maaşını nasıl değiştirdiğini de gör.';
 
 function escapeHtml(value) {
   return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -65,5 +65,5 @@ export async function applyHomeSeo2026(distDir) {
   html = updateSchema(html);
 
   await writeFile(indexPath, html, 'utf8');
-  console.log('Ana sayfa 2026 query ownership güçlendirildi: title + H1 + hero + schema + sosyal metadata hizalandı.');
+  console.log('Ana sayfa SEO metadata korunurken kullanıcıya görünen hero humanize edildi.');
 }
