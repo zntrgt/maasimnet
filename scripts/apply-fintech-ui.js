@@ -4,7 +4,9 @@ import { DATA_2026 } from '../src/data-2026.js';
 
 const UI_VERSION = 'v2';
 const CSS_MARKER = '/* Enterprise Fintech UI v2';
+const TOOLTIP_CSS_MARKER = '/* Monthly net chart tooltips v1 */';
 const SCRIPT_SRC = '/assets/fintech-ui.js';
+const TOOLTIP_SCRIPT_SRC = '/assets/tax-chart-tooltips.js';
 const FIRST_PAINT_MARKER = 'data-fintech-first-paint="v2"';
 const FIRST_PAINT_STYLE = `<style ${FIRST_PAINT_MARKER}>
 body[data-fintech-ui="v2"] #hesaplayici>div:first-child>div:first-child{background:#fff!important;color:#0b1728!important;border:1px solid #dfe5ec!important;border-radius:30px!important;box-shadow:0 10px 28px rgba(7,17,31,.055)!important}
@@ -60,35 +62,43 @@ function addFirstPaintStyle(html) {
   return html.replace(/<\/head>/i, `${FIRST_PAINT_STYLE}</head>`);
 }
 
-function addInteractionScript(html) {
-  if (html.includes(SCRIPT_SRC)) return html;
-  return html.replace(/<\/body>/i, `<script src="${SCRIPT_SRC}" defer></script></body>`);
+function addInteractionScript(html, src) {
+  if (html.includes(src)) return html;
+  return html.replace(/<\/body>/i, `<script src="${src}" defer></script></body>`);
 }
 
 export async function applyFintechUi(distDir) {
   const indexPath = join(distDir, 'index.html');
   const stylesPath = join(distDir, 'assets', 'styles.css');
+  const tooltipAssetPath = join(distDir, 'assets', 'tax-chart-tooltips.js');
 
   let html = await readFile(indexPath, 'utf8');
   let styles = await readFile(stylesPath, 'utf8');
   const fintechCss = await readFile(new URL('../src/fintech-ui.css', import.meta.url), 'utf8');
+  const tooltipCss = await readFile(new URL('../src/tax-chart-tooltips.css', import.meta.url), 'utf8');
+  const tooltipJs = await readFile(new URL('../src/tax-chart-tooltips.js', import.meta.url), 'utf8');
 
   for (const required of ['class="calculator-layout', 'id="payroll-results-shell"', 'class="result-hierarchy"', 'id="input-salary"']) {
     if (!html.includes(required)) throw new Error(`Enterprise fintech UI uygulanamadı: ${required} bulunamadı.`);
   }
   if (!fintechCss.includes(CSS_MARKER)) throw new Error('Enterprise fintech UI CSS v2 marker eksik.');
+  if (!tooltipCss.includes(TOOLTIP_CSS_MARKER)) throw new Error('Aylık net grafik tooltip CSS markerı eksik.');
+  if (!tooltipJs.includes("const TOOLTIP_VERSION = 'v1'")) throw new Error('Aylık net grafik tooltip runtime markerı eksik.');
   if (DATA_2026.year !== 2026) throw new Error('Enterprise hero 2026 veri setiyle senkron değil.');
 
   html = replaceHomeHero(html);
   html = markBody(html);
   html = normalizeMainWidthOwnership(html);
   html = addFirstPaintStyle(html);
-  html = addInteractionScript(html);
+  html = addInteractionScript(html, SCRIPT_SRC);
+  html = addInteractionScript(html, TOOLTIP_SCRIPT_SRC);
 
   if (!styles.includes(CSS_MARKER)) styles += `\n${fintechCss}\n`;
+  if (!styles.includes(TOOLTIP_CSS_MARKER)) styles += `\n${tooltipCss}\n`;
 
   await writeFile(indexPath, html);
   await writeFile(stylesPath, styles);
+  await writeFile(tooltipAssetPath, tooltipJs);
 
-  console.log('Enterprise fintech UI v2 uygulandı: hero + trust + first-paint shell + live output + native main width ownership.');
+  console.log('Enterprise fintech UI v2 uygulandı: hero + trust + first-paint shell + live output + aylık net hover/tap tooltip + native main width ownership.');
 }
