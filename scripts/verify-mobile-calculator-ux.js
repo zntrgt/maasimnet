@@ -12,7 +12,7 @@ for (const token of [
   'id="input-salary"',
   'class="calculator-results-column"',
   'onclick="calculateAndShowPayroll()"',
-  'humanized-ux.js?v=3'
+  'humanized-ux.js?v=4'
 ]) if (!html.includes(token)) throw new Error(`Mobile UX HTML contract eksik: ${token}`);
 
 if (!/src="\/assets\/mobile-calculator-ux\.js\?[^\"]*rev=[^\"]+"/.test(html)) {
@@ -58,8 +58,11 @@ for (const token of [
   "typeof window.calculateAndShowPayroll === 'function'",
   'window.calculateAndShowPayroll();',
   "qs('#input-salary')?.blur();",
-  "{ capture: true }"
-]) if (!humanizedJs.includes(token)) throw new Error(`Mobile hesaplama aksiyonu eksik: ${token}`);
+  "{ capture: true }",
+  "const resultValue = qs('#stat-avg-net');",
+  'empty.hidden = valid;',
+  '.observe(resultValue, { childList: true, subtree: true, characterData: true });'
+]) if (!humanizedJs.includes(token)) throw new Error(`Mobile hesaplama aksiyonu/state sync eksik: ${token}`);
 
 if (humanizedJs.includes("primary.removeAttribute('onclick')")) {
   throw new Error('Humanized UX ana calculateAndShowPayroll onclick davranışını silemez.');
@@ -89,4 +92,4 @@ for (const forbiddenJs of [
   if (js.includes(forbiddenJs)) throw new Error(`Mobile UX yasaklı davranış içeriyor: ${forbiddenJs}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: revisioned runtime + gerçek calculateAndShowPayroll aksiyonu korunuyor; mobil CTA klavyeyi kapatıp sonucu odaklıyor; iOS input ve overflow güvenliği korunuyor.');
+console.log('Mobile calculator UX doğrulandı: revisioned runtime + gerçek calculateAndShowPayroll aksiyonu korunuyor; sonuç üretildiğinde empty state kapanıyor; mobil CTA klavyeyi kapatıp sonucu odaklıyor; iOS input ve overflow güvenliği korunuyor.');
