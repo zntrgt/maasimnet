@@ -13,10 +13,8 @@ const requiredHtml = [
   'data-fintech-ui="v2"',
   'data-enterprise-hero="v2"',
   'data-enterprise-trust="v2"',
-  '<h1>Maaş Hesaplama 2026: Brütten Nete &amp; Netten Brüte</h1>',
-  '2026 mevzuat verileri kontrol edildi',
-  'Kuruş bazlı deterministik motor',
-  'Hesaplama tarayıcıda yapılır',
+  '<h1>Maaşını hesapla</h1>',
+  '2026 mevzuatı kontrol edildi',
   'src="/assets/fintech-ui.js"',
   'class="calculator-layout',
   'class="calculator-results-column"',
@@ -124,4 +122,4 @@ for (const route of [
 if (!css.includes('@media (max-width: 700px)')) throw new Error('Enterprise UI mobile-first breakpoint eksik.');
 if (!css.includes('@media (prefers-reduced-motion: reduce)')) throw new Error('Reduced-motion erişilebilirlik kuralı eksik.');
 
-console.log('Enterprise fintech UI v2 doğrulandı: desktop/mobile, live output, paylaşım, trust ve sitewide token sistemi.');
+console.log('Enterprise fintech UI v2 doğrulandı: desktop/mobile, humanized hero, live output, paylaşım, trust ve sitewide token sistemi.');
