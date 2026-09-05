@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const VERSION = 'v1';
-const ASSET_VERSION = '3';
+const ASSET_VERSION = '4';
 const SCRIPT_SRC = `/assets/humanized-ux.js?v=${ASSET_VERSION}`;
 const HOME_CSS = `/assets/humanized-ux.css?v=${ASSET_VERSION}`;
 const TERMINATION_CSS = `/assets/humanized-termination.css?v=${ASSET_VERSION}`;
@@ -76,11 +76,61 @@ function ensureMobileCta`);
 
 function refreshHomeState`);
 
+  const refreshPattern = /function refreshHomeState\(\) \{[\s\S]*?\n\}\n\nfunction initializeHomeUx/;
+  if (!refreshPattern.test(output)) {
+    throw new Error('Humanized runtime home state bloğu bulunamadı.');
+  }
+  output = output.replace(refreshPattern, `function refreshHomeState() {
+  if (!qs('#hesaplayici')) return;
+  const valid = hasUsableHomeResult();
+  const hero = qs('.metric-hero');
+  const empty = hero ? qs('.human-empty-state', hero) : null;
+  hero?.classList.toggle('is-human-empty', !valid);
+  hero?.classList.toggle('has-human-result', valid);
+  if (empty) {
+    empty.hidden = valid;
+    empty.setAttribute('aria-hidden', String(valid));
+  }
+  document.body.classList.toggle('human-has-result', valid);
+  setSalaryModeCopy();
+  setResultCopy();
+  updateExportState();
+  updateTaxInsight();
+}
+
+function initializeHomeUx`);
+
+  const observerPattern = /  const payrollBody = qs\('#payroll-body'\);\n  if \(payrollBody\) \{\n    new MutationObserver\(\(\) => \{\n      humanizeSalaryJourney\(\);\n      refreshHomeState\(\);\n    \}\)\.observe\(payrollBody, \{ childList: true, subtree: true, characterData: true \}\);\n  \}\n\n  refreshHomeState\(\);/;
+  if (!observerPattern.test(output)) {
+    throw new Error('Humanized runtime payroll observer bloğu bulunamadı.');
+  }
+  output = output.replace(observerPattern, `  const payrollBody = qs('#payroll-body');
+  if (payrollBody) {
+    new MutationObserver(() => {
+      humanizeSalaryJourney();
+      refreshHomeState();
+    }).observe(payrollBody, { childList: true, subtree: true, characterData: true });
+  }
+
+  const resultValue = qs('#stat-avg-net');
+  if (resultValue) {
+    new MutationObserver(() => refreshHomeState())
+      .observe(resultValue, { childList: true, subtree: true, characterData: true });
+  }
+
+  refreshHomeState();`);
+
   if (output.includes("primary.removeAttribute('onclick')")) {
     throw new Error('Humanized runtime ana hesaplama onclick davranışını hâlâ siliyor.');
   }
   if (!output.includes("typeof window.calculateAndShowPayroll === 'function'")) {
     throw new Error('Humanized runtime mobil CTA orijinal hesaplama akışına bağlı değil.');
+  }
+  if (!output.includes("const resultValue = qs('#stat-avg-net');")) {
+    throw new Error('Humanized runtime sonuç değişimini gözlemlemiyor.');
+  }
+  if (!output.includes('empty.hidden = valid;')) {
+    throw new Error('Humanized runtime empty state görünürlüğünü sonuçla eşlemiyor.');
   }
 
   return output;
