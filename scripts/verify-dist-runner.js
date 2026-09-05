@@ -24,6 +24,16 @@ source = source.replace(
   `const benefitsBlogPaths = [\n${pathsFor('benefits')}\n];`
 );
 
+const oldAppModuleCheck = `if (!indexHtml.includes('<script type="module" src="/assets/app.js"></script>')) throw new Error('index.html merkezi app modülünü yüklemiyor.');`;
+const newAppModuleCheck = `const appScriptPattern = /<script type="module" src="\\/assets\\/app\\.js(?:\\?[^\"]*)?"><\\/script>/;\nif (!appScriptPattern.test(indexHtml)) throw new Error('index.html merkezi app modülünü yüklemiyor.');`;
+if (!source.includes(oldAppModuleCheck)) throw new Error('Eski app module dist doğrulaması bulunamadı.');
+source = source.replace(oldAppModuleCheck, newAppModuleCheck);
+
+const oldAppPosition = `const appPosition = indexHtml.indexOf('<script type="module" src="/assets/app.js"></script>');`;
+const newAppPosition = `const appPosition = indexHtml.search(appScriptPattern);`;
+if (!source.includes(oldAppPosition)) throw new Error('Eski app module sıra doğrulaması bulunamadı.');
+source = source.replace(oldAppPosition, newAppPosition);
+
 const oldLayoutVerification = `const calculatorStart = indexHtml.indexOf('<section class="calculator-layout');
 const resultsColumn = indexHtml.indexOf('<div class="calculator-results-column">', calculatorStart);
 const representativeGross = indexHtml.indexOf('id="representative-gross"', resultsColumn);

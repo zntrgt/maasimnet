@@ -59,6 +59,17 @@ jobs:
             echo "Canlı UX doğrulandı: $label"
           }
 
+          assert_matches() {
+            local body="$1"
+            local pattern="$2"
+            local label="$3"
+            if ! grep -Eq "$pattern" <<< "$body"; then
+              echo "::error::Canlı UX doğrulaması başarısız: $label eşleşmedi ($pattern)"
+              exit 1
+            fi
+            echo "Canlı UX doğrulandı: $label"
+          }
+
           assert_not_contains() {
             local body="$1"
             local token="$2"
@@ -74,6 +85,11 @@ jobs:
           assert_contains "$home" 'Henüz hesap yapmadın' 'ana empty state'
           assert_contains "$home" 'Net maaşımı gör' 'ana sonuç CTA'
           assert_contains "$home" 'onclick="calculateAndShowPayroll()"' 'orijinal hesapla ve sonucu göster aksiyonu'
+          assert_contains "$home" 'data-fintech-first-paint="v2"' 'ilk paint beyaz calculator shell markerı'
+          assert_contains "$home" 'background:#fff!important' 'ilk paint beyaz calculator shell stili'
+          assert_matches "$home" 'src="/assets/app\.js\?[^\"]*rev=[^\"]+"' 'revisioned ana hesaplama modülü'
+          assert_matches "$home" 'src="/assets/fintech-ui\.js\?[^\"]*rev=[^\"]+"' 'revisioned fintech runtime'
+          assert_matches "$home" 'src="/assets/mobile-calculator-ux\.js\?[^\"]*rev=[^\"]+"' 'revisioned mobil runtime'
           assert_contains "$home" 'humanized-ux.js?v=3' 'cache-busted humanized JS'
           assert_not_contains "$home" 'class="human-quick-amounts"' 'hazır tutarlar statik ve listenersız render edilmiyor'
           assert_contains "$humanized_js" 'function ensureQuickAmounts()' 'hazır tutar component üreticisi'
@@ -94,62 +110,88 @@ jobs:
 
           echo 'Production markup smoke başarılı.'
 
-      - name: Verify live calculation in Chromium
+      - name: Verify live calculation in Chromium on mobile and desktop
         env:
           DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          npm exec --yes --package=playwright@1.55.0 -- playwright install chromium
-          npm exec --yes --package=playwright@1.55.0 -- node <<'NODE'
+          workdir="$(mktemp -d)"
+          cd "$workdir"
+          npm init -y >/dev/null 2>&1
+          npm install --no-audit --no-fund playwright@1.55.0 >/dev/null
+          npx playwright install chromium
+
+          node <<'NODE'
           const { chromium } = require('playwright');
 
           const deploySha = process.env.DEPLOY_SHA || Date.now().toString();
           const browser = await chromium.launch({ headless: true });
-          const page = await browser.newPage({ viewport: { width: 430, height: 932 } });
-          const consoleErrors = [];
-          page.on('pageerror', (error) => consoleErrors.push(`pageerror: ${error.message}`));
-          page.on('console', (message) => {
-            if (message.type() === 'error') consoleErrors.push(`console: ${message.text()}`);
-          });
 
-          await page.goto(`https://maasim.net/?ux_e2e=${encodeURIComponent(deploySha)}`, {
-            waitUntil: 'networkidle',
-            timeout: 45000
-          });
+          async function verifyViewport(name, viewport, verifyFocusWidth = false) {
+            const context = await browser.newContext({ viewport });
+            const page = await context.newPage();
+            const runtimeErrors = [];
 
-          const input = page.locator('#input-salary');
-          await input.waitFor({ state: 'visible' });
+            page.on('pageerror', (error) => runtimeErrors.push(`pageerror: ${error.message}`));
+            page.on('console', (message) => {
+              if (message.type() === 'error') runtimeErrors.push(`console: ${message.text()}`);
+            });
 
-          const widthBeforeFocus = await page.evaluate(() => ({
-            inner: window.innerWidth,
-            client: document.documentElement.clientWidth,
-            scroll: document.documentElement.scrollWidth,
-            scale: window.visualViewport?.scale ?? 1
-          }));
+            await page.goto(`https://maasim.net/?ux_e2e=${encodeURIComponent(deploySha)}&viewport=${name}`, {
+              waitUntil: 'domcontentloaded',
+              timeout: 45000
+            });
 
-          await input.click();
-          const widthAfterFocus = await page.evaluate(() => ({
-            inner: window.innerWidth,
-            client: document.documentElement.clientWidth,
-            scroll: document.documentElement.scrollWidth,
-            scale: window.visualViewport?.scale ?? 1
-          }));
+            const input = page.locator('#input-salary');
+            await input.waitFor({ state: 'visible', timeout: 15000 });
+            await page.waitForFunction(() => typeof window.calculateAndShowPayroll === 'function', null, { timeout: 15000 });
 
-          if (widthBeforeFocus.inner !== widthAfterFocus.inner || widthBeforeFocus.client !== widthAfterFocus.client) {
-            throw new Error(`Input focus viewport genişliğini değiştirdi: ${JSON.stringify({ widthBeforeFocus, widthAfterFocus })}`);
+            if (verifyFocusWidth) {
+              const widthBeforeFocus = await page.evaluate(() => ({
+                inner: window.innerWidth,
+                client: document.documentElement.clientWidth,
+                scroll: document.documentElement.scrollWidth,
+                scale: window.visualViewport?.scale ?? 1
+              }));
+
+              await input.click();
+
+              const widthAfterFocus = await page.evaluate(() => ({
+                inner: window.innerWidth,
+                client: document.documentElement.clientWidth,
+                scroll: document.documentElement.scrollWidth,
+                scale: window.visualViewport?.scale ?? 1
+              }));
+
+              if (widthBeforeFocus.inner !== widthAfterFocus.inner || widthBeforeFocus.client !== widthAfterFocus.client) {
+                throw new Error(`${name}: input focus viewport genişliğini değiştirdi: ${JSON.stringify({ widthBeforeFocus, widthAfterFocus })}`);
+              }
+            }
+
+            await input.fill('25000');
+            const calculateButton = page.locator('button[onclick="calculateAndShowPayroll()"]');
+            await calculateButton.waitFor({ state: 'visible', timeout: 10000 });
+            await calculateButton.click();
+
+            await page.waitForFunction(() => {
+              const value = document.querySelector('#stat-avg-net')?.textContent || '';
+              const numeric = Number(value.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.'));
+              return Number.isFinite(numeric) && numeric > 0;
+            }, null, { timeout: 10000 });
+
+            const result = await page.locator('#stat-avg-net').textContent();
+            const emptyStateVisible = await page.locator('.human-empty-state').isVisible().catch(() => false);
+            if (emptyStateVisible) throw new Error(`${name}: 25.000 girişi ve CTA tıklaması sonrası empty state hâlâ görünür. Sonuç: ${result}`);
+            if (runtimeErrors.length) throw new Error(`${name}: tarayıcı runtime hataları: ${runtimeErrors.join(' | ')}`);
+
+            console.log(`${name}: canlı hesaplama doğrulandı. 25.000 brüt için sonuç: ${result}`);
+            await context.close();
           }
 
-          await input.fill('25000');
-          await page.waitForFunction(() => {
-            const value = document.querySelector('#stat-avg-net')?.textContent || '';
-            return value && !/^\s*0(?:[.,]00)?\s*₺?\s*$/.test(value);
-          }, null, { timeout: 10000 });
-
-          const result = await page.locator('#stat-avg-net').textContent();
-          const emptyStateVisible = await page.locator('.human-empty-state').isVisible().catch(() => false);
-          if (emptyStateVisible) throw new Error(`25.000 girişi sonrası empty state hâlâ görünür. Sonuç: ${result}`);
-          if (consoleErrors.length) throw new Error(`Tarayıcı runtime hataları: ${consoleErrors.join(' | ')}`);
-
-          console.log(`Canlı hesaplama doğrulandı. 25.000 brüt için sonuç: ${result}`);
-          await browser.close();
+          try {
+            await verifyViewport('mobile', { width: 430, height: 932 }, true);
+            await verifyViewport('desktop', { width: 1440, height: 1000 }, false);
+          } finally {
+            await browser.close();
+          }
           NODE

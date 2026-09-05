@@ -14,9 +14,9 @@ const requiredHtml = [
   'data-fintech-ui="v2"',
   'data-enterprise-hero="v2"',
   'data-enterprise-trust="v2"',
+  'data-fintech-first-paint="v2"',
   '<h1>Maaşını hesapla</h1>',
   '2026 mevzuatı kontrol edildi',
-  'src="/assets/fintech-ui.js"',
   'class="calculator-layout',
   'class="calculator-results-column"',
   'class="calculator-table-full"',
@@ -26,6 +26,12 @@ const requiredHtml = [
 ];
 for (const token of requiredHtml) {
   if (!html.includes(token)) throw new Error(`Enterprise fintech UI HTML işareti eksik: ${token}`);
+}
+if (!/src="\/assets\/fintech-ui\.js\?[^\"]*rev=[^\"]+"/.test(html)) {
+  throw new Error('Enterprise fintech UI scripti deployment revision taşımıyor.');
+}
+if (!/src="\/assets\/app\.js\?[^\"]*rev=[^\"]+"/.test(html)) {
+  throw new Error('Ana hesaplama modülü deployment revision taşımıyor.');
 }
 
 if (html.includes('class="human-quick-amounts"')) {
@@ -135,4 +141,4 @@ for (const route of [
 if (!css.includes('@media (max-width: 700px)')) throw new Error('Enterprise UI mobile-first breakpoint eksik.');
 if (!css.includes('@media (prefers-reduced-motion: reduce)')) throw new Error('Reduced-motion erişilebilirlik kuralı eksik.');
 
-console.log('Enterprise fintech UI v2 doğrulandı: desktop/mobile, humanized hero, hızlı tutar etkileşimi, live output, paylaşım, trust ve sitewide token sistemi.');
+console.log('Enterprise fintech UI v2 doğrulandı: revisioned app graph, first-paint beyaz shell, desktop/mobile, humanized hero, hızlı tutar etkileşimi, live output, paylaşım, trust ve sitewide token sistemi.');

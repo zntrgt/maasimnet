@@ -89,9 +89,10 @@ try {
   assert.equal(home.response.status, 200);
   assertSharedShell('/', home.text);
   assert.match(home.text, /data-home-critical-css="v1"/);
+  assert.match(home.text, /data-fintech-first-paint="v2"/);
   assert.doesNotMatch(home.text, /<link\b[^>]*href=["']\/assets\/styles\.css["']/i);
   assert.match(home.text, /\.calculator-layout/);
-  assert.match(home.text, /<script type="module" src="\/assets\/app\.js"><\/script>/);
+  assert.match(home.text, /<script type="module" src="\/assets\/app\.js\?[^\"]*rev=[^\"]+"><\/script>/);
   assert.match(home.text, /class="mobile-payroll-table"/);
   assert.match(home.text, /calculateAndShowPayroll\(\)/);
   assert.match(home.text, />Vergi Dilimi<\/th>/);
@@ -187,7 +188,7 @@ try {
   const missing = await fetch(`${baseUrl}/olmayan-sayfa/`);
   assert.equal(missing.status, 404);
 
-  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, kullanıcı girdisi koruması, ortak shell, 2026/2027 ve tazminat hesaplayıcıları doğrulandı.`);
+  console.log(`Smoke test başarılı: ${shellPages.length + 1} kritik sayfa, revisioned frontend graph, first-paint shell, kullanıcı girdisi koruması, ortak shell, 2026/2027 ve tazminat hesaplayıcıları doğrulandı.`);
 } finally {
   await new Promise((resolvePromise, rejectPromise) => {
     server.close((error) => error ? rejectPromise(error) : resolvePromise());
