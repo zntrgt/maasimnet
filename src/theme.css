@@ -1,0 +1,153 @@
+/* Maaşım.net Design System v3 — semantic tokens, light/dark theme, WCAG-aware foregrounds */
+:root{
+  color-scheme:light;
+  --color-brand-primary:#0f172a;
+  --color-brand-secondary:#1e293b;
+  --color-action:#2563eb;
+  --color-action-hover:#1d4ed8;
+  --color-action-active:#1e40af;
+  --color-action-soft:#eff6ff;
+  --color-success:#10b981;
+  --color-success-strong:#047857;
+  --color-success-bg:#ecfdf5;
+  --color-warning:#f59e0b;
+  --color-warning-strong:#92400e;
+  --color-warning-bg:#fffbeb;
+  --color-danger:#ef4444;
+  --color-danger-strong:#b91c1c;
+  --color-danger-bg:#fef2f2;
+  --color-info:#0284c7;
+  --color-info-strong:#0369a1;
+  --color-info-bg:#f0f9ff;
+  --color-bg:#f8fafc;
+  --color-surface:#ffffff;
+  --color-surface-alt:#f1f5f9;
+  --color-surface-raised:#ffffff;
+  --color-text:#0f172a;
+  --color-text-secondary:#475569;
+  --color-text-muted:#64748b;
+  --color-border:#cbd5e1;
+  --color-border-subtle:#e2e8f0;
+  --color-focus:#2563eb;
+  --focus-ring:0 0 0 3px rgba(37,99,235,.22);
+  --font-sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-numeric:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --font-size-xs:.75rem;
+  --font-size-sm:.875rem;
+  --font-size-md:1rem;
+  --font-size-lg:1.125rem;
+  --font-size-xl:1.375rem;
+  --font-size-2xl:1.75rem;
+  --font-size-3xl:2.5rem;
+  --radius-sm:6px;
+  --radius-md:8px;
+  --radius-lg:12px;
+  --radius-xl:16px;
+  --radius-full:9999px;
+  --shadow-card:0 8px 24px rgba(15,23,42,.07);
+  --shadow-raised:0 18px 44px rgba(15,23,42,.12);
+  --motion-fast:140ms;
+  --motion-base:180ms;
+  --motion-slow:260ms;
+  --ease-standard:cubic-bezier(.2,.8,.2,1);
+  /* compatibility aliases while legacy modules migrate */
+  --mn-ink-950:var(--color-brand-primary);
+  --mn-ink-900:var(--color-text);
+  --mn-ink-700:var(--color-text-secondary);
+  --mn-ink-500:var(--color-text-muted);
+  --mn-surface-0:var(--color-surface);
+  --mn-surface-50:var(--color-bg);
+  --mn-surface-100:var(--color-surface-alt);
+  --mn-line:var(--color-border-subtle);
+  --mn-emerald-500:var(--color-action);
+  --mn-emerald-600:var(--color-action-hover);
+  --mn-emerald-100:var(--color-action-soft);
+  --mn-danger-600:var(--color-danger-strong);
+  --mn-focus:var(--focus-ring);
+  --primary:var(--color-brand-primary);
+  --accent:var(--color-action);
+  --accent-dark:var(--color-action-hover);
+  --neutral-dark:var(--color-text);
+  --neutral-muted:var(--color-text-muted);
+  --neutral-light:var(--color-bg);
+  --card-bg:var(--color-surface);
+  --border-color:var(--color-border-subtle);
+  --surface-100:var(--color-surface-alt);
+  --surface-200:var(--color-border-subtle);
+  --danger:var(--color-danger-strong);
+  --human-accent:var(--color-action);
+  --human-text:var(--color-text);
+  --human-muted:var(--color-text-muted);
+  --human-border:var(--color-border);
+  --human-danger:var(--color-danger-strong);
+  --human-soft:var(--color-surface-alt);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --color-brand-primary:#f8fafc;
+  --color-brand-secondary:#e2e8f0;
+  --color-action:#60a5fa;
+  --color-action-hover:#93c5fd;
+  --color-action-active:#3b82f6;
+  --color-action-soft:#172554;
+  --color-success:#34d399;
+  --color-success-strong:#6ee7b7;
+  --color-success-bg:#052e24;
+  --color-warning:#fbbf24;
+  --color-warning-strong:#fde68a;
+  --color-warning-bg:#422006;
+  --color-danger:#f87171;
+  --color-danger-strong:#fecaca;
+  --color-danger-bg:#450a0a;
+  --color-info:#38bdf8;
+  --color-info-strong:#bae6fd;
+  --color-info-bg:#082f49;
+  --color-bg:#0f172a;
+  --color-surface:#1e293b;
+  --color-surface-alt:#334155;
+  --color-surface-raised:#263548;
+  --color-text:#f8fafc;
+  --color-text-secondary:#cbd5e1;
+  --color-text-muted:#94a3b8;
+  --color-border:#64748b;
+  --color-border-subtle:#334155;
+  --color-focus:#93c5fd;
+  --focus-ring:0 0 0 3px rgba(147,197,253,.28);
+  --shadow-card:0 10px 28px rgba(0,0,0,.24);
+  --shadow-raised:0 22px 52px rgba(0,0,0,.34);
+}
+@media(prefers-color-scheme:dark){
+  html:not([data-theme]){
+    color-scheme:dark;
+    --color-brand-primary:#f8fafc;--color-brand-secondary:#e2e8f0;--color-action:#60a5fa;--color-action-hover:#93c5fd;--color-action-active:#3b82f6;--color-action-soft:#172554;--color-success:#34d399;--color-success-strong:#6ee7b7;--color-success-bg:#052e24;--color-warning:#fbbf24;--color-warning-strong:#fde68a;--color-warning-bg:#422006;--color-danger:#f87171;--color-danger-strong:#fecaca;--color-danger-bg:#450a0a;--color-info:#38bdf8;--color-info-strong:#bae6fd;--color-info-bg:#082f49;--color-bg:#0f172a;--color-surface:#1e293b;--color-surface-alt:#334155;--color-surface-raised:#263548;--color-text:#f8fafc;--color-text-secondary:#cbd5e1;--color-text-muted:#94a3b8;--color-border:#64748b;--color-border-subtle:#334155;--color-focus:#93c5fd;--focus-ring:0 0 0 3px rgba(147,197,253,.28);--shadow-card:0 10px 28px rgba(0,0,0,.24);--shadow-raised:0 22px 52px rgba(0,0,0,.34)
+  }
+}
+html,body{background:var(--color-bg);color:var(--color-text);font-family:var(--font-sans)}
+body,input,select,textarea,button{font-family:var(--font-sans)}
+body{transition:background-color var(--motion-base) var(--ease-standard),color var(--motion-base) var(--ease-standard)}
+:is(input:not([type="checkbox"]):not([type="radio"]),select,textarea,button,[role="button"],summary){min-height:44px}
+:is(input,select,textarea){font-size:max(16px,var(--font-size-md))}
+:is(input[inputmode="decimal"],input[data-money-input="true"],#input-salary,#stat-avg-net,#stat-total-net,#stat-total-gross,[data-result],[data-primary-value],.metric-value,.historical-primary strong,.historical-metric strong,.termination-result strong,.unemployment-result strong,.overtime-result strong,.annual-leave-result strong,.minimum-wage-result strong){font-family:var(--font-numeric);font-variant-numeric:tabular-nums lining-nums}
+:is(button,[role="button"],input,select,textarea,summary):focus-visible{outline:2px solid var(--color-focus)!important;outline-offset:3px!important}
+a{color:var(--color-action-hover)}
+.site-header{background:color-mix(in srgb,var(--color-surface) 94%,transparent)!important;border-color:var(--color-border-subtle)!important;color:var(--color-text)!important}
+.site-brand,.site-nav a:hover,.site-mobile-menu a:hover{color:var(--color-text)!important}.site-nav a,.site-mobile-menu a{color:var(--color-text-secondary)!important}
+.site-mobile-menu{background:var(--color-surface)!important;border-color:var(--color-border-subtle)!important}.site-mobile-menu a{background:var(--color-surface-alt)!important}
+.site-menu-button{background:var(--color-surface)!important;border-color:var(--color-border)!important}.site-menu-button span{background:var(--color-text)!important}
+.site-header__cta,.cta-button--calculate,.termination-submit,.unemployment-submit,.overtime-submit,.annual-leave-submit,.minimum-wage-submit,.salary-raise-submit,.worktime-submit,.human-mobile-cta>button{background:var(--color-action)!important;color:#fff!important;border-color:var(--color-action)!important;box-shadow:0 8px 20px color-mix(in srgb,var(--color-action) 24%,transparent)!important}
+.site-header__cta:hover,.cta-button--calculate:hover,.termination-submit:hover,.unemployment-submit:hover,.overtime-submit:hover,.annual-leave-submit:hover,.minimum-wage-submit:hover,.salary-raise-submit:hover,.worktime-submit:hover,.human-mobile-cta>button:hover{background:var(--color-action-hover)!important;color:#fff!important}
+.site-footer{background:#020617!important;color:#94a3b8!important}
+.site-header__tools{display:flex;align-items:center;gap:8px;margin-left:auto}.site-theme-toggle{width:44px;height:44px;min-width:44px;display:grid;place-items:center;padding:0;border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);background:var(--color-surface);color:var(--color-text-secondary);cursor:pointer;transition:transform var(--motion-fast) var(--ease-standard),background-color var(--motion-fast),border-color var(--motion-fast)}.site-theme-toggle:hover{background:var(--color-surface-alt);border-color:var(--color-border);color:var(--color-text)}.site-theme-toggle:active{transform:scale(.96)}.site-theme-toggle svg{width:20px;height:20px;transition:transform var(--motion-slow) var(--ease-standard),opacity var(--motion-fast)}.site-theme-toggle .theme-icon--moon{display:none}html[data-theme="dark"] .site-theme-toggle .theme-icon--sun{display:none}html[data-theme="dark"] .site-theme-toggle .theme-icon--moon{display:block;transform:rotate(-12deg)}
+:is(.enterprise-form-card,.enterprise-trust-strip,.enterprise-advanced,.historical-panel,.historical-section,.termination-panel,.termination-section,.unemployment-panel,.unemployment-section,.overtime-panel,.overtime-section,.annual-leave-panel,.annual-leave-section,.minimum-wage-panel,.minimum-wage-section,.salary-raise-panel,.worktime-panel){background:var(--color-surface)!important;color:var(--color-text)!important;border-color:var(--color-border-subtle)!important;box-shadow:var(--shadow-card)!important}
+:is(.enterprise-form-card,.historical-panel,.termination-panel,.unemployment-panel,.overtime-panel,.annual-leave-panel,.minimum-wage-panel,.salary-raise-panel,.worktime-panel) :is(input,select,textarea){background:var(--color-surface)!important;color:var(--color-text)!important;border-color:var(--color-border)!important}
+:is(.enterprise-form-card,.historical-panel,.termination-panel,.unemployment-panel,.overtime-panel,.annual-leave-panel,.minimum-wage-panel,.salary-raise-panel,.worktime-panel) :is(label,small,p){color:var(--color-text-secondary)!important}
+.enterprise-mode-toggle{background:var(--color-surface-alt)!important;border-color:var(--color-border-subtle)!important}#btn-mode-gross[aria-pressed="true"],#btn-mode-net[aria-pressed="true"]{background:var(--color-surface)!important;color:var(--color-text)!important}
+.enterprise-advanced{background:var(--color-surface-alt)!important}.enterprise-advanced .employer-options__body{background:var(--color-surface)!important;border-color:var(--color-border-subtle)!important}
+.human-quick-amounts button{background:var(--color-surface-alt)!important;border-color:var(--color-border)!important;color:var(--color-text-secondary)!important}.human-quick-amounts button:hover,.human-quick-amounts button:focus-visible{background:var(--color-surface)!important;color:var(--color-text)!important;border-color:var(--color-action)!important}
+.human-tax-insight{background:var(--color-warning-bg)!important;border-color:color-mix(in srgb,var(--color-warning) 45%,var(--color-border-subtle))!important}.human-tax-insight :is(.human-tax-insight__eyebrow,h3,p,strong){color:var(--color-warning-strong)!important}
+body[data-humanized-ux="v1"] .enterprise-money-input:focus-within{transform:scale(1.01);transition:transform var(--motion-base) var(--ease-standard)}
+@keyframes maasim-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+body[data-humanized-ux="v1"] #input-salary.human-input-error{animation:maasim-shake 240ms ease-out}
+@media(max-width:1050px){.site-header__tools{margin-left:auto}.site-header__cta{margin-left:0}}
+@media(max-width:640px){.site-header__tools{gap:6px}.site-theme-toggle{width:44px;height:44px}.site-header__cta{display:none!important}}
+@media(prefers-reduced-motion:reduce){body,.site-theme-toggle,.site-theme-toggle svg,body[data-humanized-ux="v1"] .enterprise-money-input{transition:none!important}body[data-humanized-ux="v1"] #input-salary.human-input-error{animation:none!important}}
