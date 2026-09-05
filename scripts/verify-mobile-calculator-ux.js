@@ -8,13 +8,16 @@ const js = await readFile(join(dist, 'assets', 'mobile-calculator-ux.js'), 'utf8
 const humanizedJs = await readFile(join(dist, 'assets', 'humanized-ux.js'), 'utf8');
 
 for (const token of [
-  'src="/assets/mobile-calculator-ux.js"',
   'data-fintech-ui="v2"',
   'id="input-salary"',
   'class="calculator-results-column"',
   'onclick="calculateAndShowPayroll()"',
   'humanized-ux.js?v=3'
 ]) if (!html.includes(token)) throw new Error(`Mobile UX HTML contract eksik: ${token}`);
+
+if (!/src="\/assets\/mobile-calculator-ux\.js\?[^\"]*rev=[^\"]+"/.test(html)) {
+  throw new Error('Mobile calculator UX runtime deployment revision taşımıyor.');
+}
 
 const mainTag = html.match(/<main\b[^>]*>/i)?.[0] || '';
 if (!mainTag) throw new Error('Mobile UX ana main etiketi bulunamadı.');
@@ -86,4 +89,4 @@ for (const forbiddenJs of [
   if (js.includes(forbiddenJs)) throw new Error(`Mobile UX yasaklı davranış içeriyor: ${forbiddenJs}`);
 }
 
-console.log('Mobile calculator UX doğrulandı: gerçek calculateAndShowPayroll aksiyonu korunuyor; mobil CTA klavyeyi kapatıp sonucu odaklıyor; iOS input ve overflow güvenliği korunuyor.');
+console.log('Mobile calculator UX doğrulandı: revisioned runtime + gerçek calculateAndShowPayroll aksiyonu korunuyor; mobil CTA klavyeyi kapatıp sonucu odaklıyor; iOS input ve overflow güvenliği korunuyor.');
