@@ -41,9 +41,12 @@ for (const token of [
   'function ensureQuickAmounts()',
   "quick.addEventListener('click'",
   'data-human-amount',
-  "input.dispatchEvent(new Event('input', { bubbles: true }))"
+  "input.dispatchEvent(new Event('input', { bubbles: true }))",
+  "const resultValue = qs('#stat-avg-net');",
+  'empty.hidden = valid;',
+  '.observe(resultValue, { childList: true, subtree: true, characterData: true });'
 ]) {
-  if (!humanizedJs.includes(token)) throw new Error(`Hızlı maaş tutarı etkileşimi eksik: ${token}`);
+  if (!humanizedJs.includes(token)) throw new Error(`Humanized hesaplama etkileşimi/state sync eksik: ${token}`);
 }
 
 for (const token of [
@@ -141,4 +144,4 @@ for (const route of [
 if (!css.includes('@media (max-width: 700px)')) throw new Error('Enterprise UI mobile-first breakpoint eksik.');
 if (!css.includes('@media (prefers-reduced-motion: reduce)')) throw new Error('Reduced-motion erişilebilirlik kuralı eksik.');
 
-console.log('Enterprise fintech UI v2 doğrulandı: revisioned app graph, first-paint beyaz shell, desktop/mobile, humanized hero, hızlı tutar etkileşimi, live output, paylaşım, trust ve sitewide token sistemi.');
+console.log('Enterprise fintech UI v2 doğrulandı: revisioned app graph, first-paint beyaz shell, desktop/mobile, humanized hero, hızlı tutar etkileşimi, result-state sync, live output, paylaşım, trust ve sitewide token sistemi.');
