@@ -29,7 +29,7 @@ export const blogPosts = [
   { slug: 'netten-brute-maas-neden-aylik-degisir', title: 'Netten Brüte Maaş Neden Aylık Değişir?', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'maas-hesaplama-siteleri-neden-farkli', title: 'Maaş Hesaplama Siteleri Neden Farklı Sonuç Verir?', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: '2026-sgk-tavani', title: '2026 SGK Tavanı', cluster: 'salary-2026', generator: 'core', indexable: true },
-  { slug: '100000-tl-brut-maas-neti-2026', title: '100.000 TL Brüt Maaş Neti 2026', cluster: 'salary-2026', generator: 'core', indexable: true },
+  { slug: '100000-tl-brut-maas-neti-2026', title: '100.000 TL Brüt Maaş Teklifi Nasıl Değerlendirilir?', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'prim-ikramiye-net-maasi-neden-dusurur', title: 'Prim ve İkramiye Net Maaşı Neden Düşürür?', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'kidem-tazminatina-dahil-odemeler', title: 'Kıdem Tazminatına Dahil Ödemeler', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'is-teklifinin-yillik-degeri', title: 'İş Teklifinin Yıllık Değeri', cluster: 'career-compensation', generator: 'core', indexable: true },

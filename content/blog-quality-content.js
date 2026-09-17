@@ -113,7 +113,7 @@ export const blogQualityContent = {
     rows: [['İlk ay neti', 'Düşük kümülatif matrah', 'En yüksek aylardan biri', 'Tek başına yanıltıcı'], ['Yıl ortası neti', 'Üst vergi dilimleri', 'Net düşebilir', 'Beklenen değişim'], ['Yıllık toplam net', '12 ayın toplamı', 'Teklif karşılaştırması için güçlü', 'Ana metrik'], ['Ortalama aylık net', 'Toplam / 12', 'Bütçe planlaması için uygun', 'Ana metrik']],
     checklist: ['İlk ay yerine 12 aylık tabloyu inceleyin.', 'Prim ve zam aylarını senaryoya ekleyin.', 'Yemek, yol, BES ve bonusu maaştan ayrı değerleyin.', 'Teklifleri aynı brüt/net tanımı ve aynı başlangıç ayıyla karşılaştırın.'],
     mistakes: 'Ocak netini 12 ile çarpmak yıllık geliri olduğundan yüksek gösterir.',
-    extraFaq: [['100.000 TL brüt maaş her ay aynı neti verir mi?', 'Hayır. Kümülatif vergi matrahı nedeniyle aylık net yıl içinde değişebilir.'], ['İşveren maliyeti neden brütten yüksektir?', 'İşveren SGK ve işsizlik payları ile varsa diğer maliyetler brüt ücrete eklenir.']],
+    extraFaq: [['Performans primini garanti gelir gibi saymalı mıyım?', 'Hayır. Koşulsuz ödenecek prim ile hedeflere bağlı primi ayrı gösterin. Önce primsiz bütçenizi kurun; değişken prim için sıfır, hedef ve üst sınır senaryolarını karşılaştırın.'], ['İşveren maliyeti neden brütten yüksektir?', 'İşveren SGK ve işsizlik payları ile varsa diğer maliyetler brüt ücrete eklenir.']],
     sources: [[GIB, 'GİB 2026 ücret tarifesi'], [SGK, 'SGK 2026 prim parametreleri']],
     cta: ['/#hesaplayici', '100.000 TL senaryosunu değiştir', 'Başlangıç ayı, prim ve maaş artışını ekleyerek kişisel senaryonuzu oluşturun.']
   },
