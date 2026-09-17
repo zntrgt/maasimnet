@@ -68,7 +68,11 @@ function enhanceFormStructure() {
   const exceptionBlock = retired?.closest('.pt-6');
   if (exceptionBlock) {
     exceptionBlock.classList.add('enterprise-exceptions');
-    addFormSectionHeading(exceptionBlock, '02', 'İstisnalar & Muafiyetler', 'Yalnız size uyan seçenekleri açın.');
+    const disclosure = createElement('details', 'enterprise-personal-settings');
+    disclosure.innerHTML = '<summary>Emeklilik ve engellilik ayarları</summary>';
+    exceptionBlock.parentNode.insertBefore(disclosure, exceptionBlock);
+    disclosure.appendChild(exceptionBlock);
+    disclosure.open = retired.checked || Number(qs('#select-disability')?.value || 0) > 0;
   }
 
   const employer = qs('details.employer-options');

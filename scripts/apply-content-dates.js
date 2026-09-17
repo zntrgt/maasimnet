@@ -81,8 +81,12 @@ function updateVisibleFreshness(html, metadata) {
   const footerReviewedAtTr = formatSiteDateTr(SITE_METADATA.payrollDataReviewedAt);
 
   return html
-    .replace(/(<dt>\s*Son güncelleme\s*<\/dt>\s*<dd>)[^<]*(<\/dd>)/gi, `$1${metadata.modifiedAt}$2`)
-    .replace(/(<dt>\s*Son mevzuat kontrolü\s*<\/dt>\s*<dd>)[^<]*(<\/dd>)/gi, `$1${reviewedAt}$2`)
+    .replace(/(<dt\b[^>]*>\s*İlk yayın\s*<\/dt>\s*<dd\b[^>]*>)[^<]*(<\/dd>)/gi, `$1${metadata.publishedAt}$2`)
+    .replace(/(<dt\b[^>]*>\s*Son güncelleme\s*<\/dt>\s*<dd\b[^>]*>)[^<]*(<\/dd>)/gi, `$1${metadata.modifiedAt}$2`)
+    .replace(/(<dt\b[^>]*>\s*Son mevzuat kontrolü\s*<\/dt>\s*<dd\b[^>]*>)[^<]*(<\/dd>)/gi, `$1${reviewedAt}$2`)
+    .replace(/İlk yayın \d{4}-\d{2}-\d{2} · Son güncelleme \d{4}-\d{2}-\d{2} · Son mevzuat kontrolü \d{4}-\d{2}-\d{2}/g, `İlk yayın ${metadata.publishedAt} · Son güncelleme ${metadata.modifiedAt} · Son mevzuat kontrolü ${reviewedAt}`)
+    .replace(/(Son güncelleme:\s*)(?:\d{4}-\d{2}-\d{2}|\d{1,2}\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4})/g, `$1${formatSiteDateTr(metadata.modifiedAt)}`)
+    .replace(/Yayımlandı ve son (?:mevzuat|veri) kontrolü:\s*\d{1,2}\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4}/g, `Yayımlandı: ${formatSiteDateTr(metadata.publishedAt)} · Son içerik kontrolü: ${reviewedAtTr}`)
     .replace(/(<strong>\s*Rapor güncellemesi:\s*<\/strong>\s*)\d{4}-\d{2}-\d{2}/gi, `$1${metadata.modifiedAt}`)
     .replace(/(<strong>\s*Mevzuat kontrolü:\s*<\/strong>\s*)\d{4}-\d{2}-\d{2}/gi, `$1${reviewedAt}`)
     .replace(/(Son içerik ve kaynak kontrolü:\s*)[^<]*(<\/span>)/gi, `$1${reviewedAt}$2`)

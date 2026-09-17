@@ -1,8 +1,8 @@
 import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 
-const dist = new URL('../dist/', import.meta.url).pathname;
+const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const years = [2025, 2024, 2023, 2022, 2021, 2020];
 const route = (year) => `/brutten-nete-${year}/`;
 const genericRoute = (year) => `/${year}-maas-hesaplama/`;

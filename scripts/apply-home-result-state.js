@@ -142,20 +142,22 @@ function patchHumanizedRuntime(source) {
     return;
   }
 
-  const transitionIndex = rows.findIndex((row, index) => index > 0 && row.rate && rows[index - 1]?.rate && row.rate !== rows[index - 1].rate);
-  if (transitionIndex < 1) {
+  const transitionIndex = rows.findIndex((row, index) => row.rate && (row.rateStart !== row.rate || (index > 0 && row.rate !== rows[index - 1].rate)));
+  if (transitionIndex < 0) {
     insight.hidden = true;
     return;
   }
 
-  const previous = rows[transitionIndex - 1];
   const current = rows[transitionIndex];
+  const previous = rows[transitionIndex - 1] || { net: current.net, rate: current.rateStart };
   const difference = Math.max(0, previous.net - current.net);
 
   if (title) title.textContent = current.month + ' ayında vergi dilimin değişiyor';
   if (rate) rate.textContent = '%' + previous.rate + ' → %' + current.rate;
   if (copy) {
-    if (netRange < 0.01) {
+    if (!isGrossMode()) {
+      copy.textContent = 'Hedef net maaşın sabit kalır; değişen vergi dilimini karşılamak için gerekli brüt ücret ay ay yeniden hesaplanır.';
+    } else if (netRange < 0.01) {
       copy.textContent = 'Vergi dilimi eşiği değişse de asgari ücret vergi istisnası bu hesapta aylık netini etkilemiyor; bu yüzden 12 aylık netin aynı kalıyor.';
     } else {
       copy.textContent = difference > 0

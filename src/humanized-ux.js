@@ -141,7 +141,7 @@ function setSalaryModeCopy() {
       : 'Her ay eline geçmesini hedeflediğin net maaşı yaz.';
   }
   if (primary) primary.textContent = copy.cta;
-  if (stickyButton) stickyButton.textContent = copy.cta;
+  if (stickyButton) stickyButton.textContent = hasUsableHomeResult() ? 'Tutarı değiştir' : copy.cta;
 }
 
 function ensureSalaryFeedback() {
@@ -233,13 +233,14 @@ function readPayrollRows() {
     const month = cells[0]?.textContent?.trim();
     const netText = cells[4]?.textContent?.trim() || '';
     const badgeText = qs('.tax-bracket-badge', row)?.textContent?.trim() || '';
-    const rateMatch = badgeText.match(/(15|20|27|35|40)/);
+    const rates = badgeText.match(/(15|20|27|35|40)/g) || [];
     if (!month || !netText) return null;
     return {
       month,
       net: parseCurrency(netText),
       netText,
-      rate: rateMatch ? Number(rateMatch[1]) : null
+      rateStart: rates.length ? Number(rates[0]) : null,
+      rate: rates.length ? Number(rates[rates.length - 1]) : null
     };
   }).filter(Boolean).slice(0, 12);
 }
@@ -269,14 +270,14 @@ function updateTaxInsight() {
   }
 
   const rows = readPayrollRows();
-  const transitionIndex = rows.findIndex((row, index) => index > 0 && row.rate && rows[index - 1]?.rate && row.rate !== rows[index - 1].rate);
-  if (transitionIndex < 1) {
+  const transitionIndex = rows.findIndex((row, index) => row.rate && (row.rateStart !== row.rate || (index > 0 && row.rate !== rows[index - 1].rate)));
+  if (transitionIndex < 0) {
     insight.hidden = true;
     return;
   }
 
-  const previous = rows[transitionIndex - 1];
   const current = rows[transitionIndex];
+  const previous = rows[transitionIndex - 1] || { net: current.net, rate: current.rateStart };
   const difference = Math.max(0, previous.net - current.net);
   const title = qs('[data-human-tax-title]', insight);
   const copy = qs('[data-human-tax-copy]', insight);

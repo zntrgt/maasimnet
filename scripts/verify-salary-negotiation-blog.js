@@ -14,7 +14,11 @@ assert(html.includes('max-snippet:-1'), 'GEO snippet robots yönergesi eksik.');
 assert(html.includes('"@type":"Article"'), 'Article schema eksik.');
 assert(html.includes('"@type":"BreadcrumbList"'), 'Breadcrumb schema eksik.');
 assert(html.includes('"@type":"FAQPage"'), 'FAQ schema eksik.');
-assert((html.match(/<details>/g) || []).length === 8, 'Görünür SSS sayısı sekiz olmalı.');
+const visibleQuestions = [...html.matchAll(/<summary\b[^>]*>([\s\S]*?)<\/summary>/g)].map(match => match[1].replace(/<[^>]*>/g, '').trim());
+const schemas = [...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map(match => JSON.parse(match[1]));
+const faqQuestions = schemas.flatMap(schema => schema['@graph'] || [schema]).filter(node => node['@type'] === 'FAQPage').flatMap(node => node.mainEntity).map(node => node.name);
+assert(visibleQuestions.length >= 8, 'Temel sekiz SSS korunmalı.');
+assert(visibleQuestions.length === faqQuestions.length && visibleQuestions.every(question => faqQuestions.includes(question)), 'Görünür SSS ile FAQ schema eşleşmeli.');
 assert(html.includes('/maas-teklifi-karsilastirma/'), 'Maaş teklifi karşılaştırma CTA bağlantısı eksik.');
 assert(html.includes('/#hesaplayici'), 'Maaş hesaplayıcı CTA bağlantısı eksik.');
 assert(html.includes('NBER Working Paper'), 'NBER çalışma belgesi ayrımı görünür değil.');
@@ -22,7 +26,7 @@ assert(html.includes('X–Y bandında'), 'Soyut ücret bandı örneği eksik.');
 assert(!/\b\d{1,3}(?:\.\d{3})+(?:,\d+)?\s*(?:TL|₺)\b/i.test(html), 'Makalede sayısal ücret tutarı bulunuyor; X, Y, Z kullanılmalı.');
 assert(!/180[.\s]?000|195[.\s]?000/.test(html), 'Eski örnek ücret rakamları makalede kalmış.');
 assert(html.includes('31 Temmuz 2026'), 'Görünür yayın ve kaynak kontrol tarihi eksik.');
-assert(html.includes('/assets/maas-zam-gorusmesi.svg'), 'Makale hero görseli eksik.');
+assert(html.includes('/assets/maas-zam-gorusmesi-editorial.webp'), 'Makale hero görseli eksik.');
 
 const requiredSources = [
   'nber.org/papers/w33903',
