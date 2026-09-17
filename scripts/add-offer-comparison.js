@@ -18,6 +18,7 @@ const page = `<!doctype html>
 <body>
 <main class="compare-shell">
 <section class="compare-hero"><span>İŞ DEĞİŞİKLİĞİ KARAR ARACI</span><h1>Maaş tekliflerini gerçek yıllık net gelirle karşılaştır</h1><p>Mevcut maaşınla yeni teklifini aynı bordro motorunda karşılaştır; aylık ortalama net, yıllık toplam net, yan haklar, işveren maliyeti ve vergi dilimine giriş ayını birlikte gör.</p><div class="compare-notice">Hesaplama 2026 parametreleriyle yapılır. Maaş tutarların yalnızca bu cihazın tarayıcısında saklanır ve sunucuya gönderilmez.</div></section>
+<p class="privacy-note">Dönem: Ocak–Aralık 2026. Yeni teklif başlangıcına kadar mevcut ücret kullanılır; kümülatif vergi matrahı yıl boyunca devam eder. İşveren değişiminde matrahın sıfırlanması ve yıllık beyanname ayrıca değerlendirilmelidir. <a href="/blog/is-teklifinin-yillik-degeri/">Başlangıç ayı ve yıllık fark rehberi</a></p>
 <form id="comparison-form">
 <div class="compare-grid">
 <section class="compare-card"><h2>Mevcut paket</h2>

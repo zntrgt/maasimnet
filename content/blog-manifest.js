@@ -1,3 +1,4 @@
+import { employeeGuides } from './employee-guides.js';
 export const blogClusters = Object.freeze({
   'salary-2026': Object.freeze({
     title: '2026 Maaş, Vergi ve Bordro',
@@ -20,6 +21,7 @@ export const blogClusters = Object.freeze({
 });
 
 export const blogPosts = [
+  ...employeeGuides,
   { slug: '2027-maas-zammi-beklentileri', title: '2027 Maaş Zammı Beklentileri', cluster: 'career-compensation', generator: 'legacy', indexable: true },
   { slug: 'is-yerinde-finansal-saglik', title: 'İş Yerinde Finansal Sağlık', cluster: 'benefits-wellbeing', generator: 'legacy', indexable: true },
   { slug: 'maas-zam-gorusmesi-nasil-yapilir', title: 'Maaş ve Zam Görüşmesi Nasıl Yapılır?', cluster: 'career-compensation', generator: 'career', indexable: true },

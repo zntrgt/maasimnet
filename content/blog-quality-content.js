@@ -148,7 +148,7 @@ export const blogQualityContent = {
     mistakes: 'Şirketin “toplam paket değeri” rakamını sorgulamadan kabul etmek, kullanılmayan hakları ve belirsiz bonusu kesin gelir gibi sayar.',
     extraFaq: [['Yan hakların parasal değeri nasıl hesaplanır?', 'İşveren liste fiyatı yerine çalışanın gerçekten kullanacağı ikame maliyeti esas alınmalıdır.'], ['Hisse opsiyonu maaş paketine nasıl eklenir?', 'Hak ediş, kullanım fiyatı, likidite ve kayıp riski nedeniyle ayrı ve yüksek belirsizlikli kalem olarak gösterilmelidir.']],
     sources: [[GIB, 'GİB ücret gelirleri'], [SGK, 'SGK prime esas kazançlar'], [EGM, 'EGM BES devlet katkısı']],
-    cta: ['/senaryolar/', 'İki teklifi yıllık karşılaştır', 'Maaş artışı ve başlangıç ayı senaryolarıyla yıllık net farkı görün.']
+    cta: ['/maas-teklifi-karsilastirma/', 'İki teklifi yıllık karşılaştır', 'Maaş artışı ve başlangıç ayı senaryolarıyla yıllık net farkı görün.']
   },
   'isveren-katkili-bes': {
     ...common,

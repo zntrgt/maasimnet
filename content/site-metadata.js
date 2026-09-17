@@ -16,6 +16,9 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
+  '/blog/': Object.freeze({ modifiedAt: '2026-09-17' }),
+  '/blog/is-teklifinin-yillik-degeri/': Object.freeze({ modifiedAt: '2026-09-17' }),
+  '/maas-teklifi-karsilastirma/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/prim-ikramiye-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/blog/prim-ikramiye-net-maasi-neden-dusurur/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/100000-brut-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
@@ -124,9 +127,9 @@ export function getPageMetadata(pathname = '/') {
       : isBlogPage ? SITE_METADATA.blogReviewedAt : SITE_METADATA.defaultModifiedAt;
   const metadata = {
     path,
-    publishedAt: override.publishedAt || blogPublishedAt || SITE_METADATA.defaultPublishedAt,
-    modifiedAt: override.modifiedAt || familyModifiedAt,
-    reviewedAt: isHistoricalPayrollCalculator
+    publishedAt: override.publishedAt || blogPost?.publishedAt || blogPublishedAt || SITE_METADATA.defaultPublishedAt,
+    modifiedAt: override.modifiedAt || blogPost?.modifiedAt || familyModifiedAt,
+    reviewedAt: blogPost?.generator === 'employee' ? blogPost.modifiedAt : isHistoricalPayrollCalculator
       ? SITE_METADATA.historicalPayrollReviewedAt
       : isSalaryRaiseCalculator
         ? SITE_METADATA.releaseModifiedAt

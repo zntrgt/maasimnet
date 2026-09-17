@@ -120,6 +120,8 @@ function updateSchema(html, cfg) {
 
 export async function enhanceBlogQuality(distDir = dist) {
   for (const post of indexableBlogPosts) {
+    // Employee guides render their own evidence, FAQ and editorial sections; the common quality gate still verifies every page.
+    if (post.generator === 'employee') continue;
     const cfg = qualityContent[post.slug];
     if (!cfg) throw new Error(`Blog editoryal kalite içeriği eksik: ${post.slug}`);
     const file = join(distDir, blogOutputPath(post));
