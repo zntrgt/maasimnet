@@ -1,3 +1,4 @@
+import { createOfferExample, OFFER_MONTHS } from './offer-example.js';
 import { createBonusComparison, bonusMoney, BONUS_ASSUMPTIONS, BONUS_TABLE_CSS } from './bonus-comparison.js';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -127,21 +128,17 @@ function bonusBlock() {
 }
 
 function offerBlock() {
-  const current = calculatePayrollYear({ baseGrossKurusByMonth: Array(12).fill(tlToKurus(100_000)) });
-  const offerGross = Array(12).fill(tlToKurus(100_000));
-  for (let i = 6; i < 12; i += 1) offerGross[i] = tlToKurus(120_000);
-  const offer = calculatePayrollYear({ baseGrossKurusByMonth: offerGross });
-  const currentSummary = summarizePayroll(current);
-  const offerSummary = summarizePayroll(offer);
-  const annualNetDelta = offerSummary.annualNetKurus - currentSummary.annualNetKurus;
-  const secondHalfNetDelta = offer.slice(6).reduce((sum, row, index) => sum + row.netKurus - current[index + 6].netKurus, 0);
-  const employerCostDelta = offerSummary.annualEmployerCostKurus - currentSummary.annualEmployerCostKurus;
-
+  const july = createOfferExample(6);
+  const timings = [0,6,9].map(month => {
+    const data = createOfferExample(month);
+    return `<tr><th scope="row">${OFFER_MONTHS[month]}</th><td>${data.activeMonths}</td><td>${formatTl(data.grossDelta)}</td><td>${formatTl(data.annualDelta)}</td></tr>`;
+  }).join('');
+  const months = july.baseline.map((row,index) => `<tr><th scope="row">${OFFER_MONTHS[index]}</th><td>${formatTl(row.netKurus)}</td><td>${formatTl(july.offer[index].netKurus)}</td><td>${formatTl(july.differences[index])}</td></tr>`).join('');
   return wrap(
-    'Maaşım.net hesabı: yıl ortasında gelen iş teklifinin yıllık gerçek değeri',
-    'Yeni teklif yılın ortasında başlıyorsa teklif edilen aylık farkı 12 ile çarpmak doğru sonucu vermez. Başlangıç ayı ve kümülatif vergi etkisi yıllık toplam üzerinden değerlendirilmelidir.',
-    `<div class="original-data-grid"><div><span>Mevcut brüt</span><strong>100.000 TL</strong></div><div><span>Temmuzdan itibaren yeni brüt</span><strong>120.000 TL</strong></div><div><span>Yıllık net gelir farkı</span><strong>${formatTl(annualNetDelta)}</strong></div><div><span>Temmuz–Aralık net farkı</span><strong>${formatTl(secondHalfNetDelta)}</strong></div><div><span>Yıllık işveren maliyeti farkı</span><strong>${formatTl(employerCostDelta)}</strong></div></div><p><a class="original-data-cta" href="/maas-teklifi-karsilastirma/">Kendi mevcut maaşınızı ve yeni teklifinizi başlangıç ayıyla karşılaştırın →</a></p>`,
-    'Örnek senaryoda mevcut brüt Ocak–Haziran 100.000 TL, yeni teklif Temmuz–Aralık 120.000 TL kabul edilmiştir; prim ve yan haklar dahil değildir.'
+    'Temmuzda 100.000 TL’den 120.000 TL brüte geçişin net kazancı',
+    `2026 boyunca 100.000 TL brütte kalmaya kıyasla Temmuzda başlayan 120.000 TL brüt teklif, bu varsayımlarla yıl sonuna kadar ${formatTl(july.annualDelta)} ek net sağlar. Bu tutar yeni ücretin 12 aylık kazancı değil, Temmuz–Aralık döneminin farkıdır.`,
+    `<div class="original-data-grid"><div><span>Mevcut ücretle yıllık net</span><strong>${formatTl(july.baselineAnnualNet)}</strong></div><div><span>Temmuz geçişli yıllık net</span><strong>${formatTl(july.offerAnnualNet)}</strong></div><div><span>Bu yıl ek net kazanç</span><strong>${formatTl(july.annualDelta)}</strong></div></div><p><strong>İki farklı ortalama:</strong> Takvim yılının 12 ayına bölünmüş fark ${formatTl(july.calendarAverageDelta)}; teklifin geçerli olduğu ${july.activeMonths} aya bölünmüş fark ${formatTl(july.activeAverageDelta)} olur. Bunlar ortalamadır, her ay aynı net farkın oluştuğunu söylemez.</p><h3>Aynı teklif farklı aylarda başlarsa</h3><div class="bonus-scroll" role="region" aria-label="Teklif başlangıç ayı karşılaştırması, yatay kaydırılabilir" tabindex="0"><table><caption>Her örnekte mevcut aylık brüt 100.000 TL, yeni brüt 120.000 TL</caption><thead><tr><th scope="col">Başlangıç</th><th scope="col">Yeni ücretle ay</th><th scope="col">Bu yıl brüt fark</th><th scope="col">Bu yıl net fark</th></tr></thead><tbody>${timings}</tbody></table></div><details><summary>Temmuz başlangıcının 12 aylık net tablosunu aç</summary><div class="bonus-scroll" role="region" aria-label="Temmuz teklifi aylık net tablosu, yatay kaydırılabilir" tabindex="0"><table><caption>İlk altı ay iki senaryoda da aynı ücret</caption><thead><tr><th scope="col">Ay</th><th scope="col">Mevcut ücret sürerse</th><th scope="col">Temmuzda teklif başlarsa</th><th scope="col">Net fark</th></tr></thead><tbody>${months}</tbody></table></div></details><h3>Yan hakları nakit maaştan ayrı ekleyin</h3><p>Yeni teklifte her ay gerçekten kullanacağınız yan hak değeri ayrıca 1.000 TL daha yüksekse, altı ay için kişisel kullanım değeri farkı ${formatTl(july.benefitDelta)} olur. Maaş farkıyla birlikte değerlendirilen toplam ${formatTl(july.annualDelta+july.benefitDelta)} olur; bu toplamın tamamı banka hesabınıza yatacak nakit değildir. Örnek yan hak tutarı bir varsayımdır; vergi istisnası veya bordro neti hesabı değildir.</p><p><a class="original-data-cta" href="/maas-teklifi-karsilastirma/">Kendi maaşını, teklifini ve başlangıç ayını karşılaştır →</a></p>`,
+    'Ocak–Aralık tam çalışma; Ocakta sıfır kümülatif matrah; standart çalışan; prim, engellilik indirimi ve ücret boşluğu yok. Gelir vergisi matrahı yıl boyunca kesintisiz devam eder. Yeni işverende matrahın sıfırlanması veya farklı bordro uygulaması modellenmez; yıllık beyanname ve ilave vergi hesabı yapılmaz. Gelecek yılın 12 aylık sonucu değildir.'
   );
 }
 
@@ -155,7 +152,7 @@ const blocks = Object.freeze({
 
 function insertBlock(html, block, slug) {
   if (html.includes('maasim-original-data')) return html;
-  if (['100000-tl-brut-maas-neti-2026', 'prim-ikramiye-net-maasi-neden-dusurur'].includes(slug)) {
+  if (['100000-tl-brut-maas-neti-2026', 'prim-ikramiye-net-maasi-neden-dusurur', 'is-teklifinin-yillik-degeri'].includes(slug)) {
     const answer = /(<section class="answer">[\s\S]*?<\/section>)/;
     if (!answer.test(html)) throw new Error('Teklif rehberi kısa cevap alanı bulunamadı');
     return html.replace(answer, `$1${block}`);

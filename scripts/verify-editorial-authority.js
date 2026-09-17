@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { EDITORIAL_AUTHORITY } from '../content/editorial-authority.js';
-import { SITE_METADATA } from '../content/site-metadata.js';
+import { SITE_METADATA, getPageMetadata } from '../content/site-metadata.js';
 import { indexableBlogPosts, blogOutputPath } from '../content/blog-manifest.js';
 
 const dist = join(process.cwd(), 'dist');
@@ -67,7 +67,7 @@ for (const post of indexableBlogPosts) {
   if (article.author?.url !== EDITORIAL_AUTHORITY.editorialTeam.url) failures.push(`${post.slug}: author.url editoryal politika entity'sine gitmiyor`);
   if (article.reviewedBy?.url !== EDITORIAL_AUTHORITY.editorialTeam.url) failures.push(`${post.slug}: reviewedBy merkezi editoryal entity ile eşleşmiyor`);
   if (article.publisher?.['@id'] !== EDITORIAL_AUTHORITY.site.organizationId) failures.push(`${post.slug}: publisher merkezi Organization @id kullanmıyor`);
-  if (article.lastReviewed !== SITE_METADATA.blogReviewedAt) failures.push(`${post.slug}: lastReviewed merkezi tarihle eşleşmiyor`);
+  if (article.lastReviewed !== getPageMetadata(`/blog/${post.slug}/`).reviewedAt) failures.push(`${post.slug}: lastReviewed merkezi tarihle eşleşmiyor`);
 }
 
 if (failures.length) {

@@ -131,7 +131,10 @@ for (const post of indexableBlogPosts) {
     try {
       const bytes = await readFile(join(dist, 'assets', asset));
       checks.push([bytes.length >= 1000, `editoryal WebP dosyası boş veya bozuk (${asset})`]);
-      checks.push([bytes.subarray(0, 4).toString('ascii') === 'RIFF', `editoryal asset WebP/RIFF değil (${asset})`]);
+      if (asset.endsWith('.svg')) {
+        const svg = bytes.toString('utf8');
+        checks.push([svg.includes('<svg') && svg.includes('viewBox=') && svg.includes('<title>') && svg.includes('<desc>') && !/<script|onload=|<foreignObject/i.test(svg), `hesap grafiği geçerli ve açıklamalı SVG değil (${asset})`]);
+      } else checks.push([bytes.subarray(0, 4).toString('ascii') === 'RIFF', `editoryal asset WebP/RIFF değil (${asset})`]);
     } catch {
       checks.push([false, `editoryal asset dist içinde bulunamadı (${asset})`]);
     }

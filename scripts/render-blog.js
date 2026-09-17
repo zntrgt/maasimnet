@@ -1,3 +1,5 @@
+import { renderEmployeeGuides } from './render-employee-guides.js';
+import { applyGuideFilters } from './apply-guide-filters.js';
 import { addBlog } from './add-blog.js';
 import { addFinancialHealthBlog } from './add-financial-health-blog.js';
 import { addCoreBlogCluster } from './add-core-blog-cluster.js';
@@ -20,12 +22,14 @@ export async function renderBlog(dist) {
   await addBenefitsBlogCluster(dist);
   await addSalaryNegotiationBlog(dist);
 
+  await renderEmployeeGuides(dist);
   await ensureBlogIndex(dist);
   await ensureBlogBreadcrumbSchema(dist);
   await applyBlogImages(dist);
   await compactBlogIndex(dist);
   await enhanceBlogQuality(dist);
   await normalizeBlogVisuals(dist);
+  await applyGuideFilters(dist);
 
   console.log('blog üretim hattı tek giriş noktasından 10/10 kalite standardıyla tamamlandı');
 }

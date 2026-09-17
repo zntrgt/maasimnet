@@ -1,3 +1,4 @@
+import { employeeGuides } from '../content/employee-guides.js';
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,6 +8,7 @@ const directDir = join(root, 'assets-source', 'direct');
 const encodedDir = join(root, 'assets-source', 'encoded');
 
 export const blogImageAssignments = Object.freeze([
+  ...employeeGuides.map(post => ({slug:post.slug,asset:`guide-${post.slug}.svg`,alt:`${post.title} için 2026 aylık net ücret grafiği`,generated:true})),
   {
     slug: 'is-yerinde-finansal-saglik',
     asset: 'is-yerinde-finansal-saglik-editorial.webp',
@@ -126,6 +128,11 @@ function replaceAttribute(attributes, name, value) {
 
 async function materializeAsset(post, assetDir) {
   const destination = join(assetDir, post.asset);
+  if (post.generated) {
+    const svg = await readFile(destination, 'utf8');
+    if (!svg.includes('<svg') || !svg.includes('<title>')) throw new Error(`Hesap grafiği eksik: ${post.asset}`);
+    return;
+  }
   if (!post.encoded) {
     await cp(join(directDir, post.asset), destination);
     return;
