@@ -82,7 +82,24 @@ function ensureMobileCta`);
   const button = qs('[data-human-home-cta]', sticky);
   if (!button || button.dataset.bound === 'true') return;
   button.dataset.bound = 'true';
+  let primaryVisible = false;
+  const refreshSticky = () => {
+    sticky.hidden = primaryVisible || document.activeElement === qs('#input-salary');
+  };
+  const primary = qs('.cta-button--calculate');
+  if (primary) new IntersectionObserver((entries) => {
+    primaryVisible = entries.some((entry) => entry.isIntersecting);
+    refreshSticky();
+  }).observe(primary);
+  document.addEventListener('focusin', refreshSticky);
+  document.addEventListener('focusout', () => window.setTimeout(refreshSticky, 0));
   button.addEventListener('click', () => {
+    if (hasUsableHomeResult()) {
+      const salaryInput = qs('#input-salary');
+      smoothScrollTo(salaryInput);
+      salaryInput?.focus({ preventScroll: true });
+      return;
+    }
     if (!validateSalary()) return;
     qs('#input-salary')?.blur();
     if (typeof window.calculateAndShowPayroll === 'function') {

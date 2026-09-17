@@ -58,6 +58,7 @@ import { applyCalculatorFlowFixes } from './apply-calculator-flow-fixes.js';
 import { applyEmptyInitialCalculatorState } from './apply-empty-initial-calculator-state.js';
 import { applyMetaDescriptionQuality } from './apply-meta-description-quality.js';
 import { applyAssetRevision } from './apply-asset-revision.js';
+import { applyAuditCopy } from './apply-audit-copy.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -139,6 +140,7 @@ await applyHomeResultState(distDir);
 await mergeCriticalCss(distDir);
 await inlineHomeCss(distDir);
 await applyContrastGuard(distDir);
+await applyAuditCopy(distDir);
 await applyContentDates(distDir);
 const metaDescriptionResult = await applyMetaDescriptionQuality(distDir);
 const sitemapResult = await normalizeSitemap(distDir);

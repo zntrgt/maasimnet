@@ -1,7 +1,8 @@
 import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const dist = new URL('../dist/', import.meta.url).pathname;
+const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const years = [2025, 2024, 2023, 2022, 2021, 2020];
 const route = (year) => `/${year}-maas-hesaplama/`;
 const file = (year) => join(dist, `${year}-maas-hesaplama`, 'index.html');
