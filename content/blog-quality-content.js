@@ -121,10 +121,10 @@ export const blogQualityContent = {
     ...common,
     decisionTitle: 'Prim yalnız ödendiği ayı mı etkiler?',
     intro: 'Prim ve ikramiye ücret niteliğindeyse o ayın vergi ve prim matrahına eklenir. Kümülatif gelir vergisi matrahını yükselttiği için sonraki aylarda daha yüksek vergi dilimine daha erken geçilmesine de neden olabilir.',
-    rows: [['Ödeme ayı', 'Brüt ücret + prim', 'SGK ve vergi matrahı yükselir', 'Anlık etki'], ['SGK tavanı', 'Toplam prime esas kazanç test edilir', 'Tavan üzerinde prim sınırlanır', 'Yüksek ücret'], ['Kümülatif matrah', 'Prim vergi toplamına eklenir', 'Sonraki ayları etkiler', 'Kalıcı yıl içi etki'], ['Yıllık toplam', 'Net prim + maaş toplamı', 'Gerçek kazancı gösterir', 'Karar metriği']],
+    rows: [['Ödeme ayı', 'Brüt ücret + prim', 'SGK ve vergi matrahı yükselir', 'Anlık etki'], ['SGK tavanı', 'Toplam prime esas kazanç test edilir', 'Tavan üzerinde prim sınırlanır', 'Yüksek ücret'], ['Kümülatif matrah', 'Prim vergi toplamına eklenir', 'Sonraki ayları etkileyebilir', 'Dilim geçişine bağlı'], ['Yıllık toplam', 'Net prim + maaş toplamı', 'Gerçek kazancı gösterir', 'Karar metriği']],
     checklist: ['Primin brüt mü net mi tanımlandığını doğrulayın.', 'Ödeme ayındaki SGK tavanını kontrol edin.', 'Kümülatif matrahı prim sonrası devredin.', 'Sonraki aylardaki net değişimini yıllık tabloda gösterin.'],
     mistakes: 'Brüt prim tutarını doğrudan ele geçecek net ödeme gibi yorumlamak ve yalnız ödeme ayını hesaplamak yanlıştır.',
-    extraFaq: [['Prim hangi ayın vergi matrahına girer?', 'Genel olarak ödendiği ayın ücret matrahında dikkate alınır; bordro ve hak ediş koşulları ayrıca kontrol edilir.'], ['Prim SGK tavanını aşarsa ne olur?', 'Aylık toplam prime esas kazanç tavanla sınırlanır; gelir vergisi değerlendirmesi devam eder.']],
+    extraFaq: [['Prim hangi ayın vergi matrahına girer?', 'Genel olarak ödendiği ayın ücret matrahında dikkate alınır; bordro ve hak ediş koşulları ayrıca kontrol edilir.'], ['Prim SGK tavanını aşarsa ne olur?', 'Ücret dışı primin tavanı aşan kısmı koşullarına göre takip eden en fazla iki ayın prime esas kazancına dahil edilir. Gelir vergisi hesabı ayrıca yapılır.']],
     sources: [[SGK, 'SGK prim ve ikramiyelerin prime esas kazancı'], [GIB, 'GİB ücret gelirleri']],
     cta: ['/senaryolar/', 'Primli maaş senaryosu oluştur', 'Prim ayını ekleyerek o ay ve sonraki ayların netini karşılaştırın.']
   },

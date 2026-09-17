@@ -16,6 +16,8 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
+  '/prim-ikramiye-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
+  '/blog/prim-ikramiye-net-maasi-neden-dusurur/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/100000-brut-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/blog/100000-tl-brut-maas-neti-2026/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
@@ -128,7 +130,7 @@ export function getPageMetadata(pathname = '/') {
       ? SITE_METADATA.historicalPayrollReviewedAt
       : isSalaryRaiseCalculator
         ? SITE_METADATA.releaseModifiedAt
-        : isPayrollDataPage || path === '/100000-brut-maas-hesaplama/' || isTerminationCalculator || isWorkerRightsCalculator || isPayrollUtilityCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
+        : isPayrollDataPage || path === '/100000-brut-maas-hesaplama/' || path === '/prim-ikramiye-maas-hesaplama/' || isTerminationCalculator || isWorkerRightsCalculator || isPayrollUtilityCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
           ? SITE_METADATA.payrollDataReviewedAt
           : isBlogPage ? SITE_METADATA.blogReviewedAt : undefined
   };

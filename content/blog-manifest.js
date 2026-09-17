@@ -30,7 +30,7 @@ export const blogPosts = [
   { slug: 'maas-hesaplama-siteleri-neden-farkli', title: 'Maaş Hesaplama Siteleri Neden Farklı Sonuç Verir?', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: '2026-sgk-tavani', title: '2026 SGK Tavanı', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: '100000-tl-brut-maas-neti-2026', title: '100.000 TL Brüt Maaş Teklifi Nasıl Değerlendirilir?', cluster: 'salary-2026', generator: 'core', indexable: true },
-  { slug: 'prim-ikramiye-net-maasi-neden-dusurur', title: 'Prim ve İkramiye Net Maaşı Neden Düşürür?', cluster: 'salary-2026', generator: 'core', indexable: true },
+  { slug: 'prim-ikramiye-net-maasi-neden-dusurur', title: 'Prim ve İkramiyenin Vergisi: Sonraki Ay Net Maaş Düşer mi?', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'kidem-tazminatina-dahil-odemeler', title: 'Kıdem Tazminatına Dahil Ödemeler', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'is-teklifinin-yillik-degeri', title: 'İş Teklifinin Yıllık Değeri', cluster: 'career-compensation', generator: 'core', indexable: true },
   { slug: 'isveren-katkili-bes', title: 'İşveren Katkılı BES', cluster: 'benefits-wellbeing', generator: 'benefits', indexable: true },
