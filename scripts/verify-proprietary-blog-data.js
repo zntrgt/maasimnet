@@ -15,6 +15,16 @@ const secondary = [
   '2026-yemek-karti-istisnasi'
 ];
 const failures = [];
+const scenario = await readFile(join(dist, '100000-brut-maas-hesaplama', 'index.html'), 'utf8');
+const monthlyRows = scenario.match(/<tbody>([\s\S]*?)<\/tbody>/)?.[1] || '';
+if ((monthlyRows.match(/<tr>/g) || []).length !== 12) failures.push('100.000 TL senaryosu: 12 aylık tablo eksik');
+for (const value of ['75.953,03 TL', '69.490,14 TL', '833.881,63 TL', '%15 → %20']) {
+  if (!scenario.includes(value)) failures.push(`100.000 TL senaryosu: benchmark ${value} eksik`);
+}
+const offerGuide = await readFile(join(dist, 'blog', '100000-tl-brut-maas-neti-2026', 'index.html'), 'utf8');
+if (!offerGuide.includes('100.000 TL Brüt Maaş Teklifi Nasıl Değerlendirilir?')) failures.push('100.000 TL rehberi: teklif niyeti başlıkta yok');
+if (offerGuide.indexOf('class="maasim-original-data"') > offerGuide.indexOf('class="facts"')) failures.push('100.000 TL rehberi: özgün cevap üstte değil');
+if (!offerGuide.includes('77.554,73 TL')) failures.push('100.000 TL rehberi: Ocak yıllıklaştırma farkı hatalı');
 
 for (const slug of primary) {
   const html = await readFile(join(dist, 'blog', slug, 'index.html'), 'utf8');

@@ -95,14 +95,21 @@ function netToGrossBlock() {
 function gross100kBlock() {
   const rows = payrollForGross(100_000);
   const summary = summarizePayroll(rows);
-  const selected = [0, 2, 6, 11];
-  const tableRows = selected.map((index) => `<tr><td>${MONTHS[index]}</td><td>${formatTl(rows[index].netKurus)}</td><td>${rows[index].incomeTaxRatesPpm.map((rate) => '%' + Math.round(rate / 10_000)).join(' → ')}</td><td>${formatTl(rows[index].cumulativeTaxBaseKurus)}</td></tr>`).join('');
+  const minimumNet = Math.min(...rows.map(row => row.netKurus));
+  const minimumMonths = rows.filter(row => row.netKurus === minimumNet).map(row => MONTHS[row.month]).join(', ');
+  const januaryProjection = rows[0].netKurus * 12;
+  const tableRows = [
+    ['Ocak netini 12 ile çarpmak', formatTl(januaryProjection), 'Yıllık bütçeyi olduğundan yüksek gösterir.'],
+    ['Gerçek 12 aylık toplam net', formatTl(summary.annualNetKurus), 'Aynı dönem için teklif karşılaştırmasının temeli.'],
+    ['Yanlış yıllıklaştırmanın farkı', formatTl(januaryProjection - summary.annualNetKurus), 'Ocak netine göre bütçelemenin yarattığı gelir farkı.'],
+    ['En düşük aylık net', formatTl(minimumNet), minimumMonths + ': zorunlu giderlerinizi bu tutarla karşılaştırın.']
+  ].map(([label, value, meaning]) => `<tr><th scope="row">${label}</th><td>${value}</td><td>${meaning}</td></tr>`).join('');
 
   return wrap(
-    'Maaşım.net hesabı: 100.000 TL brütün yıl içindeki net seyri',
-    'Tek bir aylık net rakam yerine 12 aylık toplam ve vergi dilimi geçişleri birlikte değerlendirildiğinde brüt ücretin yıl içindeki gerçek net profili daha net görülür.',
-    `<div class="original-data-grid"><div><span>Ocak neti</span><strong>${formatTl(rows[0].netKurus)}</strong></div><div><span>Yıllık ortalama net</span><strong>${formatTl(summary.averageNetKurus)}</strong></div><div><span>Yıllık toplam net</span><strong>${formatTl(summary.annualNetKurus)}</strong></div><div><span>En yüksek–en düşük net farkı</span><strong>${formatTl(summary.netDifferenceKurus)}</strong></div></div><div class="table-scroll"><table class="table original-data-table"><thead><tr><th>Ay</th><th>Net maaş</th><th>Vergi oranı</th><th>Kümülatif matrah</th></tr></thead><tbody>${tableRows}</tbody></table></div>`,
-    '12 ay boyunca aylık brüt 100.000 TL, ek ödeme yok, standart çalışan varsayılmıştır.'
+    '100.000 TL brüt teklif: bütçeye yazılacak gerçek tutar',
+    `Bu örnekte yıllık net gelir ${formatTl(summary.annualNetKurus)}, aylık ortalama ${formatTl(summary.averageNetKurus)} olur. Ocak netini 12 ile çarpmak yıllık geliri ${formatTl(januaryProjection - summary.annualNetKurus)} fazla gösterir.`,
+    `<div class="original-data-grid"><div><span>Yıllık toplam net</span><strong>${formatTl(summary.annualNetKurus)}</strong></div><div><span>Aylık ortalama net</span><strong>${formatTl(summary.averageNetKurus)}</strong></div><div><span>En düşük aylık net</span><strong>${formatTl(minimumNet)}</strong></div></div><div class="table-scroll" role="region" aria-label="Teklif bütçesi karşılaştırması, yatay kaydırılabilir" tabindex="0"><table class="table original-data-table"><thead><tr><th scope="col">Karar göstergesi</th><th scope="col">Tutar</th><th scope="col">Nasıl kullanılır?</th></tr></thead><tbody>${tableRows}</tbody></table></div><p><a href="/100000-brut-maas-hesaplama/">Ay ay net maaş ve vergi dilimi tablosunu inceleyin →</a></p><p><a class="original-data-cta" href="/maas-teklifi-karsilastirma/">Mevcut maaşınızla yeni teklifi karşılaştırın →</a></p>`,
+    'Ocak–Aralık 12 ay tam çalışma, her ay 100.000 TL brüt, başlangıçta sıfır kümülatif matrah, ek ödeme ve engellilik indirimi yok, standart çalışan varsayılmıştır. İşe giriş ayı veya önceki matrah değişirse bu yıllık toplam doğrudan kullanılamaz.'
   );
 }
 
@@ -154,6 +161,11 @@ const blocks = Object.freeze({
 
 function insertBlock(html, block, slug) {
   if (html.includes('maasim-original-data')) return html;
+  if (slug === '100000-tl-brut-maas-neti-2026') {
+    const answer = /(<section class="answer">[\s\S]*?<\/section>)/;
+    if (!answer.test(html)) throw new Error('Teklif rehberi kısa cevap alanı bulunamadı');
+    return html.replace(answer, `$1${block}`);
+  }
   if (/<section\s+class="faq"[^>]*>/i.test(html)) {
     return html.replace(/<section\s+class="faq"[^>]*>/i, (match) => `${block}${match}`);
   }
