@@ -1,3 +1,4 @@
+import { createBonusComparison, bonusMoney, BONUS_ASSUMPTIONS, BONUS_TABLE_CSS } from './bonus-comparison.js';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
@@ -114,21 +115,14 @@ function gross100kBlock() {
 }
 
 function bonusBlock() {
-  const baseline = payrollForGross(100_000);
-  const extras = Array(12).fill(0);
-  extras[5] = 50_000;
-  const withBonus = payrollForGross(100_000, extras);
-  const incrementalJuneNet = withBonus[5].netKurus - baseline[5].netKurus;
-  const annualNetDelta = withBonus.reduce((sum, row, index) => sum + row.netKurus - baseline[index].netKurus, 0);
-  const julyDelta = withBonus[6].netKurus - baseline[6].netKurus;
-  const decemberDelta = withBonus[11].netKurus - baseline[11].netKurus;
-  const retention = kurusToTl(incrementalJuneNet) / 50_000 * 100;
-
+  const april = createBonusComparison(3);
+  const june = createBonusComparison(5);
+  const table = [april,june].map(data => `<tr><th scope="row">${MONTHS[data.month]}</th><td>${bonusMoney(data.paymentDelta)}</td><td>${bonusMoney(data.laterDelta)}</td><td>${bonusMoney(data.annualDelta)}</td></tr>`).join('');
   return wrap(
-    'Maaşım.net hesabı: tek seferlik primin net ve sonraki aylara etkisi',
-    'Prim bordroda yalnız ödendiği ayı büyütmez; o ayın gelir vergisi matrahını artırdığı için sonraki aylardaki kümülatif vergi konumunu da değiştirebilir.',
-    `<div class="original-data-grid"><div><span>Haziran brüt primi</span><strong>50.000 TL</strong></div><div><span>Haziran net artışı</span><strong>${formatTl(incrementalJuneNet)}</strong></div><div><span>Prim ayı nete dönüşüm oranı</span><strong>${formatPct(retention)}</strong></div><div><span>Yıllık toplam net farkı</span><strong>${formatTl(annualNetDelta)}</strong></div></div><div class="table-scroll"><table class="table original-data-table"><thead><tr><th>Dönem</th><th>Primsiz net</th><th>Primli senaryo neti</th><th>Fark</th></tr></thead><tbody><tr><td>Haziran</td><td>${formatTl(baseline[5].netKurus)}</td><td>${formatTl(withBonus[5].netKurus)}</td><td>${formatTl(incrementalJuneNet)}</td></tr><tr><td>Temmuz</td><td>${formatTl(baseline[6].netKurus)}</td><td>${formatTl(withBonus[6].netKurus)}</td><td>${formatTl(julyDelta)}</td></tr><tr><td>Aralık</td><td>${formatTl(baseline[11].netKurus)}</td><td>${formatTl(withBonus[11].netKurus)}</td><td>${formatTl(decemberDelta)}</td></tr></tbody></table></div>`,
-    'Ana brüt ücret 12 ay boyunca 100.000 TL; yalnız Haziran ayında 50.000 TL ek brüt prim varsayılmıştır.'
+    '50.000 TL prim: Nisan ve Haziran ödemesi arasındaki fark',
+    `100.000 TL sabit brüt maaşta Nisan primi ödeme ayının netini ${bonusMoney(april.paymentDelta)} artırır; sonraki ayların toplam farkı ${bonusMoney(april.laterDelta)} olur. Haziran priminde ise sonraki ayların net farkı ${bonusMoney(june.laterDelta)} olur.`,
+    `<div class="bonus-scroll" role="region" aria-label="Prim ödeme ayı karşılaştırması, yatay kaydırılabilir" tabindex="0"><table><caption>Aynı 50.000 TL brüt prim, iki ayrı ödeme zamanı</caption><thead><tr><th scope="col">Prim ayı</th><th scope="col">Ödeme ayı net artışı</th><th scope="col">Sonraki aylar toplam farkı</th><th scope="col">Yıllık net artışı</th></tr></thead><tbody>${table}</tbody></table></div><p>Nisan örneğinde Mayıs neti primsiz ${bonusMoney(april.baseline[4].netKurus)} yerine ${bonusMoney(april.withBonus[4].netKurus)} olur. Negatif fark, primsiz senaryoya kıyasla azalmadır; primin yıllık kazancı yok ettiği anlamına gelmez.</p><p>Haziran örneğinde sonraki ayların neti değişmez. Ödeme ayındaki fark ile yıllık net artışı aynı kavram değildir; iki ayrı senaryo için ayrı hesaplanmalıdır. Bu örneklerde yıllık net artışlarının eşit olması, bütün maaş ve prim tutarları için aynı sonucu garanti etmez.</p><p><a href="/prim-ikramiye-maas-hesaplama/">Haziran priminin tam 12 aylık karşılaştırmasını görün →</a></p>`,
+    BONUS_ASSUMPTIONS
   );
 }
 
@@ -161,7 +155,7 @@ const blocks = Object.freeze({
 
 function insertBlock(html, block, slug) {
   if (html.includes('maasim-original-data')) return html;
-  if (slug === '100000-tl-brut-maas-neti-2026') {
+  if (['100000-tl-brut-maas-neti-2026', 'prim-ikramiye-net-maasi-neden-dusurur'].includes(slug)) {
     const answer = /(<section class="answer">[\s\S]*?<\/section>)/;
     if (!answer.test(html)) throw new Error('Teklif rehberi kısa cevap alanı bulunamadı');
     return html.replace(answer, `$1${block}`);
@@ -206,7 +200,7 @@ export async function applyBlogOriginalData(distDir) {
   const cssPath = join(distDir, 'assets', 'blog.css');
   let blogCss = await readFile(cssPath, 'utf8');
   if (!blogCss.includes('/* Maaşım.net özgün hesaplama veri blokları */')) {
-    blogCss += `\n${css}`;
+    blogCss += `\n${css}\n${BONUS_TABLE_CSS}`;
     await writeFile(cssPath, blogCss, 'utf8');
   }
 
