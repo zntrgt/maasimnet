@@ -1,4 +1,5 @@
 import { employeeGuides } from '../content/employee-guides.js';
+import { employeeGuideImage } from '../content/employee-guide-images.js';
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,7 +9,7 @@ const directDir = join(root, 'assets-source', 'direct');
 const encodedDir = join(root, 'assets-source', 'encoded');
 
 export const blogImageAssignments = Object.freeze([
-  ...employeeGuides.map(post => ({slug:post.slug,asset:`guide-${post.slug}.svg`,alt:`${post.title} için 2026 aylık net ücret grafiği`,generated:true})),
+  ...employeeGuides.map(post => ({slug:post.slug, ...employeeGuideImage(post)})),
   {
     slug: 'is-yerinde-finansal-saglik',
     asset: 'is-yerinde-finansal-saglik-editorial.webp',
@@ -158,8 +159,8 @@ function updateHero(html, post) {
   let attributes = match[2];
   attributes = replaceAttribute(attributes, 'src', relative);
   attributes = replaceAttribute(attributes, 'alt', post.alt);
-  attributes = replaceAttribute(attributes, 'width', '480');
-  attributes = replaceAttribute(attributes, 'height', '270');
+  attributes = replaceAttribute(attributes, 'width', String(post.width || 480));
+  attributes = replaceAttribute(attributes, 'height', String(post.height || 270));
   attributes = replaceAttribute(attributes, 'loading', 'eager');
   attributes = replaceAttribute(attributes, 'decoding', 'async');
   attributes = replaceAttribute(attributes, 'fetchpriority', 'high');
@@ -220,3 +221,4 @@ export async function applyBlogImages(dist) {
   console.log(`blog içeriklerinde ve kartlarında ${blogImageAssignments.length} konuya özel editoryal görsel uygulandı`);
   return { applied: blogImageAssignments.length };
 }
+

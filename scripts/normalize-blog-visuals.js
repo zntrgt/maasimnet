@@ -58,6 +58,9 @@ export async function normalizeBlogVisuals(dist) {
     await writeFile(cssPath, css);
   }
 
+  // Charts must retain their complete labels; photo covers use their native 16:9 ratio.
+  css += '\n.layout article .guide-cover img, .layout article .guide-chart img { display:block; width:100%; height:auto; max-height:none; aspect-ratio:16/9; object-fit:contain; }\n';
+  await writeFile(cssPath, css);
   let updated = 0;
   for (const post of indexableBlogPosts) {
     const articleHtml = await readFile(join(dist, blogOutputPath(post)), 'utf8');
@@ -77,3 +80,4 @@ export async function normalizeBlogVisuals(dist) {
 
   console.log(`blog görsel ve taşma koruması uygulandı; ${updated} hero başlığı normalize edildi`);
 }
+

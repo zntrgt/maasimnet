@@ -48,6 +48,9 @@ jobs:
       - name: Verify blog manifest
         run: npm run verify:manifest
 
+      - name: Verify employee guide covers, charts and social images
+        run: npm run verify:employee-guides
+
       - name: Verify SEO GEO blog quality v2
         run: npm run verify:quality
 
@@ -118,3 +121,4 @@ jobs:
           path: dist
           if-no-files-found: error
           retention-days: 14
+
