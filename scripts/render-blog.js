@@ -12,6 +12,7 @@ import { compactBlogIndex } from './compact-blog-index.js';
 import { enhanceBlogQuality } from './enhance-blog-quality.js';
 import { normalizeBlogVisuals } from './normalize-blog-visuals.js';
 import { validateBlogManifest } from '../content/blog-manifest.js';
+import { enhanceBlogAiSearch } from './enhance-blog-ai-search.js';
 
 export async function renderBlog(dist) {
   validateBlogManifest();
@@ -30,6 +31,8 @@ export async function renderBlog(dist) {
   await enhanceBlogQuality(dist);
   await normalizeBlogVisuals(dist);
   await applyGuideFilters(dist);
+  await enhanceBlogAiSearch(dist);
 
   console.log('blog üretim hattı tek giriş noktasından 10/10 kalite standardıyla tamamlandı');
 }
+

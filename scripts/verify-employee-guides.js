@@ -22,7 +22,8 @@ for(const [ordinal, post] of employeeGuides.entries()){
  const d=guideScenario(post);
  assert.ok(sitemap.includes(`https://maasim.net/blog/${post.slug}/`),post.slug+' sitemap');
  assert.ok(index.includes(`href="/blog/${post.slug}/"`),post.slug+' index');
- assert.equal((html.match(/<th scope="row">/g)||[]).length,12,post.slug+' months');
+ const guideTable = html.match(/<div class="guide-table"[\s\S]*?<\/div>/i)?.[0] || '';
+ assert.equal((guideTable.match(/<th scope="row">/g)||[]).length,12,post.slug+' months');
  for(const row of d.table)for(const cell of row)assert.ok(html.includes(cell.replaceAll('&','&amp;')),post.slug+' '+cell);
  assert.ok(html.includes('id="kaynakca"'),post.slug+' sources');
  assert.ok(html.includes('Varsayımlar'),post.slug+' assumptions');
