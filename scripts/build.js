@@ -30,6 +30,7 @@ import { addHistoricalGrossToNetPages } from './add-historical-brutten-nete-page
 import { applyHistoricalPayrollFreshness } from './apply-historical-payroll-freshness.js';
 import { addContactPage } from './add-contact-page.js';
 import { addEditorialAuthority } from './add-editorial-authority.js';
+import { addKademeliEmeklilik } from './add-kademeli-emeklilik.js';
 import { applyP0Architecture } from './apply-p0-architecture.js';
 import { addHomeFreshness } from './add-home-freshness.js';
 import { addPayrollTestReport } from './add-payroll-test-report.js';
@@ -118,6 +119,7 @@ await applyHistoricalPayrollFreshness(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 const editorialAuthorityResult = await addEditorialAuthority(distDir);
+await addKademeliEmeklilik(distDir);
 await addHomeFreshness(distDir);
 const payrollAudit = await addPayrollTestReport(distDir);
 const calculatorDiscovery = await applyCalculatorDiscovery(distDir);
