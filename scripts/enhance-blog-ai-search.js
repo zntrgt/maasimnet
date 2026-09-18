@@ -7,7 +7,7 @@ const text = (s = '') => s.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
 const question = (s) => { let q = text(s); if (!q.endsWith('?')) q += '?'; return q; };
 
 function facts(title, lead) {
-  return `<section class="ai-quick-facts" aria-labelledby="ai-quick-facts-title"><h2 id="ai-quick-facts-title">Özet / AI Quick Facts</h2><ul><li><strong>Bu sayfa neyi açıklar?</strong> ${esc(title)}</li><li><strong>Temel sonuç:</strong> ${esc(lead || 'Sonuç, sayfadaki açık varsayımlar ve hesaplama yöntemiyle birlikte okunmalıdır.')}</li><li><strong>Kontrol noktası:</strong> Ücret türü, ödeme tarihi, vergi matrahı ve çalışan koşulları aynı senaryoda tutulmalıdır.</li><li><strong>Güncellik notu:</strong> Kanun teklifi veya taslaklar yürürlükteki mevzuatın yerine geçmez; tarih ve resmî kaynak kontrol edilmelidir.</li></ul></section>`;
+  return `<section class="ai-quick-facts" aria-labelledby="ai-quick-facts-title"><h2 id="ai-quick-facts-title">Kısa özet</h2><ul><li><strong>Bu sayfa neyi açıklar?</strong> ${esc(title)}</li><li><strong>Temel sonuç:</strong> ${esc(lead || 'Sonuç, sayfadaki açık varsayımlar ve hesaplama yöntemiyle birlikte okunmalıdır.')}</li><li><strong>Kontrol noktası:</strong> Ücret türü, ödeme tarihi, vergi matrahı ve çalışan koşulları aynı senaryoda tutulmalıdır.</li><li><strong>Güncellik notu:</strong> Kanun teklifi veya taslaklar yürürlükteki mevzuatın yerine geçmez; tarih ve resmî kaynak kontrol edilmelidir.</li></ul></section>`;
 }
 
 function comparison() {
