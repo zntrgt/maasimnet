@@ -7,9 +7,9 @@ import {employeeGuideImage} from '../content/employee-guide-images.js';
 const dist=join(process.cwd(),'dist');
 const sitemap=await readFile(join(dist,'sitemap.xml'),'utf8');
 const index=await readFile(join(dist,'blog','index.html'),'utf8');
-for(const [index, post] of employeeGuides.entries()){
+for(const [ordinal, post] of employeeGuides.entries()){
  const html=await readFile(join(dist,'blog',post.slug,'index.html'),'utf8');
- const cover=employeeGuideImage({...post,coverKind:['budget','net','raise','offer','benefit','bonus','tax','timing','split','purchasing'][index % 10]});
+ const cover=employeeGuideImage({...post,coverKind:['budget','net','raise','offer','benefit','bonus','tax','timing','split','purchasing'][ordinal % 10]});
  const coverPath=`/assets/${cover.asset}`;
  assert.ok(html.includes(`class="figure guide-cover"><img src="${coverPath}"`),post.slug+' editorial cover');
  assert.ok(html.includes(`class="figure guide-chart"><img src="/assets/guide-${post.slug}.svg" width="1200" height="675" loading="lazy"`),post.slug+' separate uncropped chart');
