@@ -325,7 +325,7 @@ const page = `<!doctype html>
 </html>`;
 
 export async function addKademeliEmeklilik(dist) {
-  const dir = join(dist, PATH.replace(/^\\/+|\\/+$/g, ''));
+  const dir = join(dist, PATH.replace(/^\/+|\/+$/g, ''));
   await mkdir(dir, { recursive: true });
   await writeFile(join(dir, 'index.html'), page);
   console.log(`Kademeli emeklilik canlı dosyası üretildi: ${PATH}`);
