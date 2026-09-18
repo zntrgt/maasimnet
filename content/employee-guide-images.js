@@ -13,8 +13,10 @@ const descriptions = {
 };
 
 export function employeeGuideImage(post) {
-  const alt = descriptions[post.kind];
-  if (!alt) throw new Error(`Rehber görseli tanımlanmamış: ${post.kind}`);
-  return { asset: `employee-${post.kind}-editorial.webp`, alt, encoded: true, width: 1200, height: 675 };
+  const kinds = ['budget','net','raise','offer','benefit','bonus','tax','timing','split','purchasing'];
+  const kind = post.coverKind || post.kind;
+  const alt = descriptions[kind];
+  if (!alt) throw new Error(`Rehber görseli tanımlanmamış: ${kind}`);
+  return { asset: `employee-${kind}-editorial.webp`, alt, encoded: true, width: 1200, height: 675 };
 }
 
