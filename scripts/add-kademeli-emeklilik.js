@@ -27,7 +27,7 @@ const S = DATA.sources;
 const faqs = [
   {
     q: 'Kademeli emeklilik çıktı mı?',
-    a: 'Hayır. 18 Eylül 2026 itibarıyla 9 Eylül 1999 sonrası sigortalıların emeklilik yaş ve prim şartlarını yeniden kademelendiren yeni bir kanun yürürlüğe girmiş değil.'
+    a: `Hayır. ${fmt(DATA.reviewedAt)} itibarıyla 9 Eylül 1999 sonrası sigortalıların emeklilik yaş ve prim şartlarını yeniden kademelendiren yeni bir kanun yürürlüğe girmiş değil.`
   },
   {
     q: '2026’da kademeli emeklilik çıkacak mı?',
@@ -62,7 +62,7 @@ const faqs = [
 const timelineHtml = DATA.timeline.map((item) => `
   <li class="ke-timeline__item">
     <time datetime="${esc(item.date)}">${esc(fmt(item.date))}</time>
-    <div><strong>${esc(item.label)}</strong><p>${esc(item.text)}</p></div>
+    <div><strong>${esc(item.label)}</strong><p>${esc(item.text)}</p>${item.sourceUrl ? `<p class="ke-timeline__sources"><a href="${esc(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(item.sourceLabel)}</a>${item.reportUrl ? ` · <a href="${esc(item.reportUrl)}" target="_blank" rel="noopener noreferrer">22 Eylül tarihli haber</a>` : ''}</p>` : ''}</div>
   </li>`).join('');
 
 const faqHtml = faqs.map((item) => `
@@ -113,6 +113,8 @@ const schema = {
         S.proposal2959,
         S.question37366,
         S.question48458,
+        S.desticiInterview,
+        S.desticiReport,
         S.emadderMinistry
       ]
     },
@@ -191,7 +193,7 @@ const page = `<!doctype html>
       <article class="ke-article">
         <section id="cikti-mi">
           <h2>Kademeli emeklilik çıktı mı?</h2>
-          <div class="ke-answer"><strong>Kısa cevap: Hayır.</strong> 18 Eylül 2026 itibarıyla 9 Eylül 1999 sonrasında sigortalı olanların emeklilik yaş ve prim şartlarını yeniden kademelendiren yeni bir kanun yürürlüğe girmiş değil.</div>
+          <div class="ke-answer"><strong>Kısa cevap: Hayır.</strong> ${esc(fmt(DATA.reviewedAt))} itibarıyla 9 Eylül 1999 sonrasında sigortalı olanların emeklilik yaş ve prim şartlarını yeniden kademelendiren yeni bir kanun yürürlüğe girmiş değil.</div>
           <p>Bu konuda en sık yapılan hata, <strong>kanun teklifi</strong>, <strong>soru önergesi</strong>, <strong>sivil toplum talebi</strong> ve <strong>yürürlüğe girmiş kanunu</strong> aynı şeymiş gibi aktarmak. Oysa hukuki sonuç doğuran aşama farklıdır: bir düzenlemenin emeklilik şartlarını gerçekten değiştirmesi için yasama sürecinin tamamlanması ve yürürlüğe girmesi gerekir.</p>
           <p>3 Mart 2023’te Resmî Gazete’de yayımlanan 7438 sayılı düzenleme EYT kapsamındaki kişiler açısından yaş şartını kaldırdı. Ancak bu düzenleme, 9 Eylül 1999 ve sonrasında ilk defa sigortalı olanlar için yeni bir kademeli emeklilik sistemi oluşturmadı. <a href="${S.officialGazetteEyt}" target="_blank" rel="noopener noreferrer">7438 sayılı düzenlemeyi Resmî Gazete’de görüntüleyebilirsiniz</a>.</p>
           <p>Çalışma ve Sosyal Güvenlik Bakanlığının 2026’da TBMM’ye gönderdiği yanıtlardan biri de mevcut EYT kapsamını yeniden açıklıyor. 7/37366 esas numaralı soru önergesine verilen ve 7 Eylül 2026’da TBMM kayıtlarına giren cevapta 8 Eylül 1999 ve öncesi ile 9 Eylül 1999 ve sonrası arasındaki mevcut kapsam ayrımı tekrar ediliyor. Bu yanıt <strong>yeni bir kademeli emeklilik modeli veya yürürlük tarihi ilan etmiyor</strong>. Bununla birlikte, bir yanıtta yeni düzenleme duyurulmaması, Bakanlık içinde hiçbir hazırlık bulunmadığının tek başına kanıtı olarak da yorumlanmamalı. <a href="${S.question37366}" target="_blank" rel="noopener noreferrer">TBMM kaydını inceleyin</a>.</p>
@@ -208,9 +210,9 @@ const page = `<!doctype html>
 
         <section id="2026">
           <h2>2026’da kademeli emeklilik çıkacak mı?</h2>
-          <p><strong>18 Eylül 2026 itibarıyla 2026 içinde yasalaşacağına dair kesinleşmiş resmî bir takvim bulunmuyor.</strong> Buna karşılık konu 2026 boyunca TBMM’de yazılı soru önergeleriyle gündeme gelmeye devam etti.</p>
+          <p><strong>${esc(fmt(DATA.reviewedAt))} itibarıyla 2026 içinde yasalaşacağına dair kesinleşmiş resmî bir takvim bulunmuyor.</strong> Buna karşılık konu 2026 boyunca TBMM’de yazılı soru önergeleriyle gündeme gelmeye devam etti.</p>
           <p>3 Haziran 2026 tarihli 7/45214 esas numaralı önerge doğrudan kademeli emeklilik düzenlemesi yapılması yönündeki talepleri konu aldı ve 17 Ağustos 2026’da cevaplandı. <a href="${S.question45214}" target="_blank" rel="noopener noreferrer">TBMM’deki önerge kaydını görüntüleyin</a>.</p>
-          <p>Daha güncel olarak 4 Eylül 2026 tarihinde <strong>7/48458</strong> esas numaralı yeni bir yazılı soru önergesi verildi. TBMM kayıtlarında 18 Eylül itibarıyla “15 günlük cevaplanma süresi devam ediyor” bilgisi yer alıyor. Bu kayıt, konunun hâlen Meclis gündemine taşındığını gösteriyor; tek başına bir yasa hazırlığı veya çıkış tarihi göstermiyor. <a href="${S.question48458}" target="_blank" rel="noopener noreferrer">Güncel TBMM kaydı</a>.</p>
+          <p>Daha güncel olarak 4 Eylül 2026 tarihinde <strong>7/48458</strong> esas numaralı yeni bir yazılı soru önergesi verildi. TBMM kaydında son durum “15 günlük cevaplanma süresi devam ediyor” olarak görünüyor. Bu kayıt, konunun hâlen Meclis gündemine taşındığını gösteriyor; tek başına bir yasa hazırlığı veya çıkış tarihi göstermiyor. <a href="${S.question48458}" target="_blank" rel="noopener noreferrer">Güncel TBMM kaydı</a>.</p>
         </section>
 
         <section id="1999-2008">
@@ -263,7 +265,7 @@ const page = `<!doctype html>
 
         <section id="gelismeler">
           <h2>Kademeli emeklilik son durum: gelişmeler zaman çizelgesi</h2>
-          <p>Aşağıdaki kronoloji, “son dakika” başlıkları yerine doğrulanabilir kayıtların tarihini ve hukuki statüsünü takip eder. Yeni bir resmî gelişme olduğunda en yeni kayıt üste eklenir.</p>
+          <p>Aşağıdaki kronoloji, “son dakika” başlıkları yerine doğrulanabilir kayıtların tarihini ve hukuki statüsünü takip eder. Yeni bir gelişme doğrulandığında en yeni kayıt üste eklenir.</p>
           <ol class="ke-timeline">${timelineHtml}</ol>
         </section>
 
@@ -284,6 +286,7 @@ const page = `<!doctype html>
             <li><a href="${S.question37366}" target="_blank" rel="noopener noreferrer"><strong>TBMM — 7/37366 Yazılı Soru Önergesi</strong></a><small>7 Eylül 2026’da kayda giren Bakanlık cevabını içerir.</small></li>
             <li><a href="${S.question48458}" target="_blank" rel="noopener noreferrer"><strong>TBMM — 7/48458 Yazılı Soru Önergesi</strong></a><small>4 Eylül 2026 tarihli güncel önerge; son durum sayfa kontrolünde doğrulanır.</small></li>
             <li><a href="${S.emadderMinistry}" target="_blank" rel="noopener noreferrer"><strong>EMADDER — Bakanlık görüşmesi açıklaması</strong></a><small>Derneğin kendi faaliyetine ilişkin birincil açıklama; resmî mevzuat kaynağı değildir.</small></li>
+            <li><a href="${S.desticiInterview}" target="_blank" rel="noopener noreferrer"><strong>Ülke TV röportajından kesit — EMADDER paylaşımı</strong></a><small>Destici’nin kademeli emeklilik talebini Cumhurbaşkanı’na ilettiğini söylediği açıklama; siyasi temas kaynağıdır, mevzuat kaynağı değildir.</small></li>
           </ul>
 
           <div class="ke-editorial">
