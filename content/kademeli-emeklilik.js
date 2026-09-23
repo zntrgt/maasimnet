@@ -1,8 +1,8 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-09-18',
-  reviewedAt: '2026-09-18',
+  modifiedAt: '2026-09-23',
+  reviewedAt: '2026-09-23',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
   latestOfficialUpdate: '4 Eylül 2026 tarihli yeni yazılı soru önergesinin TBMM kayıtlarında cevaplanma süresi devam ediyor.',
@@ -16,9 +16,20 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     question45214: 'https://tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/55739033-1d8d-4756-9ee0-019e8d8562e2',
     question48458: 'https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/d0adc0ec-626b-4e78-b951-01a07ab9e70e',
     emadderMinistry: 'https://emadder.org.tr/detay.php?id=137',
-    emadderHayatiYazici: 'https://emadder.org.tr/detay.php?id=101'
+    emadderHayatiYazici: 'https://emadder.org.tr/detay.php?id=101',
+    desticiInterview: 'https://www.facebook.com/Emaddernegi/posts/-%C3%BClke-tv-ekranlarindan-milyonlarin-sesi-duyuldu%C3%BClke-tv-ekranlar%C4%B1nda-m-mustafa-y%C4%B1/122316792212067832/',
+    desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-09-22',
+      label: 'Siyasi temas / Destici’nin açıklaması',
+      text: 'BBP Genel Başkanı Mustafa Destici, 14 Eylül’de Cumhurbaşkanı Recep Tayyip Erdoğan ile yaptığı görüşmede kademeli emeklilik talebini ilettiğini Ülke TV’de açıkladı. Bu açıklama, bir düzenleme kararı veya TBMM’de yasama ilerlemesi anlamına gelmiyor.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.facebook.com/Emaddernegi/posts/-%C3%BClke-tv-ekranlarindan-milyonlarin-sesi-duyuldu%C3%BClke-tv-ekranlar%C4%B1nda-m-mustafa-y%C4%B1/122316792212067832/',
+      sourceLabel: 'Röportaj kesiti (EMADDER paylaşımı)',
+      reportUrl: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
+    }),
     Object.freeze({
       date: '2026-09-18',
       label: 'Güncel kontrol',
