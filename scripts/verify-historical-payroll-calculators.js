@@ -52,7 +52,7 @@ for (const year of years) {
   requireText(html, 'GİB', `${year} tax authority source`);
   requireText(html, 'Bu sayfa tarihsel bir bordro aracıdır', `${year} historical/current separation`);
   requireText(html, `data-year-context="${year}"`, `${year} year-specific answer block`);
-  requireText(html, `href="/hesaplama-araclari/"`, `${year} related tools link`);
+  requireText(html, `href="/hesaplama-araclari/#historical-payroll-calculators"`, `${year} related historical-tools link`);
   requireText(html, `href="/blog/netten-brute-maas-neden-aylik-degisir/"`, `${year} relevant explainer link`);
   if (year <= 2021) requireText(html, `${year} AGİ hesaplamaya dahil mi?`, `${year} AGİ FAQ`);
   else requireText(html, `${year} asgari ücret gelir ve damga vergisi istisnası uygulanıyor mu?`, `${year} exemption FAQ`);
@@ -80,6 +80,7 @@ for (const year of years) {
   requireText(sitemap, `<loc>https://maasim.net${path}</loc>`, `${year} sitemap`);
 }
 requireText(hub, 'data-historical-discovery="v1"', 'historical hub discovery marker');
+requireText(hub, 'id="historical-payroll-calculators"', 'historical hub jump target');
 requireText(home, 'data-historical-discovery="v1"', 'historical homepage discovery marker');
 requireText(hub, '2020–2025 tarihsel maaş hesaplama', 'historical hub heading');
 
