@@ -12,7 +12,7 @@ const TOOLS = Object.freeze(YEARS.map((year) => Object.freeze([
 const card = ([href,title,description]) => `<a class="calculator-discovery__card" href="${href}"><strong>${title}</strong><span>${description}</span><b>${title.replace(' Maaş Hesaplama','')} bordrosunu aç →</b></a>`;
 
 function section(extraClass = '') {
-  return `<section class="calculator-discovery ${extraClass}" ${MARKER}><div class="calculator-discovery__head"><p class="calculator-discovery__eyebrow">Geçmiş yıllar</p><h2>2020–2025 tarihsel maaş hesaplama</h2><p>Bugünkü oranları geçmişe uygulamadan; her yılın kendi vergi dilimi, SGK tavanı, AGİ veya asgari ücret vergi istisnasıyla brüt-net hesabı yapın.</p></div><div class="calculator-discovery__grid">${TOOLS.map(card).join('')}</div></section>`;
+  return `<section id="historical-payroll-calculators" class="calculator-discovery ${extraClass}" ${MARKER}><div class="calculator-discovery__head"><p class="calculator-discovery__eyebrow">Geçmiş yıllar</p><h2>2020–2025 tarihsel maaş hesaplama</h2><p>Bugünkü oranları geçmişe uygulamadan; her yılın kendi vergi dilimi, SGK tavanı, AGİ veya asgari ücret vergi istisnasıyla brüt-net hesabı yapın.</p></div><div class="calculator-discovery__grid">${TOOLS.map(card).join('')}</div></section>`;
 }
 
 function appendHistoricalItemList(html) {
