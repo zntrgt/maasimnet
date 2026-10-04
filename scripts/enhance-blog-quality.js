@@ -11,7 +11,10 @@ const qualityContent = Object.freeze({ ...blogQualityContent, ...negotiationBlog
 
 function relatedLinks(slug) {
   const preferred = relatedPool.filter((route) => !route.includes(`/${slug}/`)).slice(0, 3);
-  return preferred.map((route, i) => `<a href="${route}">${['İlgili maaş ve vergi rehberi','İlgili çalışan yan hakları rehberi','Hesaplama ve karar rehberi'][i]}</a>`).join(' · ');
+  const historicalLink = ['netten-brute-maas-neden-aylik-degisir', 'maas-hesaplama-siteleri-neden-farkli'].includes(slug)
+    ? '<a href="/hesaplama-araclari/#historical-payroll-calculators">2020–2025 tarihsel maaş hesaplamaları</a>'
+    : '';
+  return [historicalLink, ...preferred.map((route, i) => `<a href="${route}">${['İlgili maaş ve vergi rehberi','İlgili çalışan yan hakları rehberi','Hesaplama ve karar rehberi'][i]}</a>`)].filter(Boolean).join(' · ');
 }
 
 function hasDepthContent(cfg) {
