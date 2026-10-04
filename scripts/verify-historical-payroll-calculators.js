@@ -51,6 +51,11 @@ for (const year of years) {
   requireText(html, 'ÇSGB', `${year} ministry source`);
   requireText(html, 'GİB', `${year} tax authority source`);
   requireText(html, 'Bu sayfa tarihsel bir bordro aracıdır', `${year} historical/current separation`);
+  requireText(html, `data-year-context="${year}"`, `${year} year-specific answer block`);
+  requireText(html, `href="/hesaplama-araclari/"`, `${year} related tools link`);
+  requireText(html, `href="/blog/netten-brute-maas-neden-aylik-degisir/"`, `${year} relevant explainer link`);
+  if (year <= 2021) requireText(html, `${year} AGİ hesaplamaya dahil mi?`, `${year} AGİ FAQ`);
+  else requireText(html, `${year} asgari ücret gelir ve damga vergisi istisnası uygulanıyor mu?`, `${year} exemption FAQ`);
   requireText(html, 'Standart 4/a ücret bordrosu', `${year} scope disclosure`);
   if (/noindex/i.test(html)) throw new Error(`${year} sayfasında noindex bulundu.`);
 
