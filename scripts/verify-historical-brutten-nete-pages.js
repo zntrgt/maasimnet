@@ -70,6 +70,9 @@ for (const year of years) {
   requireText(html, `<h1>Brütten Nete ${year} Maaş Hesaplama</h1>`, `${year} H1`);
   requireText(html, `rel="canonical" href="${canonical}"`, `${year} canonical`);
   requireText(html, `data-query-owner="brutten-nete-${year}"`, `${year} query owner`);
+  requireText(html, `data-year-context="${year}"`, `${year} year-specific answer block`);
+  requireText(html, `href="/hesaplama-araclari/"`, `${year} related tools link`);
+  requireText(html, `href="/blog/netten-brute-maas-neden-aylik-degisir/"`, `${year} relevant explainer link`);
   requireText(html, `href="${genericRoute(year)}"`, `${year} generic calculator cross-link`);
   requireText(html, '"@type":"WebApplication"', `${year} WebApplication schema`);
   requireText(html, '"@type":"FAQPage"', `${year} FAQ schema`);
