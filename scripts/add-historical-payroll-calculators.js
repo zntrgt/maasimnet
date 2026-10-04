@@ -102,7 +102,7 @@ function historicalYearContext(year) {
 }
 
 function historicalRelatedLinks(year) {
-  return `<section class="historical-section historical-related-links" data-related-tools="${year}"><h2>İlgili maaş hesaplama ve rehberler</h2><p><a href="/">2026 güncel brütten nete ve netten brüte maaş hesaplama</a></p><p><a href="/hesaplama-araclari/">Tüm maaş ve çalışan hakları hesaplama araçları</a></p><p><a href="/hesaplama-metodolojisi/">Maaş hesaplama metodolojisi</a> · <a href="/veriler/2026/">2026 vergi ve SGK parametreleri</a></p><p><a href="/blog/netten-brute-maas-neden-aylik-degisir/">Netten brüte hesaplamada aylık brüt neden değişir?</a></p></section>`;
+  return `<section class="historical-section historical-related-links" data-related-tools="${year}"><h2>İlgili maaş hesaplama ve rehberler</h2><p><a href="/">2026 güncel brütten nete ve netten brüte maaş hesaplama</a></p><p><a href="/hesaplama-araclari/#historical-payroll-calculators">2020–2025 tarihsel maaş hesaplamaları</a></p><p><a href="/hesaplama-metodolojisi/">Maaş hesaplama metodolojisi</a> · <a href="/veriler/2026/">2026 vergi ve SGK parametreleri</a></p><p><a href="/blog/netten-brute-maas-neden-aylik-degisir/">Netten brüte hesaplamada aylık brüt neden değişir?</a></p></section>`;
 }
 
 function page(year) {
