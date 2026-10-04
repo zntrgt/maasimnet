@@ -23,7 +23,7 @@ function heading(year) { return `${year} Maaş Hesaplama: Brütten Nete & Netten
 
 function faq(year, data) {
   const items = [
-    [`${year} brütten nete maaş nasıl hesaplanır?`, `Aylık brüt ücretten çalışan SGK ve işsizlik sigortası primi düşülür; kalan vergi matrahına ${year} ücret gelirleri tarifesi kümülatif olarak uygulanır. Ardından ilgili yılın AGİ veya asgari ücret vergi istisnası ve damga vergisi kuralları dikkate alınır.`],
+    [`${year} brütten nete maaş nasıl hesaplanır?`, `Aylık brüt ücretten çalışan SGK ve işsizlik sigortası primi düşülür. Kalan vergi matrahına ${year} ücret gelirleri tarifesi kümülatif uygulanır; ${data.agiEnabled ? 'AGİ aile durumu seçimine göre hesaplanır' : 'asgari ücret gelir ve damga vergisi istisnası uygulanır'} ve damga vergisi hesaba katılır.`],
     [`${year} netten brüte maaş hesaplanabilir mi?`, `Evet. Araç hedef net ücreti, yılın her ayındaki kümülatif vergi matrahını koruyarak kuruş hassasiyetinde brüt ücrete çözer.`],
     [`${year} SGK tavanı hesaplamada dikkate alınıyor mu?`, `Evet. Her ay için ${year} döneminde geçerli prime esas kazanç üst sınırı uygulanır; 2022 ve 2023 gibi yıl ortasında asgari ücret değişen yıllarda dönem parametreleri ayrı kullanılır.`],
     ['Bu hesaplama bugünkü mevzuatı mı kullanıyor?', `Hayır. Bu sayfa tarihsel bir bordro aracıdır ve ${year} yılında geçerli olan ücret vergisi, SGK ve asgari ücret parametrelerini kullanır. Güncel 2026 hesabı için ana Maaş Hesaplama sayfasını kullanın.`],
@@ -89,6 +89,22 @@ function benchmarkCards(year) {
   return `<div class="historical-benchmarks"><article class="historical-benchmark"><span>${year} resmî asgari ücret</span><strong data-official-minimum>${amount(january.minimumGrossKurus)} brüt · ${amount(january.referenceMinimumNetKurus)} net</strong></article><article class="historical-benchmark" data-official-minimum-july${july.minimumGrossKurus === january.minimumGrossKurus ? ' hidden' : ''}><span>Temmuz–Aralık</span><strong>${amount(july.minimumGrossKurus)} brüt · ${amount(july.referenceMinimumNetKurus)} net</strong></article><article class="historical-benchmark"><span>SGK aylık tavan${july.sgkCeilingKurus !== january.sgkCeilingKurus ? ' (Ocak / Temmuz)' : ''}</span><strong>${amount(january.sgkCeilingKurus)}${july.sgkCeilingKurus !== january.sgkCeilingKurus ? ` / ${amount(july.sgkCeilingKurus)}` : ''}</strong></article></div>`;
 }
 
+function historicalYearContext(year) {
+  const stories = {
+    2020: '2020 hesaplamasında AGİ yürürlükteydi. Bu nedenle aile durumu, kümülatif gelir vergisi dilimlerine ek olarak net maaşı etkileyebilir.',
+    2021: '2021 hesaplamasında AGİ yürürlükteydi. Aile durumu seçimi ve yıl içinde biriken gelir vergisi matrahı birlikte aylık neti belirler.',
+    2022: '2022’de AGİ uygulaması sona erdi ve asgari ücret istisnası başladı. Temmuzdaki asgari ücret artışı nedeniyle yılın ilk ve ikinci yarısı farklı parametrelerle hesaplanır.',
+    2023: '2023’te Temmuz ayında asgari ücret ve SGK tavanı değişti. Hesaplama bu nedenle Ocak–Haziran ve Temmuz–Aralık dönemlerini ayrı ele alır.',
+    2024: '2024 boyunca brüt asgari ücret aynı kaldı; gelir ve damga vergisi istisnası uygulandı. Yine de kümülatif gelir vergisi matrahı yükseldikçe aynı brüt maaşın aylık neti değişebilir.',
+    2025: '2025 boyunca brüt asgari ücret aynı kaldı; gelir ve damga vergisi istisnası uygulandı. Yıl içindeki net değişimin temel nedeni kümülatif gelir vergisi matrahıdır.'
+  };
+  return `<section class="historical-section historical-year-context" data-year-context="${year}"><h2>${year} bordrosunda yılın belirleyici farkı</h2><p>${stories[year]}</p></section>`;
+}
+
+function historicalRelatedLinks(year) {
+  return `<section class="historical-section historical-related-links" data-related-tools="${year}"><h2>İlgili maaş hesaplama ve rehberler</h2><p><a href="/">2026 güncel brütten nete ve netten brüte maaş hesaplama</a></p><p><a href="/hesaplama-araclari/">Tüm maaş ve çalışan hakları hesaplama araçları</a></p><p><a href="/hesaplama-metodolojisi/">Maaş hesaplama metodolojisi</a> · <a href="/veriler/2026/">2026 vergi ve SGK parametreleri</a></p><p><a href="/blog/netten-brute-maas-neden-aylik-degisir/">Netten brüte hesaplamada aylık brüt neden değişir?</a></p></section>`;
+}
+
 function page(year) {
   const data = getHistoricalPayrollData(year);
   const desc = description(year, data);
@@ -105,7 +121,7 @@ function page(year) {
 <section class="historical-section"><h2>12 aylık bordro detayı</h2><div class="historical-table-wrap"><table class="historical-table"><thead><tr><th>Ay</th><th>Brüt</th><th>SGK + işsizlik</th><th>Gelir vergisi</th><th>Damga vergisi</th><th>Vergi dilimi</th><th>Net</th></tr></thead><tbody data-historical-table><tr><td colspan="7">Hesaplama yaptığınızda aylık sonuçlar burada görünür.</td></tr></tbody></table></div></section>
 <section class="historical-section"><h2>${year} hesaplama mantığı</h2><p>Çalışan SGK primi %14 ve işsizlik sigortası çalışan payı %1 olarak prime esas kazanç üzerinden hesaplanır; prime esas kazanç ilgili dönemin SGK tavanını aşamaz. Gelir vergisi matrahı brüt ücretten bu çalışan primleri düşüldükten sonra bulunur ve yıl içinde kümülatif ilerler. ${taxMechanism}</p><p>Damga vergisi oranı binde 7,59'dur. Netten brüte modunda her ay hedef net için gerekli brüt tutar çözülürken önceki ayların kümülatif vergi matrahı korunur; bu nedenle aynı hedef net için yılın ilerleyen aylarında gerekli brüt değişebilir.</p></section>
 <section class="historical-section"><h2>${year} ücret gelirleri vergi tarifesi</h2><div class="historical-table-wrap"><table class="historical-table"><thead><tr><th>Kümülatif ücret matrahı</th><th>Oran</th></tr></thead><tbody>${taxTable(data)}</tbody></table></div></section>
-<section class="historical-section"><h2>Diğer yıllara geç</h2>${yearLinks(year)}</section>
+<section class="historical-section"><h2>Diğer yıllara geç</h2>${yearLinks(year)}</section>${historicalYearContext(year)}${historicalRelatedLinks(year)}
 <section class="historical-section"><h2>Resmî kaynaklar ve güncellik</h2><p>Bu tarihsel parametre seti ${HISTORICAL_PAYROLL_CHECKED_AT} tarihinde yeniden kontrol edildi. Sayfa bugünkü 2026 parametrelerini geçmiş yıllara uygulamaz; her yıl kendi tarihsel veri setini kullanır.</p><ul class="historical-sources">${sourceList(data)}</ul></section>
 <section class="historical-section"><h2>Sık sorulan sorular</h2>${faqs.map(([q,a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</section>
 </div></main><script type="module" src="/assets/historical-payroll-calculator.js"></script></body></html>`;
