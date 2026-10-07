@@ -51,21 +51,13 @@ export async function normalizeSitemap(distDir) {
   const sitemapPath = join(distDir, 'sitemap.xml');
   let xml = await readFile(sitemapPath, 'utf8');
 
-  const hiddenRoutes = new Set([
-    ...hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`),
-    ...[2020, 2021, 2022, 2023, 2024, 2025].map((year) => `${SITE_ORIGIN}/brutten-nete-${year}/`)
-  ]);
-  let removedLegacy = 0;
+  const hiddenRoutes = new Set(hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`));
   xml = xml.replace(/<url>[\s\S]*?<\/url>/gi, (block) => {
     const loc = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
-    if (loc && hiddenRoutes.has(loc)) { removedLegacy++; return ''; }
-    return block;
+    return loc && hiddenRoutes.has(loc) ? '' : block;
   });
-  console.log('Eski URL filtre sayısı:', removedLegacy);
   xml = addMissingUrls(xml);
   xml = normalizeUrlDates(xml);
-  const legacyReferenceAt = xml.indexOf(`${SITE_ORIGIN}/brutten-nete-2020/`);
-  if (legacyReferenceAt !== -1) console.log('Eski URL bağlamı:', xml.slice(Math.max(0, legacyReferenceAt - 100), legacyReferenceAt + 100));
 
   // Google ignores changefreq and priority. Keep only canonical URLs and
   // centrally managed, truthful modification dates.

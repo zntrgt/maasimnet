@@ -25,7 +25,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/blog/100000-tl-brut-maas-neti-2026/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
-  '/kademeli-emeklilik/': Object.freeze({ publishedAt: '2026-09-18', modifiedAt: '2026-10-07', reviewedAt: '2026-10-07' }),
+  '/kademeli-emeklilik/': Object.freeze({ publishedAt: '2026-09-18', modifiedAt: '2026-10-07' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),
   '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
@@ -52,12 +52,6 @@ const PAGE_OVERRIDES = Object.freeze({
   '/2022-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
   '/2021-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
   '/2020-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
-  '/brutten-nete-2025/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
-  '/brutten-nete-2024/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
-  '/brutten-nete-2023/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
-  '/brutten-nete-2022/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
-  '/brutten-nete-2021/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
-  '/brutten-nete-2020/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
   '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
@@ -88,12 +82,6 @@ export const INDEXABLE_STATIC_PATHS = Object.freeze([
   '/2022-maas-hesaplama/',
   '/2021-maas-hesaplama/',
   '/2020-maas-hesaplama/',
-  '/brutten-nete-2025/',
-  '/brutten-nete-2024/',
-  '/brutten-nete-2023/',
-  '/brutten-nete-2022/',
-  '/brutten-nete-2021/',
-  '/brutten-nete-2020/'
 ]);
 
 export function normalizeSitePath(pathname = '/') {
@@ -119,7 +107,7 @@ export function getPageMetadata(pathname = '/') {
   const isWorkerRightsCalculator = ['/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/resmi-tatil-mesai-ucreti-hesaplama/', '/hafta-tatili-ucreti-hesaplama/'].includes(path);
   const isPayrollUtilityCalculator = ['/asgari-ucret-hesaplama/', '/part-time-maas-hesaplama/', '/eksik-gun-maas-hesaplama/', '/sgk-prim-hesaplama/'].includes(path);
   const isSalaryRaiseCalculator = path === '/maas-zam-hesaplama/';
-  const isHistoricalPayrollCalculator = /^\/202[0-5]-maas-hesaplama\/$/.test(path) || /^\/brutten-nete-202[0-5]\/$/.test(path);
+  const isHistoricalPayrollCalculator = /^\/202[0-5]-maas-hesaplama\/$/.test(path);
   const isCalculatorHub = path === '/hesaplama-araclari/';
 
   const familyModifiedAt = isHistoricalPayrollCalculator
