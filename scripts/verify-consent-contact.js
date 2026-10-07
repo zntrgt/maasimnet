@@ -40,6 +40,9 @@ for (const file of files) {
   assert(html.includes('Cookiebot?.consent?.marketing'), `AdSense pazarlama izni kontrolü eksik: ${file}`);
   assert(html.includes("'maasim-ga4-script'"), `Dinamik GA4 yükleyicisi eksik: ${file}`);
   assert(html.includes("'maasim-adsense-script'"), `Dinamik AdSense yükleyicisi eksik: ${file}`);
+  const headEnd = html.indexOf('</head>');
+  const adsenseMeta = html.indexOf('<meta name="google-adsense-account" content="ca-pub-8614552230353945">');
+  assert(adsenseMeta >= 0 && adsenseMeta < headEnd, `AdSense hesap doğrulama etiketi head içinde değil: ${file}`);
   assert(html.includes('CookiebotOnConsentReady'), `İzin hazır olayı eksik: ${file}`);
   assert(html.includes('CookiebotOnDecline'), `İzin geri çekme kontrolü eksik: ${file}`);
   assert(html.includes('window.location.reload()'), `İzin geri çekilince etiket temizleme yenilemesi eksik: ${file}`);

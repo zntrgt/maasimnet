@@ -55,6 +55,8 @@ test('GA4 and AdSense are blocked until Cookiebot consent and injected idempoten
       assert.match(html, /document\.documentElement\.dataset\.ads = 'on'/);
       assert.match(html, /Cookiebot\?\.consent\?\.marketing !== true/);
       assert.match(html, /data-adsbygoogle-status/);
+      assert.equal(count(html, `<meta name="google-adsense-account" content="${ADSENSE_CLIENT}">`), 1);
+      assert.ok(html.indexOf('google-adsense-account') < html.indexOf('</head>'));
     }
 
     assert.match(home, /data-maasim-calculator-analytics/);
