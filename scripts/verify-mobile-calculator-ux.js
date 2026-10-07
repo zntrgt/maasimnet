@@ -3,7 +3,14 @@ import { join } from 'node:path';
 
 const dist = join(process.cwd(), 'dist');
 const html = await readFile(join(dist, 'index.html'), 'utf8');
-const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
+// Critical CSS moves into the home document after the mobile UX pass.
+const css = [
+  await readFile(join(process.cwd(), 'src', 'mobile-calculator-ux.css'), 'utf8'),
+  await readFile(join(dist, 'assets', 'styles.css'), 'utf8')
+].join('\n');
+if (!html.includes('data-home-critical-css="v1"') || !html.includes('.enterprise-mobile-sticky')) {
+  throw new Error('Mobile UX kritik CSS çıktısı eksik.');
+}
 const js = await readFile(join(dist, 'assets', 'mobile-calculator-ux.js'), 'utf8');
 const humanizedJs = await readFile(join(dist, 'assets', 'humanized-ux.js'), 'utf8');
 

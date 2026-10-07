@@ -6,6 +6,9 @@ const ADSENSE_CLIENT = 'ca-pub-8614552230353945';
 const CONSENT_MODE_MARKER = 'data-maasim-consent-mode';
 const GOOGLE_TAG_MARKER = 'data-maasim-google-tag';
 const CALCULATOR_ANALYTICS_MARKER = 'data-maasim-calculator-analytics';
+// AdSense site doğrulaması için. Çerez kurmaz, script yüklemez; tarayıcı izni gerektirmez.
+// AdSense script'i izin gelmeden yüklenmediğinden, doğrulama tarayıcısı hesabı bu etiketten tanır.
+const ADSENSE_ACCOUNT_META = `<meta name="google-adsense-account" content="${ADSENSE_CLIENT}">`;
 
 const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER}>
 (() => {
@@ -51,6 +54,18 @@ const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER
       'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(adsenseClient),
       { crossorigin: 'anonymous' }
     );
+    document.documentElement.dataset.ads = 'on';
+    const initializeSlots = () => {
+      document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status]):not([data-maasim-ad-requested])').forEach((slot) => {
+        slot.dataset.maasimAdRequested = 'true';
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      });
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeSlots, { once: true });
+    } else {
+      initializeSlots();
+    }
   };
 
   const applyConsent = () => {
@@ -121,6 +136,12 @@ function injectGoogleTags(html) {
   return cleaned.replace(consentModeBlock, (block) => `${block}${googleTagLoader}`);
 }
 
+function injectAdsenseAccountMeta(html) {
+  const cleaned = html.replace(/<meta\s+name=["']google-adsense-account["'][^>]*>\s*/gi, '');
+  if (!/<\/head>/i.test(cleaned)) throw new Error('head kapanışı bulunamadı; AdSense hesap etiketi eklenemedi.');
+  return cleaned.replace(/<\/head>/i, `${ADSENSE_ACCOUNT_META}</head>`);
+}
+
 function injectCalculatorAnalytics(html) {
   if (!html.includes('id="input-salary"') || html.includes(CALCULATOR_ANALYTICS_MARKER)) return html;
   return html.replace(/<\/body>/i, `${calculatorAnalyticsLoader}</body>`);
@@ -131,6 +152,7 @@ export async function applyGoogleTags(dist) {
   for (const path of files) {
     let html = await readFile(path, 'utf8');
     html = injectGoogleTags(html);
+    html = injectAdsenseAccountMeta(html);
     html = injectCalculatorAnalytics(html);
     await writeFile(path, html);
   }

@@ -40,6 +40,9 @@ for (const file of files) {
   assert(html.includes('Cookiebot?.consent?.marketing'), `AdSense pazarlama izni kontrolü eksik: ${file}`);
   assert(html.includes("'maasim-ga4-script'"), `Dinamik GA4 yükleyicisi eksik: ${file}`);
   assert(html.includes("'maasim-adsense-script'"), `Dinamik AdSense yükleyicisi eksik: ${file}`);
+  const headEnd = html.indexOf('</head>');
+  const adsenseMeta = html.indexOf('<meta name="google-adsense-account" content="ca-pub-8614552230353945">');
+  assert(adsenseMeta >= 0 && adsenseMeta < headEnd, `AdSense hesap doğrulama etiketi head içinde değil: ${file}`);
   assert(html.includes('CookiebotOnConsentReady'), `İzin hazır olayı eksik: ${file}`);
   assert(html.includes('CookiebotOnDecline'), `İzin geri çekme kontrolü eksik: ${file}`);
   assert(html.includes('window.location.reload()'), `İzin geri çekilince etiket temizleme yenilemesi eksik: ${file}`);
@@ -59,7 +62,8 @@ assert(!home.includes('type="module" src="/assets/calculator-analytics.js"'), 'H
 assert(home.includes('Cookiebot?.consent?.statistics === true'), 'Hesaplayıcı analitik yükleyicisinde izin kontrolü eksik.');
 
 const styles = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
-assert(styles.includes('Erişilebilirlik kontrast düzeltmeleri'), 'Kontrast düzeltmeleri eksik.');
+assert(styles.length > 0, 'Ortak stil dosyası eksik.');
+assert(home.includes('data-contrast-guard="v1"') && home.includes('.text-white{color:#fff!important}'), 'Kontrast düzeltmeleri eksik.');
 
 const contact = await readFile(join(dist, 'iletisim', 'index.html'), 'utf8');
 assert(contact.includes('id="contact-form"'), 'İletişim formu eksik.');

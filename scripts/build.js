@@ -41,6 +41,7 @@ import { applyCalculatorHubFreshness } from './apply-calculator-hub-freshness.js
 import { applyCalculatorNavLink } from './apply-calculator-nav-link.js';
 import { applyConsentManagement } from './apply-consent-management.js';
 import { applyGoogleTags } from './apply-google-tags.js';
+import { applyAdSlots } from './apply-ad-slots.js';
 import { removeInternalCopy } from './remove-internal-copy.js';
 import { normalizeSitemap } from './normalize-sitemap.js';
 import { applyContentDates } from './apply-content-dates.js';
@@ -143,6 +144,7 @@ await applyContrastGuard(distDir);
 await applyAuditCopy(distDir);
 await applyContentDates(distDir);
 const metaDescriptionResult = await applyMetaDescriptionQuality(distDir);
+await applyAdSlots(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 const assetRevision = await applyAssetRevision(distDir);
 const proprietaryDataBlogs = originalDataResult.enhanced + secondaryOriginalDataResult.enhanced;

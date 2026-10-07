@@ -39,6 +39,9 @@ jobs:
       - name: Verify distribution
         run: npm run verify:dist
 
+      - name: Verify controlled AdSense slots
+        run: npm run verify:ad-slots
+
       - name: Verify centralized content dates
         run: npm run verify:content-dates
 
