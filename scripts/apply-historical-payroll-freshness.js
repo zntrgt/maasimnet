@@ -14,7 +14,7 @@ function versionHistoricalCss(html, label) {
 export async function applyHistoricalPayrollFreshness(dist) {
   let updated = 0;
   for (const year of HISTORICAL_YEARS) {
-    for (const route of [`${year}-maas-hesaplama`, `brutten-nete-${year}`]) {
+    for (const route of [`${year}-maas-hesaplama`]) {
       const file = join(dist, route, 'index.html');
       let html = await readFile(file, 'utf8');
       let next = html.replace('Resmî kaynaklar ve güncellik', 'Resmî Kaynaklar ve Güncellik');
@@ -26,5 +26,5 @@ export async function applyHistoricalPayrollFreshness(dist) {
       await writeFile(file, next, 'utf8');
     }
   }
-  console.log(`Tarihsel sayfa güncellik + CSS sürümleme doğrulandı: ${HISTORICAL_YEARS.length * 2}; güncellendi: ${updated}`);
+  console.log(`Tarihsel sayfa güncellik + CSS sürümleme doğrulandı: ${HISTORICAL_YEARS.length}; güncellendi: ${updated}`);
 }
