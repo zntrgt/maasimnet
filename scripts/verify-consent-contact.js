@@ -59,7 +59,8 @@ assert(!home.includes('type="module" src="/assets/calculator-analytics.js"'), 'H
 assert(home.includes('Cookiebot?.consent?.statistics === true'), 'Hesaplayıcı analitik yükleyicisinde izin kontrolü eksik.');
 
 const styles = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
-assert(styles.includes('Erişilebilirlik kontrast düzeltmeleri'), 'Kontrast düzeltmeleri eksik.');
+assert(styles.length > 0, 'Ortak stil dosyası eksik.');
+assert(home.includes('data-contrast-guard="v1"') && home.includes('.text-white{color:#fff!important}'), 'Kontrast düzeltmeleri eksik.');
 
 const contact = await readFile(join(dist, 'iletisim', 'index.html'), 'utf8');
 assert(contact.includes('id="contact-form"'), 'İletişim formu eksik.');

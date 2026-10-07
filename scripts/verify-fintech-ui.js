@@ -4,7 +4,16 @@ import { join } from 'node:path';
 const root = process.cwd();
 const dist = join(root, 'dist');
 const html = await readFile(join(dist, 'index.html'), 'utf8');
-const css = await readFile(join(dist, 'assets', 'styles.css'), 'utf8');
+// The home critical-CSS pass moves rules out of styles.css and minifies the inline copy.
+// Validate the authored rules as well as the emitted page that consumes them.
+const css = [
+  await readFile(join(root, 'src', 'fintech-ui.css'), 'utf8'),
+  await readFile(join(root, 'src', 'tax-chart-tooltips.css'), 'utf8'),
+  await readFile(join(dist, 'assets', 'styles.css'), 'utf8')
+].join('\n');
+if (!html.includes('data-home-critical-css="v1"') || !html.includes('.enterprise-tax-tooltip')) {
+  throw new Error('Enterprise fintech UI kritik CSS çıktısı eksik.');
+}
 const fintechJs = await readFile(join(dist, 'assets', 'fintech-ui.js'), 'utf8');
 const taxTooltipJs = await readFile(join(dist, 'assets', 'tax-chart-tooltips.js'), 'utf8');
 const humanizedJs = await readFile(join(dist, 'assets', 'humanized-ux.js'), 'utf8');

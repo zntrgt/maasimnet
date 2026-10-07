@@ -51,6 +51,18 @@ const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER
       'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(adsenseClient),
       { crossorigin: 'anonymous' }
     );
+    document.documentElement.dataset.ads = 'on';
+    const initializeSlots = () => {
+      document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status]):not([data-maasim-ad-requested])').forEach((slot) => {
+        slot.dataset.maasimAdRequested = 'true';
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      });
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeSlots, { once: true });
+    } else {
+      initializeSlots();
+    }
   };
 
   const applyConsent = () => {
