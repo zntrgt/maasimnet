@@ -55,10 +55,13 @@ export async function normalizeSitemap(distDir) {
     ...hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`),
     ...[2020, 2021, 2022, 2023, 2024, 2025].map((year) => `${SITE_ORIGIN}/brutten-nete-${year}/`)
   ]);
+  let removedLegacy = 0;
   xml = xml.replace(/<url>[\s\S]*?<\/url>/gi, (block) => {
     const loc = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
-    return loc && hiddenRoutes.has(loc) ? '' : block;
+    if (loc && hiddenRoutes.has(loc)) { removedLegacy++; return ''; }
+    return block;
   });
+  console.log('Eski URL filtre sayısı:', removedLegacy);
   xml = addMissingUrls(xml);
   xml = normalizeUrlDates(xml);
   const legacyReferenceAt = xml.indexOf(`${SITE_ORIGIN}/brutten-nete-2020/`);
