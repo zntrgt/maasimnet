@@ -61,6 +61,8 @@ export async function normalizeSitemap(distDir) {
   });
   xml = addMissingUrls(xml);
   xml = normalizeUrlDates(xml);
+  const legacyReferenceAt = xml.indexOf(`${SITE_ORIGIN}/brutten-nete-2020/`);
+  if (legacyReferenceAt !== -1) console.log('Eski URL bağlamı:', xml.slice(Math.max(0, legacyReferenceAt - 100), legacyReferenceAt + 100));
 
   // Google ignores changefreq and priority. Keep only canonical URLs and
   // centrally managed, truthful modification dates.
