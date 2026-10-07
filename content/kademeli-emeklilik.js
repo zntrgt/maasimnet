@@ -1,12 +1,23 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-09-18',
-  reviewedAt: '2026-09-18',
+  modifiedAt: '2026-10-07',
+  reviewedAt: '2026-10-07',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
-  latestOfficialUpdate: '4 Eylül 2026 tarihli yeni yazılı soru önergesinin TBMM kayıtlarında cevaplanma süresi devam ediyor.',
+  latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; 4 Eylül tarihli 7/48458 sayılı soru önergesine yanıt kaydı görünmüyor.',
   officialTableExists: false,
+  emadderProposal: Object.freeze([
+    Object.freeze({ start: '9 Eylül 1999–2000', women: 43, men: 45, days: 6400 }),
+    Object.freeze({ start: '2001', women: 44, men: 46, days: 6475 }),
+    Object.freeze({ start: '2002', women: 45, men: 47, days: 6550 }),
+    Object.freeze({ start: '2003', women: 46, men: 48, days: 6625 }),
+    Object.freeze({ start: '2004', women: 47, men: 49, days: 6700 }),
+    Object.freeze({ start: '2005', women: 48, men: 50, days: 6775 }),
+    Object.freeze({ start: '2006', women: 49, men: 51, days: 6850 }),
+    Object.freeze({ start: '2007', women: 50, men: 52, days: 6925 }),
+    Object.freeze({ start: '2008', women: 51, men: 53, days: 7000 })
+  ]),
   sources: Object.freeze({
     sgk4a: 'https://www.sgk.gov.tr/Content/Post/785eac3b-d260-47b5-8103-ae591b2ac320/4a-Hizmet-Akdi-ile-Calisanlar-2024-01-11-02-39-38',
     officialGazetteEyt: 'https://www.resmigazete.gov.tr/eskiler/2023/03/20230303-8.htm',
@@ -16,9 +27,40 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     question45214: 'https://tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/55739033-1d8d-4756-9ee0-019e8d8562e2',
     question48458: 'https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/d0adc0ec-626b-4e78-b951-01a07ab9e70e',
     emadderMinistry: 'https://emadder.org.tr/detay.php?id=137',
-    emadderHayatiYazici: 'https://emadder.org.tr/detay.php?id=101'
+    emadderHayatiYazici: 'https://emadder.org.tr/detay.php?id=101',
+    emadderDocuments: 'https://www.emadder.org.tr/dokuman.php',
+    emadderPresentation: 'https://www.emadder.org.tr/uploads/dokuman_1786272170_6a7859aad87b6.pdf',
+    emadderOctoberEvent: 'https://www.emadder.org.tr/detay.php?id=139',
+    desticiJointBill: 'https://www.superhaber.com/beklenen-sonunda-oluyor-bbp-lideri-mustafa-destici-guzel-haberi-verdi-kademeli-emeklilik-585599',
+    desticiInterview: 'https://www.facebook.com/Emaddernegi/posts/-%C3%BClke-tv-ekranlarindan-milyonlarin-sesi-duyuldu%C3%BClke-tv-ekranlar%C4%B1nda-m-mustafa-y%C4%B1/122316792212067832/',
+    desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-09-23',
+      label: 'EMADDER / Ankara buluşması duyurusu',
+      text: 'Dernek, 18 Ekim için Ankara Ulus Meydanı’nda bir buluşma çağrısı yaptı. Bu duyuru bir kanun veya resmî karar değildir.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.emadder.org.tr/detay.php?id=139',
+      sourceLabel: 'EMADDER duyurusu'
+    }),
+    Object.freeze({
+      date: '2026-09-23',
+      label: 'Siyasi açıklama / ortak teklif niyeti',
+      text: 'BBP Genel Başkanı Mustafa Destici, Meclis açıldıktan sonra partilerle ortak bir kademeli emeklilik teklifi için görüşeceğini söyledi. Bu açıklama, ortak teklifin TBMM’ye sunulduğu anlamına gelmiyor.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.superhaber.com/beklenen-sonunda-oluyor-bbp-lideri-mustafa-destici-guzel-haberi-verdi-kademeli-emeklilik-585599',
+      sourceLabel: 'Destici röportajı'
+    }),
+    Object.freeze({
+      date: '2026-09-22',
+      label: 'Siyasi temas / Destici’nin açıklaması',
+      text: 'BBP Genel Başkanı Mustafa Destici, 14 Eylül’de Cumhurbaşkanı Recep Tayyip Erdoğan ile yaptığı görüşmede kademeli emeklilik talebini ilettiğini Ülke TV’de açıkladı. Bu açıklama, bir düzenleme kararı veya TBMM’de yasama ilerlemesi anlamına gelmiyor.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.facebook.com/Emaddernegi/posts/-%C3%BClke-tv-ekranlarindan-milyonlarin-sesi-duyuldu%C3%BClke-tv-ekranlar%C4%B1nda-m-mustafa-y%C4%B1/122316792212067832/',
+      sourceLabel: 'Röportaj kesiti (EMADDER paylaşımı)',
+      reportUrl: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
+    }),
     Object.freeze({
       date: '2026-09-18',
       label: 'Güncel kontrol',
@@ -34,7 +76,7 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     Object.freeze({
       date: '2026-09-04',
       label: 'TBMM / Yeni soru önergesi',
-      text: 'Kademeli emeklilik düzenlemesi talebine ilişkin 7/48458 esas numaralı yeni yazılı soru önergesi verildi. 18 Eylül itibarıyla cevaplanma süresi devam ediyor.',
+      text: 'Kademeli emeklilik düzenlemesi talebine ilişkin 7/48458 esas numaralı yazılı soru önergesi verildi. 7 Ekim kaynak kontrolünde TBMM kaydında yanıt görünmüyor.',
       kind: 'official'
     }),
     Object.freeze({
