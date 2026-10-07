@@ -56,6 +56,13 @@ for (const filename of await walk(dist)) {
   }
 
   const slots = [...html.matchAll(/<aside\b[^>]*\bclass\s*=\s*(["'])([^"']*\bad-slot\b[^"']*)\1[^>]*>/gi)];
+  const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] || '';
+  const noindex = [...head.matchAll(/<meta\b[^>]*>/gi)].some(([tag]) => {
+    const name = tag.match(/\bname\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const content = tag.match(/\bcontent\s*=\s*(["'])(.*?)\1/i)?.[2];
+    return name?.toLowerCase() === 'robots' && /noindex/i.test(content || '');
+  });
+  if (noindex && slots.length) throw new Error(`Noindex sayfada reklam: ${path}`);
   const excluded = AD_EXCLUDED_PATHS.has(path) || /(?:^|\/)404(?:\.html|\/)/.test(path);
   if (excluded && slots.length) throw new Error(`Hariç tutulan sayfada reklam: ${path}`);
   const blog = /^\/blog\/[^/]+\/$/.test(path);

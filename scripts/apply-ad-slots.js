@@ -9,6 +9,15 @@ export const AD_EXCLUDED_PATHS = Object.freeze(new Set([
   '/blog/', '/hesaplama-araclari/', '/senaryolar/', '/404/', '/404.html'
 ]));
 
+export function hasNoindexRobotsMeta(html) {
+  const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] || '';
+  return [...head.matchAll(/<meta\b[^>]*>/gi)].some(([tag]) => {
+    const name = tag.match(/\bname\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const content = tag.match(/\bcontent\s*=\s*(["'])(.*?)\1/i)?.[2];
+    return name?.toLowerCase() === 'robots' && /noindex/i.test(content || '');
+  });
+}
+
 const SLOT_STYLE = `<style data-maasim-ad-slots>
 .ad-slot{display:none;box-sizing:border-box;width:100%;max-width:100%;min-width:0;overflow:hidden;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:16px 0;background:transparent}
 html[data-ads="on"] .ad-slot{display:block;margin:32px 0}
@@ -145,7 +154,7 @@ function articlePlacements(html, slots) {
       while (cursor < sidebar.end) {
         const box = findElement(html, 'div', 'side', cursor, sidebar.end);
         if (!box) break;
-        if (/<h2\b[^>]*>\s*İlgili araçlar\s*<\/h2>/i.test(box.html)) {
+        if (/<h2\b[^>]*>\s*(?:İlgili araçlar|Kendi maaşını hesapla)\s*<\/h2>/i.test(box.html)) {
           placements.push({ at: box.end, name: 'sidebar' });
           break;
         }
@@ -177,7 +186,7 @@ export async function applyAdSlots(dist, slots = AD_SLOTS) {
   for (const filename of files) {
     const path = routeFor(dist, filename);
     let html = stripSlots(await readFile(filename, 'utf8'));
-    if (AD_EXCLUDED_PATHS.has(path) || /(?:^|\/)404(?:\.html|\/)/.test(path)) {
+    if (AD_EXCLUDED_PATHS.has(path) || /(?:^|\/)404(?:\.html|\/)/.test(path) || hasNoindexRobotsMeta(html)) {
       await writeFile(filename, html);
       continue;
     }
