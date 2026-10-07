@@ -51,7 +51,10 @@ export async function normalizeSitemap(distDir) {
   const sitemapPath = join(distDir, 'sitemap.xml');
   let xml = await readFile(sitemapPath, 'utf8');
 
-  const hiddenRoutes = new Set(hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`));
+  const hiddenRoutes = new Set([
+    ...hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`),
+    ...[2020, 2021, 2022, 2023, 2024, 2025].map((year) => `${SITE_ORIGIN}/brutten-nete-${year}/`)
+  ]);
   xml = xml.replace(/<url>[\s\S]*?<\/url>/gi, (block) => {
     const loc = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     return loc && hiddenRoutes.has(loc) ? '' : block;
