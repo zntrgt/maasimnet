@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { indexableBlogPosts, blogRoute } from '../content/blog-manifest.js';
+import { discoverableBlogPosts, hiddenBlogPosts, blogRoute } from '../content/blog-manifest.js';
 import { getPageMetadata, INDEXABLE_STATIC_PATHS } from '../content/site-metadata.js';
 
 const EXPECTED_HOST = 'maasim.net';
@@ -18,7 +18,7 @@ function addMissingUrls(xml) {
     [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1].trim())
   );
   const requiredPaths = [
-    ...indexableBlogPosts.map(blogRoute),
+    ...discoverableBlogPosts.map(blogRoute),
     ...INDEXABLE_STATIC_PATHS
   ];
   const missingEntries = requiredPaths
@@ -51,6 +51,11 @@ export async function normalizeSitemap(distDir) {
   const sitemapPath = join(distDir, 'sitemap.xml');
   let xml = await readFile(sitemapPath, 'utf8');
 
+  const hiddenRoutes = new Set(hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`));
+  xml = xml.replace(/<url>[\s\S]*?<\/url>/gi, (block) => {
+    const loc = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
+    return loc && hiddenRoutes.has(loc) ? '' : block;
+  });
   xml = addMissingUrls(xml);
   xml = normalizeUrlDates(xml);
 
@@ -81,7 +86,7 @@ export async function normalizeSitemap(distDir) {
     seen.add(loc);
   }
 
-  for (const path of [...indexableBlogPosts.map(blogRoute), ...INDEXABLE_STATIC_PATHS]) {
+  for (const path of [...discoverableBlogPosts.map(blogRoute), ...INDEXABLE_STATIC_PATHS]) {
     const expectedUrl = `${SITE_ORIGIN}${path}`;
     if (!seen.has(expectedUrl)) {
       throw new Error(`Sitemap zorunlu URL'yi içermiyor: ${expectedUrl}`);

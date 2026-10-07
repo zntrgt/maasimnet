@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { indexableBlogPosts, blogOutputPath, blogRoute, validateBlogManifest } from '../content/blog-manifest.js';
+import { discoverableBlogPosts, blogOutputPath, blogRoute, validateBlogManifest } from '../content/blog-manifest.js';
 
 const decode = (value = '') => value
   .replace(/&amp;/g, '&')
@@ -46,7 +46,7 @@ export async function ensureBlogIndex(dist) {
   let index = await readFile(indexPath, 'utf8');
   const missingCards = [];
 
-  for (const post of indexableBlogPosts) {
+  for (const post of discoverableBlogPosts) {
     const route = blogRoute(post);
     if (hasCardForRoute(index, route)) continue;
     const articleHtml = await readFile(join(dist, blogOutputPath(post)), 'utf8');
