@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   blogClusters,
-  indexableBlogPosts,
+  discoverableBlogPosts,
   blogOutputPath,
   blogRoute,
   postsInCluster,
@@ -13,7 +13,7 @@ validateBlogManifest();
 const dist = join(process.cwd(), 'dist');
 const failures = [];
 
-for (const post of indexableBlogPosts) {
+for (const post of discoverableBlogPosts) {
   const html = await readFile(join(dist, blogOutputPath(post)), 'utf8');
   const clusterPosts = postsInCluster(post.cluster).filter((item) => item.slug !== post.slug);
   const expectedMinimum = Math.min(2, clusterPosts.length);
@@ -44,4 +44,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Topic cluster yapısı doğrulandı: ${Object.keys(blogClusters).length} küme, ${indexableBlogPosts.length} blog.`);
+console.log(`Topic cluster yapısı doğrulandı: ${Object.keys(blogClusters).length} küme, ${discoverableBlogPosts.length} keşfedilebilir blog.`);

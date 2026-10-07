@@ -44,9 +44,11 @@ export const blogPosts = [
 ];
 
 export const indexableBlogPosts = blogPosts.filter((post) => post.indexable);
+export const discoverableBlogPosts = indexableBlogPosts.filter((post) => post.discoverable !== false);
+export const hiddenBlogPosts = indexableBlogPosts.filter((post) => post.discoverable === false);
 export const blogRoute = (post) => `/blog/${post.slug}/`;
 export const blogOutputPath = (post) => `blog/${post.slug}/index.html`;
-export const postsInCluster = (cluster) => indexableBlogPosts.filter((post) => post.cluster === cluster);
+export const postsInCluster = (cluster) => discoverableBlogPosts.filter((post) => post.cluster === cluster);
 
 export function validateBlogManifest() {
   const validSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -69,7 +71,7 @@ export function validateBlogManifest() {
   }
 
   for (const cluster of Object.keys(blogClusters)) {
-    if (!blogPosts.some((post) => post.cluster === cluster && post.indexable)) {
+    if (!discoverableBlogPosts.some((post) => post.cluster === cluster)) {
       throw new Error(`Boş blog konu kümesi: ${cluster}`);
     }
   }

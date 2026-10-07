@@ -1,11 +1,14 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {employeeGuides,GUIDE_CATEGORIES} from '../content/employee-guides.js';
+
 export async function applyGuideFilters(dist){
  const path=join(dist,'blog','index.html');let html=await readFile(path,'utf8');
  html=html.replace('Maaş ve zam gündemini kaynaklarıyla okuyun','Maaşını ve iş teklifini daha iyi değerlendir').replace('Beyaz yakalar için ücret görüşmeleri, enflasyon, brüt-net hesaplama ve vergi gündemi.','Maaş, prim, zam, bütçe ve iş teklifi kararları için kaynaklı rehberler ve açık varsayımlı hesaplama örnekleri.');
- for(const post of employeeGuides){const route=`/blog/${post.slug}/`;html=html.replaceAll(`href="${route}"`,`data-guide-kind="${post.kind}" href="${route}"`);}
- const controls=`<section class="guide-filters" aria-label="Blog yazısı bul"><label>Yazı ara<input id="guide-search" type="search" placeholder="Örn. prim, kira, teklif" autocomplete="off"></label><label>Konu<select id="guide-category"><option value="all">Tüm konular</option>${Object.entries(GUIDE_CATEGORIES).map(([key,label])=>`<option value="${key}">${label}</option>`).join('')}<option value="existing">Temel rehberler</option></select></label><p id="guide-count" role="status" aria-live="polite"></p></section>`;
+ const hiddenRoutes=new Set(employeeGuides.filter(post=>post.discoverable===false).map(post=>`/blog/${post.slug}/`));
+ html=html.replace(/<a\b(?=[^>]*class="[^"]*\bcard\b[^"]*")(?=[^>]*href="([^"]+)")[^>]*>[\s\S]*?<\/a>/gi,(card,route)=>hiddenRoutes.has(route)?'':card);
+ for(const post of employeeGuides){if(post.discoverable===false)continue;const route=`/blog/${post.slug}/`;html=html.replaceAll(`href="${route}"`,`data-guide-kind="${post.kind}" href="${route}"`);}
+ const controls=`<section class="guide-filters" aria-label="Blog yazısı bul"><label>Yazı ara<input id="guide-search" type="search" placeholder="Örn. prim, kira, teklif" autocomplete="off"></label><label>Konu<select id="guide-category"><option value="all">Tüm konular</option>${Object.entries(GUIDE_CATEGORIES).filter(([key])=>employeeGuides.some(post=>post.discoverable!==false&&post.kind===key)).map(([key,label])=>`<option value="${key}">${label}</option>`).join('')}<option value="existing">Temel rehberler</option></select></label><p id="guide-count" role="status" aria-live="polite"></p></section>`;
  html=html.replace(/(<(?:section|div) class="cards"[^>]*>)/,controls+'$1');
  html=html.replace('</body>','<script src="/assets/guide-filters.js" defer></script></body>');
  await writeFile(path,html);

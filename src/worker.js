@@ -193,10 +193,18 @@ async function handleContact(request, env) {
   }
 }
 
+export function permanentRedirectFor(pathname) {
+  const match = pathname.match(/^\/brutten-nete-(202[0-5])\/?$/);
+  return match ? `/${match[1]}-maas-hesaplama/` : null;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/contact') return handleContact(request, env);
+
+    const redirectPath = permanentRedirectFor(url.pathname);
+    if (redirectPath) return Response.redirect(`https://maasim.net${redirectPath}`, 301);
 
     const assetResponse = await env.ASSETS.fetch(request);
     return withSecurityHeaders(withStaticCacheHeaders(assetResponse, url.pathname));

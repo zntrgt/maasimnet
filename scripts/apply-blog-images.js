@@ -116,6 +116,11 @@ export const blogImageAssignments = Object.freeze([
   }
 ]);
 
+export const indexCardImageAssignments = Object.freeze(blogImageAssignments.filter((post) => {
+  const guide = employeeGuides.find((item) => item.slug === post.slug);
+  return !guide || guide.discoverable !== false;
+}));
+
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -215,7 +220,7 @@ export async function applyBlogImages(dist) {
 
   const indexPath = join(dist, 'blog', 'index.html');
   let indexHtml = await readFile(indexPath, 'utf8');
-  for (const post of blogImageAssignments) indexHtml = updateIndexCard(indexHtml, post);
+  for (const post of indexCardImageAssignments) indexHtml = updateIndexCard(indexHtml, post);
   await writeFile(indexPath, indexHtml);
 
   console.log(`blog içeriklerinde ve kartlarında ${blogImageAssignments.length} konuya özel editoryal görsel uygulandı`);

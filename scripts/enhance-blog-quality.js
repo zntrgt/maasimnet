@@ -1,12 +1,12 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { indexableBlogPosts, blogOutputPath, blogRoute } from '../content/blog-manifest.js';
+import { indexableBlogPosts, discoverableBlogPosts, blogOutputPath, blogRoute } from '../content/blog-manifest.js';
 import { blogQualityContent } from '../content/blog-quality-content.js';
 import { negotiationBlogQualityContent } from '../content/blog-quality-content-negotiation.js';
 
 const esc = (v='') => String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const dist = join(process.cwd(), 'dist');
-const relatedPool = indexableBlogPosts.map(blogRoute);
+const relatedPool = discoverableBlogPosts.map(blogRoute);
 const qualityContent = Object.freeze({ ...blogQualityContent, ...negotiationBlogQualityContent });
 
 function relatedLinks(slug) {

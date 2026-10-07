@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { indexableBlogPosts, blogOutputPath } from '../content/blog-manifest.js';
-import { blogImageAssignments } from './apply-blog-images.js';
+import { discoverableBlogPosts, blogOutputPath } from '../content/blog-manifest.js';
+import { indexCardImageAssignments } from './apply-blog-images.js';
 
 const dist = join(process.cwd(), 'dist');
 const failures = [];
@@ -14,7 +14,7 @@ const originalDataSlugs = new Set([
   'prim-ikramiye-net-maasi-neden-dusurur',
   'is-teklifinin-yillik-degeri'
 ]);
-const editorialImages = new Map(blogImageAssignments.map(({ slug, asset }) => [slug, asset]));
+const editorialImages = new Map(indexCardImageAssignments.map(({ slug, asset }) => [slug, asset]));
 
 const strip = (html) => html
   .replace(/<script[\s\S]*?<\/script>/gi, ' ')
@@ -64,11 +64,11 @@ function hasType(node, type) {
   return Array.isArray(value) ? value.includes(type) : value === type;
 }
 
-if (editorialImages.size !== indexableBlogPosts.length) {
-  failures.push(`Editoryal görsel kapsamı eksik: ${editorialImages.size}/${indexableBlogPosts.length}`);
+if (editorialImages.size !== discoverableBlogPosts.length) {
+  failures.push(`Editoryal görsel kapsamı eksik: ${editorialImages.size}/${discoverableBlogPosts.length}`);
 }
 
-for (const post of indexableBlogPosts) {
+for (const post of discoverableBlogPosts) {
   const html = await readFile(join(dist, blogOutputPath(post)), 'utf8');
   const article = articleHtml(html);
   const title = titleText(html);
@@ -168,4 +168,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${indexableBlogPosts.length} içerik; ${originalDataSlugs.size} birincil yüksek niyetli blogda özgün hesaplama, ${editorialImages.size}/${indexableBlogPosts.length} blogda konuya özel görsel doğrulandı.`);
+console.log(`Blog SEO/GEO kalite kapısı v2 başarılı: ${discoverableBlogPosts.length} içerik; ${originalDataSlugs.size} birincil yüksek niyetli blogda özgün hesaplama, ${editorialImages.size}/${discoverableBlogPosts.length} blogda konuya özel görsel doğrulandı.`);

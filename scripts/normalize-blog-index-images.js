@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { blogImageAssignments } from './apply-blog-images.js';
+import { indexCardImageAssignments } from './apply-blog-images.js';
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -25,7 +25,7 @@ export async function normalizeBlogIndexImages(dist) {
   const indexPath = join(dist, 'blog', 'index.html');
   let html = await readFile(indexPath, 'utf8');
 
-  for (const post of blogImageAssignments) {
+  for (const post of indexCardImageAssignments) {
     const route = `/blog/${post.slug}/`;
     const match = findCard(html, route);
     if (!match || match.index == null) throw new Error(`Gerçek blog kartı bulunamadı: ${post.slug}`);
@@ -46,7 +46,7 @@ export async function normalizeBlogIndexImages(dist) {
     html = html.slice(0, match.index) + normalizedCard + html.slice(match.index + card.length);
   }
 
-  for (const post of blogImageAssignments) {
+  for (const post of indexCardImageAssignments) {
     const route = `/blog/${post.slug}/`;
     const match = findCard(html, route);
     if (!match?.[0].includes(`/assets/${post.asset}`)) {
@@ -55,5 +55,5 @@ export async function normalizeBlogIndexImages(dist) {
   }
 
   await writeFile(indexPath, html);
-  console.log(`Blog index kart görselleri gerçek .card öğeleri üzerinde normalize edildi: ${blogImageAssignments.length}/${blogImageAssignments.length}`);
+  console.log(`Blog index kart görselleri gerçek .card öğeleri üzerinde normalize edildi: ${indexCardImageAssignments.length}/${indexCardImageAssignments.length}`);
 }
