@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { discoverableBlogPosts, hiddenBlogPosts, blogRoute } from '../content/blog-manifest.js';
+import { CONSOLIDATED_REDIRECTS } from '../src/consolidated-redirects.js';
 import { getPageMetadata, INDEXABLE_STATIC_PATHS } from '../content/site-metadata.js';
 
 const EXPECTED_HOST = 'maasim.net';
@@ -51,7 +52,10 @@ export async function normalizeSitemap(distDir) {
   const sitemapPath = join(distDir, 'sitemap.xml');
   let xml = await readFile(sitemapPath, 'utf8');
 
-  const hiddenRoutes = new Set(hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`));
+  const hiddenRoutes = new Set([
+    ...hiddenBlogPosts.map((post) => `${SITE_ORIGIN}${blogRoute(post)}`),
+    ...Object.keys(CONSOLIDATED_REDIRECTS).map((path) => `${SITE_ORIGIN}${path}`)
+  ]);
   xml = xml.replace(/<url>[\s\S]*?<\/url>/gi, (block) => {
     const loc = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     return loc && hiddenRoutes.has(loc) ? '' : block;

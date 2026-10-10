@@ -41,7 +41,7 @@ for (const token of [
   'İlk yayın: 30 Temmuz 2026',
   'Durum: Resmî 2027 parametreleri bekleniyor',
   'href="/hesaplama-metodolojisi/"',
-  'href="/veriler/2026-gelir-vergisi-dilimleri/"',
+  'href="/blog/2026-maas-vergi-dilimleri/"',
   'type="module" src="/assets/estimate-2027.js"',
   '"@type":"WebApplication"',
   '"@type":"FAQPage"',
