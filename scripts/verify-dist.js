@@ -97,7 +97,7 @@ const article = await readFile(join(dist,'blog','2027-maas-zammi-beklentileri','
 const financialHealthArticle = await readFile(join(dist,'blog','is-yerinde-finansal-saglik','index.html'),'utf8');
 const blogIndex = await readFile(join(dist,'blog','index.html'),'utf8');
 const sitemap = await readFile(join(dist,'sitemap.xml'),'utf8');
-for (const token of ['2027 Maaş Zammı Ne Kadar Olabilir?','%32,11','%17,76','%15','%21,47','%29,21','%23,95','%17,83','TÜİK','Piyasa Katılımcıları Anketi']) if (!article.includes(token)) throw new Error(`Blog yazısında beklenen içerik yok: ${token}`);
+for (const token of ['2027 Asgari Ücret ve Maaş Zammı Ne Kadar Olabilir?','%29,73','%24,32','%15','%21','%22,69','%29,61','%23,70','%18,32','33.030,00 TL','28.075,50 TL','Asgari Ücret Tespit Komisyonu','yeniden değerleme oranı','TÜİK','Piyasa Katılımcıları Anketi']) if (!article.includes(token)) throw new Error(`Blog yazısında beklenen içerik yok: ${token}`);
 for (const schema of ['"@type":"Article"','"@type":"FAQPage"','"@type":"BreadcrumbList"']) if (!article.includes(schema)) throw new Error(`Blog şeması eksik: ${schema}`);
 for (const token of ['İş Yerinde Finansal Sağlık','%32,11','%20','79.272 TL','396.360 TL','9.909 TL','gizli borç danışmanlığı']) if (!financialHealthArticle.includes(token)) throw new Error(`Finansal sağlık yazısında beklenen içerik yok: ${token}`);
 for (const schema of ['"@type":"Article"','"@type":"FAQPage"','"@type":"BreadcrumbList"']) if (!financialHealthArticle.includes(schema)) throw new Error(`Finansal sağlık şeması eksik: ${schema}`);

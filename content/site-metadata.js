@@ -16,7 +16,7 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
-  '/blog/': Object.freeze({ modifiedAt: '2026-10-07' }),
+  '/blog/': Object.freeze({ modifiedAt: '2026-10-10' }),
   // Veri sayfası birleştirmesi: resmî değer bloğu ve Dataset şeması bu sayfalara taşındı.
   '/blog/2026-maas-vergi-dilimleri/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/blog/2026-sgk-tavani/': Object.freeze({ modifiedAt: '2026-10-10' }),
@@ -30,6 +30,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kademeli-emeklilik/': Object.freeze({ publishedAt: '2026-09-18', modifiedAt: '2026-10-07' }),
+  '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-10-10', reviewedAt: '2026-10-10' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),
   '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
@@ -123,13 +124,13 @@ export function getPageMetadata(pathname = '/') {
     path,
     publishedAt: override.publishedAt || blogPost?.publishedAt || blogPublishedAt || SITE_METADATA.defaultPublishedAt,
     modifiedAt: override.modifiedAt || blogPost?.modifiedAt || familyModifiedAt,
-    reviewedAt: blogPost?.generator === 'employee' ? blogPost.modifiedAt : isHistoricalPayrollCalculator
+    reviewedAt: override.reviewedAt || (blogPost?.generator === 'employee' ? blogPost.modifiedAt : isHistoricalPayrollCalculator
       ? SITE_METADATA.historicalPayrollReviewedAt
       : isSalaryRaiseCalculator
         ? SITE_METADATA.releaseModifiedAt
         : isPayrollDataPage || path === '/100000-brut-maas-hesaplama/' || path === '/prim-ikramiye-maas-hesaplama/' || isTerminationCalculator || isWorkerRightsCalculator || isPayrollUtilityCalculator || isCalculatorHub || path === '/' || path === '/hesaplama-metodolojisi/' || path === '/test-raporu/'
           ? SITE_METADATA.payrollDataReviewedAt
-          : isBlogPage ? SITE_METADATA.blogReviewedAt : undefined
+          : isBlogPage ? SITE_METADATA.blogReviewedAt : undefined)
   };
 
   for (const [name, value] of Object.entries(metadata)) {
