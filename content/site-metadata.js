@@ -1,5 +1,7 @@
 import { DATA_2026 } from '../src/data-2026.js';
 import { HISTORICAL_PAYROLL_CHECKED_AT } from '../src/historical-payroll-data.js';
+import { PROMO_CHECKED_AT } from '../src/promo-data.js';
+import { ZAM_DATA_CHECKED_AT } from '../src/zam-2027-engine.js';
 import { blogPosts } from './blog-manifest.js';
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -53,7 +55,9 @@ const PAGE_OVERRIDES = Object.freeze({
   '/borclanma-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
   '/emekli-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
   '/memur-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
-  '/en-dusuk-emekli-maasi/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
+  // Sayfa tarihi zam verisiyle birlikte değişir (TÜİK günü görevi KNOWN_MONTHS'u güncellediğinde).
+  '/en-dusuk-emekli-maasi/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: ZAM_DATA_CHECKED_AT }),
+  '/emekli-promosyonu/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: PROMO_CHECKED_AT }),
   '/fazla-mesai-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/yillik-izin-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/asgari-ucret-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-10-10' }),
@@ -88,6 +92,7 @@ export const INDEXABLE_STATIC_PATHS = Object.freeze([
   '/emekli-zammi-hesaplama/',
   '/memur-zammi-hesaplama/',
   '/en-dusuk-emekli-maasi/',
+  '/emekli-promosyonu/',
   '/kira-artis-orani-hesaplama/',
   '/borclanma-hesaplama/',
   '/fazla-mesai-hesaplama/',
