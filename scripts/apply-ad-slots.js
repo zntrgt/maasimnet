@@ -90,7 +90,7 @@ function toolPlacement(html, path) {
     return scenarios && guide && scenarios.end <= guide.start ? guide.start : null;
   }
 
-  for (const family of ['termination', 'overtime', 'unemployment', 'retirement', 'zam', 'rw', 'rent', 'annual-leave', 'minimum-wage', 'salary-raise', 'worktime']) {
+  for (const family of ['termination', 'overtime', 'unemployment', 'retirement', 'zam', 'rw', 'rent', 'borrow', 'annual-leave', 'minimum-wage', 'salary-raise', 'worktime']) {
     const grid = findElement(html, 'section', `${family}-grid`);
     const guide = findElement(html, 'section', `${family}-section`);
     if (!grid) continue;
