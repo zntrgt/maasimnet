@@ -19,6 +19,7 @@ import { apply2027QueryOwnership } from './apply-2027-query-ownership.js';
 import { addOfferComparison } from './add-offer-comparison.js';
 import { addTerminationCalculators } from './add-termination-calculators.js';
 import { addUnemploymentCalculator } from './add-unemployment-calculator.js';
+import { addRetirementCalculator } from './add-retirement-calculator.js';
 import { addOvertimeCalculator } from './add-overtime-calculator.js';
 import { addAnnualLeaveCalculator } from './add-annual-leave-calculator.js';
 import { addMinimumWageCalculator } from './add-minimum-wage-calculator.js';
@@ -81,6 +82,7 @@ for (const file of [
   'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
   'estimate-2027.js','offer-comparison.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
   'unemployment-engine.js','unemployment-calculator.js','unemployment-calculator.css',
+  'retirement-engine.js','retirement-calculator.js','retirement-calculator.css',
   'overtime-engine.js','overtime-calculator.js','overtime-calculator.css',
   'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
   'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
@@ -108,6 +110,7 @@ await add2027EstimateCalculator(distDir);
 await addOfferComparison(distDir);
 const terminationResult = await addTerminationCalculators(distDir);
 const unemploymentResult = await addUnemploymentCalculator(distDir);
+await addRetirementCalculator(distDir);
 const overtimeResult = await addOvertimeCalculator(distDir);
 const annualLeaveResult = await addAnnualLeaveCalculator(distDir);
 const minimumWageResult = await addMinimumWageCalculator(distDir);

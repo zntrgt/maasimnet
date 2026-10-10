@@ -208,6 +208,7 @@ const page = `<!doctype html>
         <div class="ke-stat"><span>Son kaynak kontrolü</span><strong>${esc(fmt(DATA.reviewedAt))}</strong></div>
       </div>
       <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)}</div>
+      <p class="ke-calc-cta"><a href="/emeklilik-hesaplama/"><strong>Ne zaman emekli olursunuz?</strong> Bugünkü kurala ve EMADDER önerisine göre tarihinizi hesaplayın →</a></p>
     </header>
 
     <div class="ke-layout">

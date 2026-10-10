@@ -1,0 +1,98 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { EMADDER_PROPOSAL, RULES_CHECKED_AT, RULE_TABLES } from '../src/retirement-engine.js';
+import { KADEMELI_EMEKLILIK } from '../content/kademeli-emeklilik.js';
+
+const SITE = 'https://maasim.net';
+export const RETIREMENT_ROUTE = '/emeklilik-hesaplama/';
+const TITLE = 'Emeklilik Hesaplama 2026: Ne Zaman Emekli Olurum? | Maaşım.net';
+const H1 = 'Emeklilik Hesaplama: Ne Zaman Emekli Olurum?';
+const DESCRIPTION = 'SSK (4/a) emeklilik tarihinizi doğum tarihi, ilk sigorta girişi ve prim gününüzle hesaplayın. EYT, 1999-2008 ve 2008 sonrası kuralları, kademeli emeklilik senaryosu.';
+const SOURCES = Object.freeze({
+  sgk4a: KADEMELI_EMEKLILIK.sources.sgk4a,
+  sgkTool: 'https://uyg.sgk.gov.tr/nezaman/',
+  law5510: 'https://www.mevzuat.gov.tr/mevzuatmetin/1.5.5510.pdf',
+  eyt: KADEMELI_EMEKLILIK.sources.officialGazetteEyt
+});
+
+const esc = (value = '') => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const fmtDate = (iso) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`));
+const fmtDays = (days) => days.toLocaleString('tr-TR');
+const shortDate = (iso) => iso.split('-').reverse().join('.');
+
+function eytDaysRows() {
+  const rows = [];
+  const widen = (list) => list.map(([upTo, days], index) => ({ from: index === 0 ? null : nextDay(list[index - 1][0]), upTo, days }));
+  const women = widen(RULE_TABLES.EYT_DAYS.K);
+  const men = widen(RULE_TABLES.EYT_DAYS.E);
+  for (let i = 0; i < Math.max(women.length, men.length); i += 1) rows.push([women[i], men[i]]);
+  const cell = (row) => row ? `${row.from ? `${shortDate(row.from)} – ` : '… – '}${shortDate(row.upTo)}` : '—';
+  return rows.map(([w, m]) => `<tr><td>${cell(w)}</td><td>${w ? fmtDays(w.days) : '—'}</td><td>${cell(m)}</td><td>${m ? fmtDays(m.days) : '—'}</td></tr>`).join('');
+}
+function nextDay(iso) { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); }
+
+function yearAgeRows(table) {
+  const women = table.K; const men = table.E;
+  const bounds = [...new Set([...women.map(([y]) => y), ...men.map(([y]) => y)])].sort((a, b) => a - b);
+  const pick = (list, year) => list.find(([upTo]) => year <= upTo)[1];
+  let from = null;
+  return bounds.map((upTo) => {
+    const label = from === null ? `${upTo} ve öncesi` : upTo === 9999 ? `${from} ve sonrası` : from === upTo ? `${upTo}` : `${from}–${upTo}`;
+    const row = `<tr><td>${label}</td><td>${pick(women, upTo)}</td><td>${pick(men, upTo)}</td></tr>`;
+    from = upTo + 1;
+    return row;
+  }).join('');
+}
+
+const partialDaysRows = RULE_TABLES.REFORM_PARTIAL_DAYS.map(([year, days]) => `<tr><td>${year === 9999 ? '2016 ve sonrası' : year}</td><td>${fmtDays(days)}</td></tr>`).join('');
+const emadderRows = EMADDER_PROPOSAL.map((row) => `<tr><td>${row.fromYear === row.toYear ? row.fromYear : `${row.fromYear}–${row.toYear}`}</td><td>${row.women}</td><td>${row.men}</td><td>${fmtDays(row.days)}</td></tr>`).join('');
+
+const FAQ = [
+  ['Ne zaman emekli olacağımı nasıl hesaplarım?', 'Üç bilgiye ihtiyacınız var: ilk sigorta giriş tarihiniz, bugüne kadarki prim gün sayınız ve doğum tarihiniz. İlk giriş tarihi hangi kuralların uygulanacağını belirler; prim günü ve yaş şartından en son dolan, emeklilik tarihinizi belirler. İlk giriş tarihini ve prim gününüzü e-Devlet’teki SGK Tescil ve Hizmet Dökümü’nden alabilirsiniz.'],
+  ['1999-2008 arası girişliler kaç yaşında emekli olur?', '9 Eylül 1999 ile 30 Nisan 2008 arasında ilk kez SSK’lı olanlar kadınlarda 58, erkeklerde 60 yaşında ve 7.000 prim günüyle emekli olur. Alternatif olarak 25 yıl sigortalılık ve en az 4.500 prim günüyle de aynı yaşlarda emeklilik mümkündür.'],
+  ['2008 sonrası girişliler kaç günle emekli olur?', '1 Mayıs 2008 ve sonrasında ilk kez SSK’lı olanlar 7.200 prim günüyle emekli olur. Yaş şartı 7.200 gün 2036’dan önce dolarsa kadınlarda 58, erkeklerde 60’tır; 2036’dan itibaren kademeli olarak 65’e yükselir.'],
+  ['EYT’de yaş şartı var mı?', '8 Eylül 1999 ve öncesinde ilk kez sigortalı olanlar için 3 Mart 2023’te yürürlüğe giren 7438 sayılı Kanunla tam emeklilikte yaş şartı kaldırıldı. Kadınlarda 20, erkeklerde 25 yıl sigortalılık ve giriş tarihine göre 5.000 ile 5.975 arası prim günü yeterlidir.'],
+  ['Kademeli emeklilik çıkarsa ne zaman emekli olurum?', `Kademeli emeklilik ${fmtDate(RULES_CHECKED_AT)} itibarıyla yasalaşmadı. Hesaplayıcı, 1999-2008 girişliler için EMADDER’ın önerdiği yaş ve prim günü tablosuyla ayrı bir senaryo gösterir. Bu senaryo bir kanun değildir; kesinleşmiş hak doğurmaz.`],
+  ['Askerlik veya doğum borçlanması hesaba katılıyor mu?', 'Hayır. Borçlanma prim gününüzü artırır ve bazı durumlarda sigorta başlangıç tarihinizi geriye çekebilir. Borçlanma yaptıysanız güncel hizmet dökümünüzdeki toplam gün ve başlangıç tarihini girin; kesin sonuç için SGK’ya danışın.']
+];
+
+function schema() {
+  const url = `${SITE}${RETIREMENT_ROUTE}`;
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': 'WebPage', '@id': `${url}#page`, url, name: TITLE, description: DESCRIPTION, inLanguage: 'tr-TR', datePublished: RULES_CHECKED_AT, dateModified: RULES_CHECKED_AT },
+      { '@type': 'WebApplication', '@id': `${url}#calculator`, url, name: 'Emeklilik Hesaplama', applicationCategory: 'FinanceApplication', operatingSystem: 'Web', isAccessibleForFree: true, description: DESCRIPTION, offers: { '@type': 'Offer', price: 0, priceCurrency: 'TRY' } },
+      { '@type': 'BreadcrumbList', itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: `${SITE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Hesaplama Araçları', item: `${SITE}/hesaplama-araclari/` },
+        { '@type': 'ListItem', position: 3, name: 'Emeklilik Hesaplama', item: url }
+      ] },
+      { '@type': 'FAQPage', mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
+    ]
+  };
+}
+
+function page() {
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${TITLE}</title><meta name="description" content="${esc(DESCRIPTION)}"><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="${SITE}${RETIREMENT_ROUTE}"><meta property="og:type" content="website"><meta property="og:title" content="${esc(H1)}"><meta property="og:description" content="${esc(DESCRIPTION)}"><meta property="og:url" content="${SITE}${RETIREMENT_ROUTE}"><meta property="og:site_name" content="Maaşım.net"><script type="application/ld+json">${JSON.stringify(schema())}</script><link rel="stylesheet" href="/assets/retirement-calculator.css"></head><body class="retirement-page"><main><div class="retirement-shell">
+<header class="retirement-hero"><span class="retirement-eyebrow">SGK 4/a (SSK) kurallarıyla</span><h1>${H1}</h1><p>Doğum tarihinizi, ilk sigorta giriş tarihinizi ve prim gün sayınızı girin; bugünkü kanuna göre en erken emeklilik tarihinizi ve hangi şartın sizi beklettiğini görün. 1999-2008 girişliyseniz, kademeli emeklilik önerisi yasalaşsaydı ne değişeceğini de aynı ekranda karşılaştırın.</p><div class="retirement-freshness"><span>Son kural kontrolü: ${fmtDate(RULES_CHECKED_AT)}</span><span>Kademeli emeklilik: yasalaşmadı</span></div></header>
+<section class="retirement-answer"><h2>Kısa cevap</h2><p>Emeklilik tarihinizi <strong>ilk sigorta giriş tarihiniz</strong> belirler; ardından prim günü, sigortalılık süresi ve yaş şartlarından en son dolanı beklenir. SSK’lılar (4/a) için bugünkü kurallar:</p><ul><li><strong>8 Eylül 1999 ve öncesi (EYT):</strong> yaş şartı yok; kadın 20, erkek 25 yıl sigortalılık ve 5.000–5.975 prim günü.</li><li><strong>9 Eylül 1999 – 30 Nisan 2008:</strong> kadın 58, erkek 60 yaş ve 7.000 gün; ya da aynı yaşlarda 25 yıl ve 4.500 gün.</li><li><strong>1 Mayıs 2008 ve sonrası:</strong> 7.200 gün; yaş, günün dolduğu yıla göre kadında 58–65, erkekte 60–65.</li></ul></section>
+<section class="retirement-grid" data-retirement-calculator><div class="retirement-panel"><form novalidate><h2>Bilgilerini gir</h2><p>İlk giriş tarihini ve toplam prim gününü e-Devlet’te <strong>SGK Tescil ve Hizmet Dökümü</strong> ekranından alabilirsiniz.</p><div class="retirement-stack"><div class="retirement-field"><label for="gender">Cinsiyet</label><select id="gender" name="gender" required><option value="">Seçin</option><option value="K">Kadın</option><option value="E">Erkek</option></select></div><div class="retirement-field"><label for="birthDate">Doğum tarihi</label><input id="birthDate" name="birthDate" type="date" min="1940-01-01" required></div><div class="retirement-field"><label for="startDate">İlk sigorta giriş tarihi <small>(SSK / 4/a)</small></label><input id="startDate" name="startDate" type="date" min="1960-01-01" required></div><div class="retirement-field"><label for="currentDays">Bugüne kadarki toplam prim günü</label><input id="currentDays" name="currentDays" type="number" inputmode="numeric" min="0" max="20000" step="1" placeholder="Örn. 4200" required></div><div class="retirement-field"><label for="daysPerYear">Bundan sonra yılda kaç gün prim ödenecek? <small>(tam yıl = 360)</small></label><input id="daysPerYear" name="daysPerYear" type="number" inputmode="numeric" min="0" max="360" step="1" value="360"></div></div><p class="retirement-help">Hesap, gelecekte her yıl girdiğiniz gün kadar prim ödeneceğini varsayar. Borçlanma, yurt dışı hizmeti ve Bağ-Kur (4/b) süreleri dahil değildir.</p><button class="retirement-submit" type="submit">Emeklilik tarihimi hesapla</button></form></div>
+<div class="retirement-results" data-calculator-results hidden><h2>Emeklilik sonucu</h2><div class="retirement-error" data-calculator-error hidden></div><div class="retirement-result-grid"><article class="retirement-result retirement-result--primary"><span data-result="headline-label">En erken emeklilik tarihi</span><strong data-result="headline">—</strong></article><article class="retirement-result"><span>Emeklilik yaşınız</span><strong data-result="age">—</strong></article><article class="retirement-result"><span>Kalan süre</span><strong data-result="remaining">—</strong></article><article class="retirement-result retirement-result--status"><span>Sizi bekleten şart</span><strong data-result="binding">—</strong></article></div><div class="retirement-table-scroll"><table><caption class="visually-hidden">Emeklilik seçenekleri</caption><thead><tr><th>Seçenek</th><th>Prim günü</th><th>Gün dolar</th><th>Yaş</th><th>Emeklilik</th></tr></thead><tbody data-result="options"></tbody></table></div><div class="retirement-proposal" data-result="proposal" hidden></div><p class="retirement-disclaimer"><strong>Önemli:</strong> Sonuç tahminidir. Kesin tarih için SGK’nın <a href="${SOURCES.sgkTool}" rel="noopener noreferrer">“Ne Zaman Emekli Olabilirim?”</a> hizmetini ve hizmet dökümünüzü kontrol edin.</p></div></section>
+<section class="retirement-section"><h2>Kademeli emeklilik çıkarsa ne değişir?</h2><p>Kademeli emeklilik ${fmtDate(RULES_CHECKED_AT)} itibarıyla <strong>yasalaşmadı</strong>. TBMM’de 2/2755 ve 2/2959 sayılı teklifler komisyonda bekliyor. Hesaplayıcı, 9 Eylül 1999 – 30 Nisan 2008 girişliler için EMADDER’ın önerdiği tabloyu ayrı bir senaryo olarak gösterir:</p><div class="retirement-table-scroll"><table><thead><tr><th>İlk giriş yılı</th><th>Kadın yaşı</th><th>Erkek yaşı</th><th>Prim günü</th></tr></thead><tbody>${emadderRows}</tbody></table></div><p>Prim gününüz düşükse öneri sizi daha erken emekli etmeyebilir; hesaplayıcı bu durumu ayrıca belirtir. Son gelişmeler: <a href="/kademeli-emeklilik/">Kademeli emeklilik son durum</a>.</p></section>
+<section class="retirement-section"><h2>8 Eylül 1999 ve öncesi girişliler (EYT)</h2><p>3 Mart 2023’te yürürlüğe giren 7438 sayılı Kanunla bu gruptaki 4/a sigortalılar için tam emeklilikte yaş şartı kaldırıldı. Kadınlarda 20, erkeklerde 25 yıl sigortalılık süresi ve aşağıdaki prim günü aranır:</p><div class="retirement-table-scroll"><table><thead><tr><th>Kadın: ilk giriş</th><th>Gün</th><th>Erkek: ilk giriş</th><th>Gün</th></tr></thead><tbody>${eytDaysRows()}</tbody></table></div><p>15 yıl sigortalılık ve 3.600 gün ile emeklilik (yaştan emeklilik) seçeneğinde yaş şartı sürer. Yaş, bu iki şartın tamamlandığı tarihe göre kadında 50–58, erkekte 55–60 arasındadır; 24 Mayıs 2011 sonrası kadında 58, 24 Mayıs 2014 sonrası erkekte 60’tır.</p></section>
+<section class="retirement-section"><h2>9 Eylül 1999 – 30 Nisan 2008 girişliler</h2><div class="retirement-table-scroll"><table><thead><tr><th>Seçenek</th><th>Kadın</th><th>Erkek</th><th>Şart</th></tr></thead><tbody><tr><td>Tam emeklilik</td><td>58 yaş</td><td>60 yaş</td><td>7.000 prim günü</td></tr><tr><td>25 yıl seçeneği</td><td>58 yaş</td><td>60 yaş</td><td>25 yıl sigortalılık ve 4.500 prim günü</td></tr></tbody></table></div><p>Bu grupta yaş şartı sabittir; prim günü erken dolsa bile 58/60 yaş beklenir. Bu nedenle kademeli emeklilik tartışması en çok bu grubu ilgilendirir.</p></section>
+<section class="retirement-section"><h2>1 Mayıs 2008 ve sonrası girişliler</h2><p>Tam emeklilik için 7.200 prim günü gerekir. Yaş şartı, 7.200 günün dolduğu yıla göre belirlenir:</p><div class="retirement-table-scroll"><table><thead><tr><th>7.200 günün dolduğu yıl</th><th>Kadın yaşı</th><th>Erkek yaşı</th></tr></thead><tbody>${yearAgeRows(RULE_TABLES.REFORM_FULL_AGE)}</tbody></table></div><p>Yaştan (kısmi) emeklilikte prim günü ilk giriş yılına göre 4.600 ile 5.400 arasındadır; yaş, bu günün dolduğu yıla göre tam emeklilik yaşının 3 yıl fazlasıdır ve 65’i geçmez.</p><div class="retirement-table-scroll"><table><thead><tr><th>İlk giriş yılı</th><th>Yaştan emeklilik prim günü</th></tr></thead><tbody>${partialDaysRows}</tbody></table></div><div class="retirement-table-scroll"><table><thead><tr><th>Günün dolduğu yıl</th><th>Kadın yaşı</th><th>Erkek yaşı</th></tr></thead><tbody>${yearAgeRows(RULE_TABLES.REFORM_PARTIAL_AGE)}</tbody></table></div></section>
+<section class="retirement-section"><h2>Hesaplama yöntemi ve kapsam</h2><p>Hesaplayıcı, girdiğiniz ilk giriş tarihine göre kural grubunu seçer ve her emeklilik seçeneği için üç tarihi ayrı ayrı bulur: prim gününün dolacağı tarih, sigortalılık süresinin dolacağı tarih ve yaş şartının dolacağı tarih. Bunlardan en geç olanı o seçeneğin emeklilik tarihidir; seçenekler arasındaki en erken tarih sonuç olarak gösterilir. Gelecekteki prim günleri, yılda girdiğiniz gün kadar eşit dağıtılır. Prim günü şartını bugün zaten aşmışsanız, şartın dolduğu geçmiş tarih ilk girişten bugüne eşit dağılım varsayımıyla tahmin edilir.</p><p><strong>18 yaşından önce sigortalı olanlar:</strong> 1 Nisan 1981 ve sonrasında 18 yaşından önce işe başladıysanız, sigortalılık süreniz (20/25 yıl, 15 yıl veya 25 yıl şartı) 18 yaşınızı doldurduğunuz tarihten başlar; o tarihten önceki prim günleri ise sayılır. Hesaplayıcı bunu otomatik uygular.</p><p><strong>Kapsam dışı:</strong> Bağ-Kur (4/b) ve kamu görevlisi (4/c) kuralları, askerlik ve doğum borçlanması, yurt dışı hizmet, yıpranma payı, malullük ve hizmet birleştirmesi. Bu durumlarda sonuç farklı olabilir.</p></section>
+<section class="retirement-section"><h2>İlgili hesaplama araçları</h2><div class="retirement-links"><a class="retirement-link" href="/kademeli-emeklilik/"><strong>Kademeli Emeklilik Son Durum</strong><span>TBMM teklifleri, EMADDER önerisi ve tarihli gelişmeler.</span></a><a class="retirement-link" href="/kidem-tazminati-hesaplama/"><strong>Kıdem Tazminatı</strong><span>Emeklilikte alınacak kıdem tazminatını hesapla.</span></a><a class="retirement-link" href="/emekli-calisan-maas-hesaplama/"><strong>Emekli Çalışan Maaşı</strong><span>Emekli olup çalışmaya devam edince net maaşı gör.</span></a></div></section>
+<section class="retirement-section"><h2>Resmî kaynaklar</h2><div class="retirement-source-list"><a href="${SOURCES.sgk4a}" rel="noopener noreferrer">SGK — 4/a Hizmet Akdi ile Çalışanlar: emeklilik şartları ↗</a><a href="${SOURCES.sgkTool}" rel="noopener noreferrer">SGK — Ne Zaman Emekli Olabilirim? ↗</a><a href="${SOURCES.law5510}" rel="noopener noreferrer">5510 sayılı Sosyal Sigortalar ve Genel Sağlık Sigortası Kanunu ↗</a><a href="${SOURCES.eyt}" rel="noopener noreferrer">Resmî Gazete — 7438 sayılı Kanun (EYT), 3 Mart 2023 ↗</a></div><p class="retirement-disclaimer">Bu sayfa bilgilendirme amaçlıdır; kişisel emeklilik tahsis kararı SGK tarafından verilir.</p></section>
+<section class="retirement-section retirement-faq"><h2>Sık sorulan sorular</h2>${FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</section></div></main><script type="module" src="/assets/retirement-calculator.js"></script></body></html>`;
+}
+
+export async function addRetirementCalculator(dist) {
+  const dir = join(dist, RETIREMENT_ROUTE.replace(/^\/+|\/+$/g, ''));
+  await mkdir(dir, { recursive: true });
+  await writeFile(join(dir, 'index.html'), page(), 'utf8');
+  console.log('Emeklilik hesaplayıcı sayfası üretildi:', RETIREMENT_ROUTE);
+  return Object.freeze({ generated: 1, path: RETIREMENT_ROUTE });
+}
