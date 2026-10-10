@@ -50,6 +50,7 @@ if (typeof document !== 'undefined') {
         if (results) results.hidden = false;
         if (globalThis.Cookiebot?.consent?.statistics === true && typeof globalThis.gtag === 'function') globalThis.gtag('event', 'zam_2027_calculator_complete', { zam_kind: kind });
       } catch (err) {
+        for (const key of ['new', 'rate', 'increase', 'basis']) setText(root, `[data-result="${key}"]`, '—');
         if (results) results.hidden = false;
         if (error) { error.hidden = false; error.textContent = err instanceof Error ? err.message : 'Hesaplama sırasında bir hata oluştu.'; }
       }

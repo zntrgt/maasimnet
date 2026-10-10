@@ -100,6 +100,11 @@ if (typeof document !== 'undefined') {
         sendRetirementCalculatorEvent(result.regime);
         root.querySelector('[data-calculator-results]')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
       } catch (error) {
+        for (const key of ['headline', 'age', 'remaining', 'binding']) setText(root, `[data-result="${key}"]`, '—');
+        const rows = root.querySelector('[data-result="options"]');
+        if (rows) rows.innerHTML = '';
+        const proposal = root.querySelector('[data-result="proposal"]');
+        if (proposal) proposal.hidden = true;
         const results = root.querySelector('[data-calculator-results]');
         if (results) results.hidden = false;
         const node = root.querySelector('[data-calculator-error]');

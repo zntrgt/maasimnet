@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { knownCumulativePct, sixMonthInflationPct, emekliZam, memurZam, impliedMonthlyPct, scenarioPresets, MIN_PENSION_KURUS } from '../src/zam-2027-engine.js';
+import { KNOWN_MONTHS, knownCumulativePct, sixMonthInflationPct, emekliZam, memurZam, impliedMonthlyPct, scenarioPresets, MIN_PENSION_KURUS } from '../src/zam-2027-engine.js';
 
 test('Temmuz–Eylül kesinleşen kümülatif enflasyon %5,56', () => {
   assert.equal(Math.round(knownCumulativePct() * 100) / 100, 5.56);
@@ -32,7 +32,9 @@ test('6 aylık enflasyon %7 altında kalırsa memur farkı sıfır, zam %5', () 
 
 test('yıl sonu tahmininden ima edilen aylık oran tutarlı', () => {
   const m = impliedMonthlyPct(28);
-  const yearEnd = (1.2432 * Math.pow(1 + m / 100, 3) - 1) * 100;
+  const ytd = 1.1776 * (1 + knownCumulativePct() / 100);
+  assert.ok(Math.abs(ytd - 1.2432) < 0.0005, 'Ocak–Haziran + bilinen aylar TÜİK Ocak–Eylül değeriyle uyumlu');
+  const yearEnd = (ytd * Math.pow(1 + m / 100, 3) - 1) * 100;
   assert.ok(Math.abs(yearEnd - 28) < 1e-9);
   assert.equal(scenarioPresets().length, 3);
 });
@@ -40,4 +42,12 @@ test('yıl sonu tahmininden ima edilen aylık oran tutarlı', () => {
 test('hatalı girdiler reddedilir', () => {
   assert.throws(() => emekliZam({ currentKurus: 0, assumedMonthlyPct: 1 }), /tutar/);
   assert.throws(() => emekliZam({ currentKurus: 100, assumedMonthlyPct: 40 }), /varsayımı/);
+});
+
+test('yeni ay eklendiğinde senaryo o ayı iki kez saymaz', () => {
+  const withOctober = [...KNOWN_MONTHS, { month: '2026-10', label: 'Ekim 2026', pct: 1.5 }];
+  const m = impliedMonthlyPct(28, withOctober);
+  const ytd = 1.1776 * withOctober.reduce((acc, x) => acc * (1 + x.pct / 100), 1);
+  const yearEnd = (ytd * Math.pow(1 + m / 100, 2) - 1) * 100;
+  assert.ok(Math.abs(yearEnd - 28) < 1e-9);
 });

@@ -9,7 +9,10 @@ export const KNOWN_MONTHS = Object.freeze([
   Object.freeze({ month: '2026-09', label: 'Eylül 2026', pct: 1.84 })
 ]);
 export const PERIOD_MONTHS = Object.freeze(['Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']);
-// TÜİK: Ocak–Eylül 2026 kümülatif TÜFE %24,32. Yıl sonu tahmin/beklentileri kalan ayların ima ettiği aylık oranı verir.
+// TÜİK: Ocak–Haziran 2026 kümülatif TÜFE %17,76 (Temmuz 2026 emekli zammı). Yılbaşından bugüne değer,
+// buna KNOWN_MONTHS eklenerek hesaplanır; böylece her yeni ay eklendiğinde senaryolar kendiliğinden hizalanır.
+export const JAN_JUN_CUMULATIVE_PCT = 17.76;
+// Sayfa metni için TÜİK'in açıkladığı Ocak–Eylül kümülatif değeri.
 export const JAN_SEP_CUMULATIVE_PCT = 24.32;
 export const YEAR_END_REFERENCES = Object.freeze([
   Object.freeze({ key: 'tcmb', label: 'TCMB 2026 yıl sonu tahmini', yearEndPct: 28 }),
@@ -27,9 +30,11 @@ export function knownCumulativePct() {
   return compound(KNOWN_MONTHS.map((m) => m.pct));
 }
 
-export function impliedMonthlyPct(yearEndPct, remainingMonths = 6 - KNOWN_MONTHS.length) {
+export function impliedMonthlyPct(yearEndPct, knownMonths = KNOWN_MONTHS) {
+  const remainingMonths = 6 - knownMonths.length;
   if (remainingMonths <= 0) return 0;
-  const ratio = (1 + yearEndPct / 100) / (1 + JAN_SEP_CUMULATIVE_PCT / 100);
+  const yearToDate = (1 + JAN_JUN_CUMULATIVE_PCT / 100) * (1 + compound(knownMonths.map((m) => m.pct)) / 100);
+  const ratio = (1 + yearEndPct / 100) / yearToDate;
   return (Math.pow(ratio, 1 / remainingMonths) - 1) * 100;
 }
 
