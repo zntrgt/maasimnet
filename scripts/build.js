@@ -21,6 +21,7 @@ import { addTerminationCalculators } from './add-termination-calculators.js';
 import { addUnemploymentCalculator } from './add-unemployment-calculator.js';
 import { addRetirementCalculator } from './add-retirement-calculator.js';
 import { addRetiredWorkerCalculator } from './add-retired-worker-calculator.js';
+import { addRentCalculator } from './add-rent-calculator.js';
 import { addZam2027Calculators } from './add-zam-2027-calculators.js';
 import { addOvertimeCalculator } from './add-overtime-calculator.js';
 import { addAnnualLeaveCalculator } from './add-annual-leave-calculator.js';
@@ -86,6 +87,7 @@ for (const file of [
   'unemployment-engine.js','unemployment-calculator.js','unemployment-calculator.css',
   'retirement-engine.js','retirement-calculator.js','retirement-calculator.css',
   'retired-worker-engine.js','rw-calculator.js','rw-calculator.css',
+  'rent-engine.js','rent-calculator.js','rent-calculator.css',
   'zam-2027-engine.js','zam-2027-calculator.js','zam-calculator.css',
   'overtime-engine.js','overtime-calculator.js','overtime-calculator.css',
   'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
@@ -116,6 +118,7 @@ const terminationResult = await addTerminationCalculators(distDir);
 const unemploymentResult = await addUnemploymentCalculator(distDir);
 await addRetirementCalculator(distDir);
 await addRetiredWorkerCalculator(distDir);
+await addRentCalculator(distDir);
 await addZam2027Calculators(distDir);
 const overtimeResult = await addOvertimeCalculator(distDir);
 const annualLeaveResult = await addAnnualLeaveCalculator(distDir);
