@@ -34,9 +34,8 @@ const required = [
   ...coreBlogPaths,
   ...benefitsBlogPaths,
   'sss/index.html','sozluk/index.html',
-  'cerez-politikasi/index.html','veriler/2026/index.html','veriler/2026-asgari-ucret/index.html','veriler/2026-gelir-vergisi-dilimleri/index.html',
-  'veriler/2026-sgk-tavani/index.html','veriler/2026-kidem-tazminati-tavani/index.html','veriler/2026-yemek-yardimi-istisnasi/index.html',
-  'sgk/sgk-tavani/index.html','indexability-report.json','llms.txt','robots.txt','sitemap.xml','ads.txt','version.json'
+  'cerez-politikasi/index.html','veriler/2026/index.html',
+  'indexability-report.json','llms.txt','robots.txt','sitemap.xml','ads.txt','version.json'
 ];
 for (const path of required) await access(join(dist, path));
 
@@ -120,14 +119,14 @@ if (sss.includes('"@type":"FAQPage"')) throw new Error('/sss/ sayfasında 25 sor
 const glossary = await readFile(join(dist,'sozluk','index.html'),'utf8');
 if (!glossary.includes('Maaş ve Bordro Terimleri Sözlüğü') || !glossary.includes('<dl class="glossary">')) throw new Error('Sözlük ayrı URL’de doğru üretilmedi.');
 
-for (const path of ['/blog/is-yerinde-finansal-saglik/','/veriler/2026/','/veriler/2026-asgari-ucret/','/veriler/2026-gelir-vergisi-dilimleri/','/veriler/2026-sgk-tavani/','/veriler/2026-kidem-tazminati-tavani/','/veriler/2026-yemek-yardimi-istisnasi/','/sgk/sgk-tavani/','/sss/','/sozluk/']) {
+for (const path of ['/blog/is-yerinde-finansal-saglik/','/veriler/2026/','/asgari-ucret-hesaplama/','/blog/2026-maas-vergi-dilimleri/','/blog/2026-sgk-tavani/','/kidem-tazminati-hesaplama/','/blog/2026-yemek-karti-istisnasi/','/sss/','/sozluk/']) {
   if (!sitemap.includes(`<loc>https://maasim.net${path}</loc>`)) throw new Error(`Yeni URL sitemap içinde yok: ${path}`);
 }
-const sgkPage = await readFile(join(dist,'veriler','2026-sgk-tavani','index.html'),'utf8');
-if (!sgkPage.includes('297.270,00 TL') || !sgkPage.includes('5510 sayılı') || !sgkPage.includes('"@type":"Dataset"')) throw new Error('SGK veri sayfası değer, dayanak veya Dataset schema eksik.');
-const mealPage = await readFile(join(dist,'veriler','2026-yemek-yardimi-istisnasi','index.html'),'utf8');
+const sgkPage = await readFile(join(dist,'blog','2026-sgk-tavani','index.html'),'utf8');
+if (!sgkPage.includes('297.270,00 TL') || !sgkPage.includes('5510 sayılı') || !sgkPage.includes('"@type":"Dataset"')) throw new Error('SGK kanonik sayfasında değer, dayanak veya Dataset schema eksik.');
+const mealPage = await readFile(join(dist,'blog','2026-yemek-karti-istisnasi','index.html'),'utf8');
 if (!mealPage.includes('300,00 TL') || !mealPage.includes('158,00 TL')) throw new Error('Yemek yardımı GV/SGK ayrımı eksik.');
-const severancePage = await readFile(join(dist,'veriler','2026-kidem-tazminati-tavani','index.html'),'utf8');
+const severancePage = await readFile(join(dist,'kidem-tazminati-hesaplama','index.html'),'utf8');
 if (!severancePage.includes('64.948,77 TL') || !severancePage.includes('73.729,87 TL')) throw new Error('Kıdem tazminatı iki dönem değeri eksik.');
 
 const indexability = JSON.parse(await readFile(join(dist,'indexability-report.json'),'utf8'));
