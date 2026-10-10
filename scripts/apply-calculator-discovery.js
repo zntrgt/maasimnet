@@ -20,7 +20,7 @@ const TOOL_CANDIDATES = Object.freeze([
   { path: '/isveren-maliyeti-hesaplama/', title: 'İşveren Maliyeti Hesaplama', description: 'Brüt ücretin işverene aylık ve yıllık toplam maliyetini karşılaştır.', group: 'salary', keywords: ['işveren maliyeti hesaplama'] },
   { path: '/vergi-dilimi-hesaplama/', title: 'Vergi Dilimi Hesaplama 2026', description: 'Kümülatif gelir vergisi matrahının hangi vergi dilimine geçtiğini gör.', group: 'salary', keywords: ['vergi dilimi hesaplama', 'gelir vergisi dilimi'] },
   { path: '/asgari-ucret-isveren-maliyeti/', title: 'Asgari Ücret İşveren Maliyeti 2026', description: '2026 asgari ücretinin teşvik seçeneklerine göre işverene maliyetini incele.', group: 'salary', keywords: ['asgari ücret işveren maliyeti'] },
-  { path: '/emekli-calisan-maas-hesaplama/', title: 'Emekli Çalışan Maaş Hesaplama', description: 'SGDP uygulanan emekli çalışan maaş ve işveren maliyeti senaryosunu incele.', group: 'salary', keywords: ['emekli çalışan maaş hesaplama', 'SGDP hesaplama'] },
+  { path: '/emekli-calisan-maas-hesaplama/', title: 'Emekli Çalışan Maaş Hesaplama', description: 'SGDP ile emekli çalışanın brütten nete ve netten brüte maaşını, normal çalışana göre farkı hesapla.', group: 'salary', keywords: ['emekli çalışan maaş hesaplama', 'emekli brütten nete', 'SGDP hesaplama'] },
   { path: '/2027-maas-hesaplama/', title: '2027 Maaş Tahmin Aracı', description: 'Henüz kesinleşmemiş 2027 parametrelerini kendi varsayımlarınla senaryolaştır.', group: 'salary', keywords: ['2027 maaş hesaplama'] }
 ]);
 

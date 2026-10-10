@@ -48,6 +48,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/ihbar-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/issizlik-maasi-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/emeklilik-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
+  '/emekli-calisan-maas-hesaplama/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-10-10' }),
   '/emekli-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
   '/memur-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
   '/fazla-mesai-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
