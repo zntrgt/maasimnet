@@ -134,7 +134,7 @@ export function calculateRetirement(input) {
   const daysPerYear = Number(input.daysPerYear ?? 360);
   if (!Number.isFinite(currentDays) || currentDays < 0 || currentDays > 20_000) throw new Error('Prim gün sayısı 0 ile 20.000 arasında olmalı.');
   if (!Number.isFinite(daysPerYear) || daysPerYear < 0 || daysPerYear > 360) throw new Error('Yıllık prim günü 0 ile 360 arasında olmalı.');
-  if (start.getTime() <= addYears(birth, 14).getTime()) throw new Error('İlk sigorta giriş tarihi doğum tarihinden en az 14 yıl sonra olmalı.');
+  if (start.getTime() < addYears(birth, 14).getTime()) throw new Error('İlk sigorta giriş tarihi doğum tarihinden en az 14 yıl sonra olmalı.');
   if (start.getTime() > asOf.getTime()) throw new Error('İlk sigorta giriş tarihi bugünden sonra olamaz.');
 
   const regime = regimeFor(iso(start));

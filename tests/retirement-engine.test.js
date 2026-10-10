@@ -115,3 +115,7 @@ test('EYT yolu 3 Mart 2023 öncesine tarih üretmez', () => {
   assert.equal(full.binding, 'law');
   assert.equal(r.alreadyEligible, true);
 });
+
+test('14. yaş gününde başlayan sigortalılık kabul edilir', () => {
+  assert.doesNotThrow(() => run({ gender: 'E', birthDate: '1990-01-01', startDate: '2004-01-01', currentDays: 4000 }));
+});

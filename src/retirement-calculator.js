@@ -42,8 +42,10 @@ export function proposalHtml(result) {
   return `<small>Senaryo · Yasalaşmadı</small><h3>EMADDER önerisi yasalaşsaydı: ${esc(formatDate(p.eligibleDate))}</h3><p>${p.row.fromYear === p.row.toYear ? p.row.fromYear : `${p.row.fromYear}–${p.row.toYear}`} girişliler için önerilen şart: ${p.age} yaş ve ${formatDays(p.requiredDays)} prim günü.</p><p>${comparison}</p><p><a href="/kademeli-emeklilik/">Kademeli emeklilikte son durum →</a></p>`;
 }
 
+// Geçmişte dolan şartlar için tarih gösterilmez: geçmiş tarih tahminidir ve EYT öncesi eski yaş tablosu hesaplanmaz.
+const pastOr = (isoDate, asOf) => (isoDate && isoDate <= asOf ? 'Tamamlanmış' : formatDate(isoDate));
 export function optionsRows(result) {
-  return result.options.map((item) => `<tr><td>${esc(item.label)}${item.serviceYears && !item.label.includes('yıl') ? ` <small>(${item.serviceYears} yıl sigortalılık)</small>` : ''}</td><td>${formatDays(item.requiredDays)}</td><td>${esc(formatDate(item.daysDate))}</td><td>${item.age == null ? 'Yok' : item.age}</td><td><strong>${esc(formatDate(item.eligibleDate))}</strong></td></tr>`).join('');
+  return result.options.map((item) => `<tr><td>${esc(item.label)}${item.serviceYears && !item.label.includes('yıl') ? ` <small>(${item.serviceYears} yıl sigortalılık)</small>` : ''}</td><td>${formatDays(item.requiredDays)}</td><td>${esc(pastOr(item.daysDate, result.asOf))}</td><td>${item.age == null ? 'Yok' : item.age}</td><td><strong>${esc(pastOr(item.eligibleDate, result.asOf))}</strong></td></tr>`).join('');
 }
 
 function render(root, result) {
@@ -55,9 +57,9 @@ function render(root, result) {
     setText(root, '[data-result="headline-label"]', 'En erken emeklilik tarihi');
     setText(root, '[data-result="headline"]', earliest ? formatDate(earliest.eligibleDate) : 'Bu varsayımla hesaplanamıyor');
   }
-  setText(root, '[data-result="age"]', earliest ? `${earliest.ageAtEligible} yaş` : '—');
+  setText(root, '[data-result="age"]', earliest && !result.alreadyEligible ? `${earliest.ageAtEligible} yaş` : '—');
   setText(root, '[data-result="remaining"]', earliest ? remainingText(result.asOf, earliest.eligibleDate) : '—');
-  setText(root, '[data-result="binding"]', earliest ? `${BINDING[earliest.binding]} · ${earliest.label}` : 'Yıllık prim günü 0 olduğu için prim şartı dolmuyor');
+  setText(root, '[data-result="binding"]', !earliest ? 'Yıllık prim günü 0 olduğu için prim şartı dolmuyor' : result.alreadyEligible ? `Yok · ${earliest.label} şartları tamamlanmış görünüyor; tahsis için SGK’ya başvurun` : `${BINDING[earliest.binding]} · ${earliest.label}`);
   const rows = root.querySelector('[data-result="options"]');
   if (rows) rows.innerHTML = optionsRows(result);
   const proposal = root.querySelector('[data-result="proposal"]');
