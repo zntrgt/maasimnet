@@ -50,3 +50,14 @@ test('arayüz: Türkçe tutar ve özel taban okunur, hatalı girdi reddedilir', 
   assert.throws(() => compute({ kokText: '', scenario: '1.5', floorMode: 'same' }), /Kök/);
   assert.throws(() => compute({ kokText: '15.000', scenario: 'custom', customMonthly: '', floorMode: 'same' }), /varsayım/);
 });
+
+test('dul/yetim: taban dosyaya uygulanır, sonra hisseye bölünür', () => {
+  const r = minPensionOutlook({ kokKurus: 1_125_000, assumedMonthlyPct: 1.5, floorMode: 'same', sharePct: 75 });
+  assert.equal(r.fileKokKurus, 1_500_000);
+  assert.equal(r.currentPaymentKurus, 1_766_400);
+  assert.equal(r.paymentKurus, 1_766_400);
+  assert.equal(r.increaseKurus, 0);
+  assert.equal(compute({ kokText: '11.250', scenario: '1.5', floorMode: 'same', share: '75' }).paymentKurus, 1_766_400);
+  assert.throws(() => minPensionOutlook({ kokKurus: 1_000_000, sharePct: 0 }), /Hisse/);
+  assert.equal(minPensionOutlook({ kokKurus: 1_500_000, assumedMonthlyPct: 1.5 }).sharePct, 100);
+});

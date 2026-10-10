@@ -27,9 +27,15 @@ export function historyRows() {
 
 const FLOOR_MODES = new Set(['indexed', 'same', 'custom']);
 
-export function minPensionOutlook({ kokKurus, assumedMonthlyPct = 0, floorMode = 'indexed', customFloorKurus = null }) {
-  const kok = Number(kokKurus);
-  if (!Number.isFinite(kok) || kok <= 0 || kok > 100_000_000) throw new Error('Kök aylığınızı girin (0’dan büyük).');
+// sharePct: dul/yetim aylığında hak sahibinin hissesi. Taban dosya toplamına uygulanır, sonra hisseye bölünür;
+// bu yüzden hesap dosya düzeyinde yapılıp sonuç hisseyle çarpılır. Kendi aylığında hisse %100'dür.
+export function minPensionOutlook({ kokKurus, assumedMonthlyPct = 0, floorMode = 'indexed', customFloorKurus = null, sharePct = 100 }) {
+  const share = Number(sharePct);
+  if (!Number.isFinite(share) || share <= 0 || share > 100) throw new Error('Hisse oranı 0 ile 100 arasında olmalı.');
+  const ownKok = Number(kokKurus);
+  if (!Number.isFinite(ownKok) || ownKok <= 0 || ownKok > 100_000_000) throw new Error('Kök aylığınızı girin (0’dan büyük).');
+  const ratio = share / 100;
+  const kok = Math.round(ownKok / ratio);
   if (!FLOOR_MODES.has(floorMode)) throw new Error('Taban aylık senaryosunu seçin.');
   const zam = emekliZam({ currentKurus: kok, assumedMonthlyPct });
   let floorKurus;
@@ -40,17 +46,22 @@ export function minPensionOutlook({ kokKurus, assumedMonthlyPct = 0, floorMode =
     if (!Number.isFinite(custom) || custom <= 0 || custom > 100_000_000) throw new Error('Taban aylık tutarını girin.');
     floorKurus = Math.round(custom);
   }
-  const currentPaymentKurus = Math.max(zam.currentKurus, MIN_PENSION_KURUS);
-  const newKokKurus = zam.newKurus;
-  const paymentKurus = Math.max(newKokKurus, floorKurus);
-  const effectivePct = Math.round(((paymentKurus / currentPaymentKurus) - 1) * 10_000) / 100;
+  const part = (kurus) => Math.round(kurus * ratio);
+  const fileCurrent = Math.max(zam.currentKurus, MIN_PENSION_KURUS);
+  const filePayment = Math.max(zam.newKurus, floorKurus);
+  const currentPaymentKurus = part(fileCurrent);
+  const newKokKurus = part(zam.newKurus);
+  const paymentKurus = part(filePayment);
+  const effectivePct = Math.round(((filePayment / fileCurrent) - 1) * 10_000) / 100;
   return {
+    sharePct: share,
     raisePct: zam.raisePct,
-    kokKurus: zam.currentKurus,
+    kokKurus: Math.round(ownKok),
+    fileKokKurus: zam.currentKurus,
     newKokKurus,
     floorKurus,
     currentPaymentKurus,
-    currentTopUpKurus: currentPaymentKurus - zam.currentKurus,
+    currentTopUpKurus: currentPaymentKurus - Math.round(ownKok),
     paymentKurus,
     topUpKurus: paymentKurus - newKokKurus,
     increaseKurus: paymentKurus - currentPaymentKurus,

@@ -10,12 +10,13 @@ const parsePercent = (value) => {
   return raw === '' ? NaN : Number(raw);
 };
 
-export function compute({ kokText, scenario, customMonthly, floorMode, customFloor }) {
+export function compute({ kokText, scenario, customMonthly, floorMode, customFloor, share }) {
   const kokKurus = Math.round(parseTurkishMoney(kokText) * 100);
   const assumedMonthlyPct = scenario === 'custom' ? parsePercent(customMonthly) : Number(scenario ?? 0);
   if (!Number.isFinite(assumedMonthlyPct)) throw new Error('Kalan aylar için aylık enflasyon varsayımını girin.');
   const customFloorKurus = floorMode === 'custom' ? Math.round(parseTurkishMoney(customFloor) * 100) : null;
-  return minPensionOutlook({ kokKurus, assumedMonthlyPct, floorMode, customFloorKurus });
+  const sharePct = String(share ?? '').trim() === '' ? 100 : parsePercent(share);
+  return minPensionOutlook({ kokKurus, assumedMonthlyPct, floorMode, customFloorKurus, sharePct });
 }
 
 export function noteText(r) {
@@ -52,7 +53,7 @@ if (typeof document !== 'undefined') {
       const error = root.querySelector('[data-calculator-error]');
       const val = (n) => form.elements.namedItem(n)?.value;
       try {
-        const r = compute({ kokText: val('kok'), scenario: val('scenario'), customMonthly: val('customMonthly'), floorMode: val('floorMode'), customFloor: val('customFloor') });
+        const r = compute({ kokText: val('kok'), scenario: val('scenario'), customMonthly: val('customMonthly'), floorMode: val('floorMode'), customFloor: val('customFloor'), share: val('share') });
         setText(root, 'payment', tl(r.paymentKurus));
         setText(root, 'kok', `${tl(r.newKokKurus)} (${pct(r.raisePct)} zam)`);
         setText(root, 'topup', r.topUpKurus > 0 ? tl(r.topUpKurus) : 'Yok');
