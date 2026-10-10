@@ -15,11 +15,13 @@ const common = {
 export const blogQualityContent = {
   '2027-maas-zammi-beklentileri': {
     ...common,
+    reviewedAt: '10 Ekim 2026',
     decisionTitle: '2027 maaş görüşmesine hangi veriyle hazırlanılmalı?',
     intro: 'Tek bir enflasyon oranını doğrudan zam oranı kabul etmek hatalıdır. Çalışan ve işveren, geçmiş satın alma gücü kaybını, ileriye dönük beklentiyi, piyasa ücret bandını ve rol değişimini ayrı kalemler halinde değerlendirmelidir.',
     rows: [
       ['Gerçekleşen enflasyon', 'Geçmiş kaybı ölçer', 'TÜİK aylık ve yıllık TÜFE', 'Tek başına gelecek zammı belirlemez'],
       ['İleriye dönük beklenti', 'Yeni ücretin aşınma riskini gösterir', 'TCMB raporu ve beklenti anketi', 'Tahmin, kesinleşmiş oran değildir'],
+      ['Asgari ücret kararı', 'Taban ücreti, SGK tabanını ve tavanını belirler', 'Asgari Ücret Tespit Komisyonu', 'Aralıkta açıklanması beklenir; önceden kesin değildir'],
       ['Piyasa ücret bandı', 'Rolün yeniden işe alım maliyetini gösterir', 'Sektör ve kıdem bazlı veri', 'Şirket içi unvanla sınırlı kalmayın'],
       ['Performans ve rol kapsamı', 'Kişisel değer artışını ölçer', 'Hedef, sorumluluk ve terfi', 'Enflasyon telafisiyle karıştırmayın']
     ],

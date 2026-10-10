@@ -17,6 +17,7 @@ export const SITE_METADATA = Object.freeze({
 
 const PAGE_OVERRIDES = Object.freeze({
   '/blog/': Object.freeze({ modifiedAt: '2026-09-17' }),
+  '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/blog/is-teklifinin-yillik-degeri/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/maas-teklifi-karsilastirma/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/prim-ikramiye-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),

@@ -18,7 +18,7 @@ export const blogImageAssignments = Object.freeze([
   {
     slug: '2027-maas-zammi-beklentileri',
     asset: '2027-maas-zammi-beklentileri-editorial.webp',
-    alt: '2027 maaş ve zam beklentilerini veri tabloları üzerinden değerlendiren Türk profesyoneller'
+    alt: '2027 asgari ücret, maaş ve zam beklentilerini veri tabloları üzerinden değerlendiren Türk profesyoneller'
   },
   {
     slug: 'maas-zam-gorusmesi-nasil-yapilir',
