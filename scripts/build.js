@@ -25,6 +25,7 @@ import { addRentCalculator } from './add-rent-calculator.js';
 import { addBorrowingCalculator } from './add-borrowing-calculator.js';
 import { addZam2027Calculators } from './add-zam-2027-calculators.js';
 import { addMinPensionPage } from './add-min-pension-page.js';
+import { addPromoPage } from './add-promo-page.js';
 import { addOvertimeCalculator } from './add-overtime-calculator.js';
 import { addAnnualLeaveCalculator } from './add-annual-leave-calculator.js';
 import { addMinimumWageCalculator } from './add-minimum-wage-calculator.js';
@@ -91,7 +92,7 @@ for (const file of [
   'retired-worker-engine.js','rw-calculator.js','rw-calculator.css',
   'rent-engine.js','rent-calculator.js','rent-calculator.css',
   'borrowing-engine.js','borrowing-calculator.js','borrowing-calculator.css',
-  'zam-2027-engine.js','zam-2027-calculator.js','zam-calculator.css','min-pension-engine.js','min-pension-calculator.js',
+  'zam-2027-engine.js','zam-2027-calculator.js','zam-calculator.css','min-pension-engine.js','min-pension-calculator.js','promo-data.js','promo-engine.js','promo-calculator.js',
   'overtime-engine.js','overtime-calculator.js','overtime-calculator.css',
   'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
   'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
@@ -125,6 +126,7 @@ await addRentCalculator(distDir);
 await addBorrowingCalculator(distDir);
 await addZam2027Calculators(distDir);
 await addMinPensionPage(distDir);
+await addPromoPage(distDir);
 const overtimeResult = await addOvertimeCalculator(distDir);
 const annualLeaveResult = await addAnnualLeaveCalculator(distDir);
 const minimumWageResult = await addMinimumWageCalculator(distDir);
