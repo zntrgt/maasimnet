@@ -1,6 +1,6 @@
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {employeeGuides,GUIDE_CATEGORIES,GUIDE_DATE} from '../content/employee-guides.js';
+import {employeeGuides,GUIDE_CATEGORIES,GUIDE_DATE,GUIDE_TARGETS} from '../content/employee-guides.js';
 import {guideScenario,months,money} from './employee-guide-data.js';
 import {employeeGuideImage} from '../content/employee-guide-images.js';
 import {DATA_2026} from '../src/data-2026.js';
@@ -17,7 +17,7 @@ const method = {
  split:'Taksit karşılaştırması aynı toplam brüt primi tek ödeme ve iki eşit ödeme olarak hesaplar. Her alternatifin yıl içi matrahı ayrı ilerler. İlk taksidin netini ikiyle çarpmak ikinci taksidin katkısını her zaman doğru vermez. Prim tutarlarının toplamı ve net farkların toplamı ayrı kontrol edilir. Başka vergi yılına taşınan ödeme bu karşılaştırmada bulunmaz.',
  purchasing:'Gelir-gider senaryosu önce zamlı ve zamsız bordroyu hesaplar, sonra ilgili gider varsayımını aylık netten çıkarır. Gider yüzdesi kullanıcı senaryosudur; resmî enflasyon verisi olarak sunulmaz. Nakit bütçe farkı ile ekonomide kullanılan reel ücret endeksi farklı ölçülerdir. Tek seferlik gider veya değişik bir başlangıç tarihi varsa aynı varsayımla devam etmek yerine takvimi düzeltin.'
 };
-const links = {budget:'/blog/is-yerinde-finansal-saglik/',net:'/blog/netten-brute-maas-neden-aylik-degisir/',tax:'/blog/2026-maas-vergi-dilimleri/',raise:'/blog/maas-zam-gorusmesi-nasil-yapilir/',offer:'/blog/is-teklifinin-yillik-degeri/',benefit:'/blog/esnek-yan-hak-butcesi/',bonus:'/blog/prim-ikramiye-net-maasi-neden-dusurur/',timing:'/blog/prim-ikramiye-net-maasi-neden-dusurur/',split:'/blog/prim-ikramiye-net-maasi-neden-dusurur/',purchasing:'/blog/is-teklifinin-yillik-degeri/'};
+const links = GUIDE_TARGETS;
 function wrapLines(text,max=44){const lines=[];let current='';for(const word of text.split(' ')){if((current+' '+word).trim().length>max){lines.push(current);current=word;}else current=(current+' '+word).trim();}if(current)lines.push(current);return lines;}
 export function guideChart(post,data){
  const max=Math.max(...data.a.map(r=>r.netKurus),...data.b.map(r=>r.netKurus));
@@ -28,6 +28,7 @@ export function guideChart(post,data){
 export async function renderEmployeeGuides(dist){
  await mkdir(join(dist,'assets'),{recursive:true});
  for(const [index, post] of employeeGuides.entries()){
+  if(post.retired) continue;
   const cover=employeeGuideImage({...post,coverKind:['budget','net','raise','offer','benefit','bonus','tax','timing','split','purchasing'][index % 10]});
   const data=guideScenario(post),url=`https://maasim.net/blog/${post.slug}/`,image=`https://maasim.net/assets/${cover.asset}`;
   const description=`${post.title.replace(/\?$/,'')}: 2026 için açık varsayımlar, 12 aylık bordro tablosu ve çalışan odaklı karar kontrolü.`;
