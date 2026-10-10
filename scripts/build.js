@@ -69,6 +69,7 @@ import { applyEmptyInitialCalculatorState } from './apply-empty-initial-calculat
 import { applyMetaDescriptionQuality } from './apply-meta-description-quality.js';
 import { applyAssetRevision } from './apply-asset-revision.js';
 import { applyAuditCopy } from './apply-audit-copy.js';
+import { applyStructuredData } from './apply-structured-data.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const staticDir = join(root, 'static');
@@ -80,6 +81,7 @@ await rm(distDir, { recursive: true, force: true });
 await cp(staticDir, distDir, { recursive: true });
 await cp(join(root, 'content', 'robots.txt'), join(distDir, 'robots.txt'));
 await cp(join(root, 'content', 'BingSiteAuth.xml'), join(distDir, 'BingSiteAuth.xml'));
+await cp(join(root, 'content', 'brand', 'logo-512.png'), join(distDir, 'assets', 'logo-512.png'));
 await cp(join(root, 'content', '_headers'), join(distDir, '_headers'));
 await mkdir(assetsDir, { recursive: true });
 
@@ -167,6 +169,7 @@ await applyContentDates(distDir);
 const metaDescriptionResult = await applyMetaDescriptionQuality(distDir);
 await applyOfficialFacts(distDir);
 await applyGuideConsolidation(distDir);
+await applyStructuredData(distDir);
 await applyAdSlots(distDir);
 const sitemapResult = await normalizeSitemap(distDir);
 const assetRevision = await applyAssetRevision(distDir);
