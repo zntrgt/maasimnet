@@ -30,6 +30,7 @@ const round2 = (value) => Math.round(value * 100) / 100;
 const compound = (pcts) => (pcts.reduce((acc, pct) => acc * (1 + pct / 100), 1) - 1) * 100;
 
 export function knownCumulativePct() {
+  if (KNOWN_MONTHS.length === 6 && OFFICIAL_SIX_MONTH_PCT !== null) return OFFICIAL_SIX_MONTH_PCT;
   return compound(KNOWN_MONTHS.map((m) => m.pct));
 }
 
@@ -41,7 +42,9 @@ export function impliedMonthlyPct(yearEndPct, knownMonths = KNOWN_MONTHS) {
   return (Math.pow(ratio, 1 / remainingMonths) - 1) * 100;
 }
 
+// 6 ayın tamamı açıklandı. Resmî oran henüz girilmediyse sayfa sonucu "aylık oranlardan hesaplanan" diye etiketler.
 export const isFinal = () => KNOWN_MONTHS.length === 6;
+export const hasOfficialRate = () => isFinal() && OFFICIAL_SIX_MONTH_PCT !== null;
 
 export function sixMonthInflationPct(assumedMonthlyPct) {
   const remaining = 6 - KNOWN_MONTHS.length;
