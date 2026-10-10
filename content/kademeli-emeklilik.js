@@ -1,8 +1,8 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-10-07',
-  reviewedAt: '2026-10-07',
+  modifiedAt: '2026-10-10',
+  reviewedAt: '2026-10-10',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
   latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; 4 Eylül tarihli 7/48458 sayılı soru önergesine yanıt kaydı görünmüyor.',
@@ -33,9 +33,34 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     emadderOctoberEvent: 'https://www.emadder.org.tr/detay.php?id=139',
     desticiJointBill: 'https://www.superhaber.com/beklenen-sonunda-oluyor-bbp-lideri-mustafa-destici-guzel-haberi-verdi-kademeli-emeklilik-585599',
     desticiInterview: 'https://www.facebook.com/Emaddernegi/posts/-%C3%BClke-tv-ekranlarindan-milyonlarin-sesi-duyuldu%C3%BClke-tv-ekranlar%C4%B1nda-m-mustafa-y%C4%B1/122316792212067832/',
+    arikanYargiPaketi: 'https://www.milligazete.com.tr/kademeli-emeklilik-meclise-geliyor-mu-13-yargi-paketine-girdi-mi-kimleri-kapsayacak-tablo-belli-oldu-mu',
+    desticiSeptember29: 'https://www.yenisafak.com/galeri/ozgun/kademeli-emeklilik-geliyor-mu-kademeli-emeklilik-1-ekimde-meclise-gelecek-mi-yeni-kanun-teklifi-verildi-mi-4859881',
+    erdoganClaim: 'https://www.yozgatcamlik.com/ekonomi/eytyi-kaciran-milyonlar-bekliyor-kademeli-emeklilik-dosyasi-erdoganin-onunde-22166316h',
     desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-10-10',
+      label: 'Güncel kontrol',
+      text: 'TBMM, SGK ve Resmî Gazete kayıtlarında yürürlüğe girmiş yeni bir kademeli emeklilik kanunu yok. Destici’nin duyurduğu ortak kanun teklifinin TBMM’ye sunulduğuna dair bir kayıt veya haber bulunamadı. 7/48458 sayılı soru önergesi hâlâ cevap bekliyor.',
+      kind: 'verification'
+    }),
+    Object.freeze({
+      date: '2026-10-01',
+      label: 'TBMM yeni yasama yılı',
+      text: 'TBMM 1 Ekim’de yeni yasama yılına başladı. BBP Genel Başkanı Mustafa Destici, Meclis açıldıktan sonra diğer partilerle ortak bir kanun teklifi için girişimde bulunacaklarını söylemişti. Bu bir niyet açıklamasıdır; teklif sunulmuş değildir.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.yenisafak.com/galeri/ozgun/kademeli-emeklilik-geliyor-mu-kademeli-emeklilik-1-ekimde-meclise-gelecek-mi-yeni-kanun-teklifi-verildi-mi-4859881',
+      sourceLabel: 'Destici’nin 29 Eylül açıklaması (Yeni Şafak)'
+    }),
+    Object.freeze({
+      date: '2026-09-28',
+      label: '13. Yargı Paketi talebi',
+      text: 'Saadet Partisi Genel Başkanı Mahmut Arıkan, kademeli emekliliğin 13. Yargı Paketi’ne eklenmesini istedi. Paket metni TBMM’ye sunulmadığı için içeriği belli değil; kademeli emekliliğin pakette yer aldığına dair resmî bir bilgi yok.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.milligazete.com.tr/kademeli-emeklilik-meclise-geliyor-mu-13-yargi-paketine-girdi-mi-kimleri-kapsayacak-tablo-belli-oldu-mu',
+      sourceLabel: 'Milli Gazete haberi'
+    }),
     Object.freeze({
       date: '2026-09-23',
       label: 'EMADDER / Ankara buluşması duyurusu',
@@ -62,6 +87,14 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
       reportUrl: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
     }),
     Object.freeze({
+      date: '2026-09-21',
+      label: '“Dosya Erdoğan’ın önünde” iddiası',
+      text: 'Bazı haberlerde dosyanın Cumhurbaşkanı’nın önünde olduğu yazıldı. Dayanak, EMADDER Başkanı Mihriban Uğurlu’nun Cumhurbaşkanı’nın talepten haberdar olduğunu söylemesi. Cumhurbaşkanlığı resmî bir çalışma açıklamadı.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.yozgatcamlik.com/ekonomi/eytyi-kaciran-milyonlar-bekliyor-kademeli-emeklilik-dosyasi-erdoganin-onunde-22166316h',
+      sourceLabel: 'İlgili haber'
+    }),
+    Object.freeze({
       date: '2026-09-18',
       label: 'Güncel kontrol',
       text: 'TBMM, SGK ve Resmî Gazete kayıtlarında yürürlüğe girmiş yeni bir kademeli emeklilik kanunu bulunmuyor.',
@@ -76,7 +109,7 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     Object.freeze({
       date: '2026-09-04',
       label: 'TBMM / Yeni soru önergesi',
-      text: 'Kademeli emeklilik düzenlemesi talebine ilişkin 7/48458 esas numaralı yazılı soru önergesi verildi. 7 Ekim kaynak kontrolünde TBMM kaydında yanıt görünmüyor.',
+      text: 'Kademeli emeklilik düzenlemesi talebine ilişkin 7/48458 esas numaralı yazılı soru önergesi verildi. 10 Ekim kaynak kontrolünde TBMM kaydında yanıt görünmüyor.',
       kind: 'official'
     }),
     Object.freeze({

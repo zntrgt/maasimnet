@@ -59,6 +59,18 @@ const faqs = [
     a: '4/A açısından SGK’nın resmî açıklamasında kritik tarih 30 Nisan 2008’dir. 30 Nisan 2008 sonrasında ilk kez sigortalı olanlar için 5510 sayılı Kanunla belirlenen şartlar uygulanır.'
   },
   {
+    q: '13. Yargı Paketi’nde kademeli emeklilik var mı?',
+    a: `${fmt(DATA.reviewedAt)} itibarıyla bilinmiyor; resmî bir bilgi yok. Saadet Partisi Genel Başkanı Mahmut Arıkan kademeli emekliliğin pakete eklenmesini istedi, ancak 13. Yargı Paketi TBMM’ye sunulmadığı için metni ve içeriği henüz belli değil.`
+  },
+  {
+    q: 'Kademeli emeklilik için ortak kanun teklifi verildi mi?',
+    a: `${fmt(DATA.reviewedAt)} kontrolünde hayır. BBP Genel Başkanı Mustafa Destici, Meclis açıldıktan sonra partilerle ortak bir teklif için girişimde bulunacaklarını söyledi; bu teklifin TBMM’ye sunulduğuna dair kayıt bulunamadı. TBMM’de bekleyen teklifler 2/2755 ve 2/2959 sayılı tekliflerdir.`
+  },
+  {
+    q: 'Kademeli emeklilik dosyası Erdoğan’ın önünde mi?',
+    a: 'Bu iddianın dayanağı, EMADDER Başkanı Mihriban Uğurlu’nun Cumhurbaşkanı’nın talepten haberdar olduğunu söylemesidir. Cumhurbaşkanlığı veya Bakanlık tarafından açıklanmış resmî bir çalışma ya da karar yok.'
+  },
+  {
     q: 'EMADDER’ın önerisi yasalaştı mı?',
     a: 'Hayır. EMADDER bir sivil toplum kuruluşudur. Derneğin Bakanlıkla görüşmesi ve model sunması, önerinin Bakanlık tarafından kabul edildiği veya kanunlaştığı anlamına gelmez.'
   }
