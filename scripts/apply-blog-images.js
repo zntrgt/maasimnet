@@ -9,7 +9,7 @@ const directDir = join(root, 'assets-source', 'direct');
 const encodedDir = join(root, 'assets-source', 'encoded');
 
 export const blogImageAssignments = Object.freeze([
-  ...employeeGuides.map((post, index) => ({slug:post.slug, ...employeeGuideImage({...post, coverKind:['budget','net','raise','offer','benefit','bonus','tax','timing','split','purchasing'][index % 10]})})),
+  ...employeeGuides.map((post, index) => ({slug:post.slug, retired:post.retired, ...employeeGuideImage({...post, coverKind:['budget','net','raise','offer','benefit','bonus','tax','timing','split','purchasing'][index % 10]})})).filter((post) => !post.retired),
   {
     slug: 'is-yerinde-finansal-saglik',
     asset: 'is-yerinde-finansal-saglik-editorial.webp',

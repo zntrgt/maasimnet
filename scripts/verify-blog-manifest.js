@@ -60,7 +60,8 @@ for (const post of hiddenBlogPosts) {
   if (sitemap.includes(`<loc>https://maasim.net${route}</loc>`)) throw new Error(`Gizli rehber sitemap içinde: ${route}`);
   if (!/<meta name="robots" content="noindex,follow">/i.test(html)) throw new Error(`Gizli rehber noindex,follow değil: ${route}`);
 }
-if (indexableBlogPosts.length !== 119 || discoverableBlogPosts.length !== 24 || hiddenBlogPosts.length !== 95) {
+// Ekim 2026: 95 noindex şablon rehber kapsamlı rehberlere birleştirildi (301).
+if (indexableBlogPosts.length !== 24 || discoverableBlogPosts.length !== 24 || hiddenBlogPosts.length !== 0) {
   throw new Error(`Blog manifest sayıları beklenenden farklı: ${indexableBlogPosts.length} içerik (${discoverableBlogPosts.length} keşfedilebilir, ${hiddenBlogPosts.length} noindex)`);
 }
 const orphanSlugs = [...generatedBlogSlugs].filter((slug) => !expectedSlugs.has(slug));

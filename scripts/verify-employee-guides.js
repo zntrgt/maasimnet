@@ -1,14 +1,32 @@
-import {readFile} from 'node:fs/promises';
+import {access,readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
-import {employeeGuides,DISCOVERABLE_EMPLOYEE_GUIDES} from '../content/employee-guides.js';
+import {employeeGuides,DISCOVERABLE_EMPLOYEE_GUIDES,retiredEmployeeGuides} from '../content/employee-guides.js';
+import {RETIRED_GUIDE_REDIRECTS} from '../src/retired-guide-redirects.js';
 import {guideScenario} from './employee-guide-data.js';
 import {employeeGuideImage} from '../content/employee-guide-images.js';
 const dist=join(process.cwd(),'dist');
 const sitemap=await readFile(join(dist,'sitemap.xml'),'utf8');
 const index=await readFile(join(dist,'blog','index.html'),'utf8');
 assert.deepEqual([...DISCOVERABLE_EMPLOYEE_GUIDES].sort(),['kira-artisi-maas-butcesi','kredi-taksiti-degisken-net-maas','maas-artmadan-gider-artisi','maas-butcesini-en-dusuk-aya-gore-kurmak','yillik-ortalama-net-butce']);
+assert.equal(retiredEmployeeGuides.length,95,'95 birleştirilmiş rehber');
+const retiredRoutes=new Set(retiredEmployeeGuides.map(p=>`/blog/${p.slug}/`));
+const targetHtml=new Map();
+for(const post of retiredEmployeeGuides){
+ const route=`/blog/${post.slug}/`;
+ assert.equal(RETIRED_GUIDE_REDIRECTS[route],post.redirectTo,post.slug+' 301 hedefi');
+ await assert.rejects(access(join(dist,'blog',post.slug,'index.html')),post.slug+' ayrı sayfa olarak üretilmemeli');
+ assert.ok(!sitemap.includes(`https://maasim.net${route}`),post.slug+' sitemap dışı');
+ const [target,anchor]=post.redirectTo.split('#');
+ if(!targetHtml.has(target)) targetHtml.set(target,await readFile(join(dist,target,'index.html'),'utf8'));
+ const html=targetHtml.get(target);
+ assert.ok(html.includes(`id="${anchor}"`),post.slug+' hedef çapası');
+ assert.ok(html.includes(post.answer.replaceAll('&','&amp;')),post.slug+' cevap hedefe taşındı');
+ assert.match(html,/<meta name="robots" content="index,follow/,target+' indekslenebilir hedef');
+}
+for(const file of ['index.html','blog/index.html','llms.txt']){const text=await readFile(join(dist,file),'utf8');for(const route of retiredRoutes)assert.ok(!text.includes(`href="${route}"`)&&!text.includes(`https://maasim.net${route}`),file+' eski rehber bağlantısı: '+route);}
 for(const [ordinal, post] of employeeGuides.entries()){
+ if(post.retired) continue;
  const html=await readFile(join(dist,'blog',post.slug,'index.html'),'utf8');
  const cover=employeeGuideImage({...post,coverKind:['budget','net','raise','offer','benefit','bonus','tax','timing','split','purchasing'][ordinal % 10]});
  const coverPath=`/assets/${cover.asset}`;
@@ -37,5 +55,5 @@ for(const [ordinal, post] of employeeGuides.entries()){
  assert.deepEqual(faq.mainEntity.map(q=>q.name),visible,post.slug+' FAQ alignment');
 }
 assert.ok(index.includes('guide-search')&&index.includes('guide-category'));
-console.log('100 yeni rehber: hesap değerleri, 12 ay, SSS, kaynaklar, tarih ve keşif kontrolleri başarılı.');
+console.log(`${employeeGuides.length-retiredEmployeeGuides.length} ayrı rehber ve ${retiredEmployeeGuides.length} birleştirilmiş durum: hesap, 12 ay, SSS, 301 hedefi, çapa ve keşif kontrolleri başarılı.`);
 
