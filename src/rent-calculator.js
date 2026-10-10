@@ -5,9 +5,9 @@ const tl = (kurus) => `${(kurus / 100).toLocaleString('tr-TR', { minimumFraction
 const pct = (v) => `%${Number(v).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const KEYS = ['max', 'increase', 'cap', 'agreed'];
 
-export function compute({ currentText, renewal, agreedText }) {
-  const agreedRaw = String(agreedText ?? '').trim().replace('%', '').replace(',', '.');
-  return calculateRent({ currentKurus: Math.round(parseTurkishMoney(currentText) * 100), renewal, agreedPct: agreedRaw === '' ? null : Number(agreedRaw) });
+const pctInput = (v) => { const raw = String(v ?? '').trim().replace('%', '').replace(',', '.'); return raw === '' ? null : Number(raw); };
+export function compute({ currentText, renewal, agreedText, customCapText }) {
+  return calculateRent({ currentKurus: Math.round(parseTurkishMoney(currentText) * 100), renewal, agreedPct: pctInput(agreedText), customCapPct: pctInput(customCapText) });
 }
 
 export function agreedText(result) {
@@ -25,12 +25,15 @@ if (typeof document !== 'undefined') {
   for (const root of document.querySelectorAll('[data-rent-calculator]')) {
     const form = root.querySelector('form');
     if (!form) continue;
+    const renewalSelect = form.elements.namedItem('renewal');
+    const customField = root.querySelector('[data-custom-cap]');
+    renewalSelect?.addEventListener('change', () => { if (customField) customField.hidden = renewalSelect.value !== 'custom'; });
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       const results = root.querySelector('[data-calculator-results]');
       const error = root.querySelector('[data-calculator-error]');
       try {
-        const r = compute({ currentText: form.elements.namedItem('current')?.value, renewal: form.elements.namedItem('renewal')?.value, agreedText: form.elements.namedItem('agreed')?.value });
+        const r = compute({ currentText: form.elements.namedItem('current')?.value, renewal: form.elements.namedItem('renewal')?.value, agreedText: form.elements.namedItem('agreed')?.value, customCapText: form.elements.namedItem('customCap')?.value });
         setText(root, 'max', tl(r.maxKurus));
         setText(root, 'increase', `+${tl(r.maxIncreaseKurus)}`);
         setText(root, 'cap', `${pct(r.cap.pct)} (${r.cap.label})`);

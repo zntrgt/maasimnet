@@ -18,10 +18,15 @@ export const RENT_CAPS = Object.freeze([
 export const latestCap = () => RENT_CAPS[0];
 export const capFor = (renewal) => RENT_CAPS.find((c) => c.renewal === renewal) || null;
 
-export function calculateRent({ currentKurus, renewal, agreedPct = null }) {
+export function calculateRent({ currentKurus, renewal, agreedPct = null, customCapPct = null }) {
   const current = Math.round(Number(currentKurus));
   if (!Number.isFinite(current) || current <= 0 || current > 10_000_000_000) throw new Error('Mevcut aylık kirayı girin (0’dan büyük).');
-  const cap = capFor(renewal);
+  let cap = capFor(renewal);
+  if (renewal === 'custom') {
+    const v = Number(customCapPct);
+    if (customCapPct === null || customCapPct === '' || !Number.isFinite(v) || v < 0 || v > 200) throw new Error('Tabloda olmayan ay için TÜİK 12 aylık ortalama oranını girin (0–200).');
+    cap = { renewal: 'custom', label: 'elle girilen oran', basis: 'kullanıcı', pct: v };
+  }
   if (!cap) throw new Error('Yenileme ayını seçin.');
   const maxKurus = Math.round(current * (1 + cap.pct / 100));
   const result = { cap, currentKurus: current, maxKurus, maxIncreaseKurus: maxKurus - current, agreed: null };

@@ -11,3 +11,9 @@ test('Türkçe tutar ve virgüllü oran okunur; tavan aşımı yazılır', () =>
 test('istenen oran boşsa "Girilmedi"', () => {
   assert.equal(agreedText(compute({ currentText: '15.000', renewal: '2026-09', agreedText: '' })), 'Girilmedi');
 });
+
+test('tabloda olmayan ay için elle oran girilebilir', () => {
+  const r = compute({ currentText: '10.000', renewal: 'custom', agreedText: '', customCapText: '34,88' });
+  assert.equal(r.maxKurus, 1_348_800);
+  assert.throws(() => compute({ currentText: '10.000', renewal: 'custom', agreedText: '', customCapText: '' }), /TÜİK/);
+});
