@@ -20,6 +20,7 @@ import { addOfferComparison } from './add-offer-comparison.js';
 import { addTerminationCalculators } from './add-termination-calculators.js';
 import { addUnemploymentCalculator } from './add-unemployment-calculator.js';
 import { addRetirementCalculator } from './add-retirement-calculator.js';
+import { addZam2027Calculators } from './add-zam-2027-calculators.js';
 import { addOvertimeCalculator } from './add-overtime-calculator.js';
 import { addAnnualLeaveCalculator } from './add-annual-leave-calculator.js';
 import { addMinimumWageCalculator } from './add-minimum-wage-calculator.js';
@@ -83,6 +84,7 @@ for (const file of [
   'estimate-2027.js','offer-comparison.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
   'unemployment-engine.js','unemployment-calculator.js','unemployment-calculator.css',
   'retirement-engine.js','retirement-calculator.js','retirement-calculator.css',
+  'zam-2027-engine.js','zam-2027-calculator.js','zam-calculator.css',
   'overtime-engine.js','overtime-calculator.js','overtime-calculator.css',
   'annual-leave-engine.js','annual-leave-calculator.js','annual-leave-calculator.css',
   'minimum-wage-engine.js','minimum-wage-calculator.js','minimum-wage-calculator.css',
@@ -111,6 +113,7 @@ await addOfferComparison(distDir);
 const terminationResult = await addTerminationCalculators(distDir);
 const unemploymentResult = await addUnemploymentCalculator(distDir);
 await addRetirementCalculator(distDir);
+await addZam2027Calculators(distDir);
 const overtimeResult = await addOvertimeCalculator(distDir);
 const annualLeaveResult = await addAnnualLeaveCalculator(distDir);
 const minimumWageResult = await addMinimumWageCalculator(distDir);
