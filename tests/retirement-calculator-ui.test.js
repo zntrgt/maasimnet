@@ -22,7 +22,7 @@ test('öneri kartı yasalaşmadı etiketini taşır', () => {
 });
 
 test('öneri tarihi aynıysa yaş şartının belirleyici olduğu yazılır', () => {
-  const r = calculateRetirement({ status: '4b', gender: 'E', birthDate: '1975-06-01', startDate: '2003-01-01', currentDays: 6000, daysPerYear: 360, asOf: '2026-10-10' });
+  const r = calculateRetirement({ status: '4b', gender: 'E', birthDate: '1980-06-01', startDate: '2009-01-01', currentDays: 6000, daysPerYear: 360, asOf: '2026-10-10' });
   assert.equal(r.proposalGainDays, 0);
   assert.match(proposalHtml(r), /yaş şartı belirleyici/);
   assert.match(proposalHtml(r), /7\.200 gün/);

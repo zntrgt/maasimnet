@@ -57,7 +57,7 @@ function render(root, result) {
   const earliest = result.earliest;
   if (result.alreadyEligible) {
     setText(root, '[data-result="headline-label"]', 'Bugünkü kurallara göre');
-    setText(root, '[data-result="headline"]', 'Emeklilik şartlarını sağlıyor görünüyorsunuz');
+    setText(root, '[data-result="headline"]', result.status === '4b' ? 'Gün ve yaş şartlarını sağlıyor görünüyorsunuz (Bağ-Kur’da prim borcu da olmamalı)' : 'Emeklilik şartlarını sağlıyor görünüyorsunuz');
   } else {
     setText(root, '[data-result="headline-label"]', 'En erken emeklilik tarihi');
     setText(root, '[data-result="headline"]', earliest ? formatDate(earliest.eligibleDate) : 'Bu varsayımla hesaplanamıyor');

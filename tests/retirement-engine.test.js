@@ -149,8 +149,9 @@ test('Bağ-Kur 2008 sonrası: 9000 gün ve günün dolduğu yıla göre yaş', (
   assert.equal(full.age, 61);
 });
 
-test('Bağ-Kur 7200 gün önerisi senaryosu yasalaşmadı etiketiyle hesaplanır', () => {
-  const r = bk({ gender: 'E', birthDate: '1975-06-01', startDate: '2003-01-01', currentDays: 6000 });
+test('Bağ-Kur 7200 gün önerisi yalnız 2008 sonrası girişlilere senaryo olarak uygulanır', () => {
+  assert.equal(bk({ gender: 'E', birthDate: '1975-06-01', startDate: '2003-01-01', currentDays: 6000 }).proposal, null);
+  const r = bk({ gender: 'E', birthDate: '1988-06-01', startDate: '2010-01-01', currentDays: 4000 });
   assert.equal(r.proposal.kind, 'bagkur7200');
   assert.equal(r.proposal.requiredDays, 7200);
   assert.match(r.proposal.label, /yasalaşmadı/);

@@ -186,10 +186,11 @@ export function calculateRetirement(input) {
     const age = gender === 'K' ? row.women : row.men;
     const proposalOption = option({ key: 'emadder', label: 'EMADDER önerisi (yasalaşmadı)', requiredDays: row.days, age, start, birth, daysDate: when(row.days) });
     proposal = { ...proposalOption, kind: 'emadder', row };
-  } else if (status === '4b' && regime !== 'eyt') {
+  } else if (status === '4b' && regime === 'reform') {
+    // TBMM'deki öneri 5510 m.28'deki 9.000 günü değiştiriyor; yalnız 1 Mayıs 2008 sonrası girişlileri kapsar.
     const pd = when(BAGKUR.proposalDays);
-    const age = regime === 'transition' ? (gender === 'K' ? 58 : 60) : (pd ? lookupByYear(REFORM_FULL_AGE[gender], pd.getUTCFullYear()) : null);
-    proposal = { ...option({ key: 'bagkur-7200', label: 'Bağ-Kur 7.200 gün önerisi (yasalaşmadı)', requiredDays: BAGKUR.proposalDays, age, ageFrom: regime === 'reform' ? 'days' : null, start, birth, daysDate: pd }), kind: 'bagkur7200', row: null };
+    const age = pd ? lookupByYear(REFORM_FULL_AGE[gender], pd.getUTCFullYear()) : null;
+    proposal = { ...option({ key: 'bagkur-7200', label: 'Bağ-Kur 7.200 gün önerisi (yasalaşmadı)', requiredDays: BAGKUR.proposalDays, age, ageFrom: 'days', start, birth, daysDate: pd }), kind: 'bagkur7200', row: null };
   }
 
   return {
