@@ -51,3 +51,9 @@ test('yeni ay eklendiğinde senaryo o ayı iki kez saymaz', () => {
   const yearEnd = (ytd * Math.pow(1 + m / 100, 2) - 1) * 100;
   assert.ok(Math.abs(yearEnd - 28) < 1e-9);
 });
+
+test('bugün dönem kesinleşmedi ve resmî oran girilmedi', async () => {
+  const m = await import('../src/zam-2027-engine.js');
+  assert.equal(m.isFinal(), m.KNOWN_MONTHS.length === 6);
+  assert.equal(m.hasOfficialRate(), m.isFinal() && m.OFFICIAL_SIX_MONTH_PCT !== null);
+});
