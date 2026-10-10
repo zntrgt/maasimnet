@@ -11,8 +11,8 @@ export function compute(v) {
   const intOrNull = (x) => (String(x ?? '').trim() === '' ? NaN : Number(x));
   return calculateBorrowing({
     type: v.type,
-    days: v.type === 'dogum' ? intOrNull(v.dogumDays) : intOrNull(v.days),
-    children: Number(v.children || 1),
+    days: v.type === 'dogum' ? undefined : intOrNull(v.days),
+    daysPerChild: v.type === 'dogum' ? Array.from({ length: Number(v.children || 1) }, (_, i) => intOrNull(v.childDays?.[i])) : null,
     dailyPekKurus: pekText === '' ? null : Math.round(parseTurkishMoney(pekText) * 100),
     beforeFirstInsurance: Boolean(v.before),
     firstInsuranceDate: v.before ? (v.first || null) : null
@@ -39,11 +39,16 @@ if (typeof document !== 'undefined') {
     const type = form.elements.namedItem('type');
     const before = form.elements.namedItem('before');
     const sync = () => {
-      for (const node of root.querySelectorAll('[data-only]')) node.hidden = node.getAttribute('data-only') !== type.value;
+      const childCount = Number(form.elements.namedItem('children')?.value || 1);
+      for (const node of root.querySelectorAll('[data-only]')) {
+        const child = Number(node.getAttribute('data-child') || 0);
+        node.hidden = node.getAttribute('data-only') !== type.value || (child > 0 && child > childCount);
+      }
       const first = root.querySelector('[data-first]');
       if (first) first.hidden = type.value !== 'askerlik' || !before.checked;
     };
     type.addEventListener('change', sync);
+    form.elements.namedItem('children')?.addEventListener('change', sync);
     before.addEventListener('change', sync);
     sync();
     form.addEventListener('submit', (event) => {
@@ -53,7 +58,7 @@ if (typeof document !== 'undefined') {
       const val = (n) => form.elements.namedItem(n)?.value;
       try {
         if (type.value === 'askerlik' && before.checked && !val('first')) throw new Error('İlk sigorta giriş tarihini girin.');
-        const r = compute({ type: type.value, days: val('days'), dogumDays: val('dogumDays'), children: val('children'), pek: val('pek'), before: before.checked, first: val('first') });
+        const r = compute({ type: type.value, days: val('days'), childDays: [val('child1'), val('child2'), val('child3')], children: val('children'), pek: val('pek'), before: before.checked, first: val('first') });
         setText(root, 'total', tl(r.totalKurus));
         setText(root, 'daily', `${tl(r.dailyKurus)} (%${r.ratePct})`);
         setText(root, 'days', `${r.totalDays.toLocaleString('tr-TR')} gün`);

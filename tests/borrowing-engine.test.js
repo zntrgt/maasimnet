@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateBorrowing, dailyBounds, DAILY_FLOOR_KURUS, DAILY_CEILING_KURUS } from '../src/borrowing-engine.js';
+import { calculateBorrowing, dailyBounds, DAILY_FLOOR_KURUS, DAILY_CEILING_KURUS, sgkDuration, shiftBackSgk } from '../src/borrowing-engine.js';
 
 test('2026 günlük alt ve üst sınır: 1.101 TL ve 9.909 TL', () => {
   assert.equal(DAILY_FLOOR_KURUS, 110_100);
@@ -23,7 +23,7 @@ test('doğum %32: günlük en az 352,32 TL; bir çocuk 720 gün 253.670,40 TL', 
 
 test('işe girişten önceki askerlik başlangıcı geriye çeker ve dönem değişimini gösterir', () => {
   const r = calculateBorrowing({ type: 'askerlik', days: 540, beforeFirstInsurance: true, firstInsuranceDate: '2000-06-01' });
-  assert.equal(r.startShift.to, '1998-12-09');
+  assert.equal(r.startShift.to, '1998-12-01');
   assert.equal(r.startShift.fromRegime, 'transition');
   assert.equal(r.startShift.toRegime, 'eyt');
 });
@@ -33,4 +33,19 @@ test('hatalı girdiler reddedilir', () => {
   assert.throws(() => calculateBorrowing({ type: 'dogum', children: 4, days: 720 }), /Çocuk/);
   assert.throws(() => calculateBorrowing({ type: 'askerlik', days: 0 }), /süresi/);
   assert.throws(() => calculateBorrowing({ type: 'askerlik', days: 100, dailyPekKurus: 50_000 }), /sınır/);
+});
+
+test('SGK süre aritmetiği: 540 gün = 1 yıl 6 ay; 2001-03-08 girişli EYT sınırına düşer', () => {
+  assert.deepEqual(sgkDuration(540), { years: 1, months: 6, days: 0 });
+  assert.deepEqual(sgkDuration(6980), { years: 19, months: 4, days: 20 });
+  const r = calculateBorrowing({ type: 'askerlik', days: 540, beforeFirstInsurance: true, firstInsuranceDate: '2001-03-08' });
+  assert.equal(r.startShift.to, '1999-09-08');
+  assert.equal(r.startShift.toRegime, 'eyt');
+  assert.equal(shiftBackSgk('2001-03-31', 30), '2001-02-28');
+});
+
+test('doğum: her doğum için ayrı gün girilebilir', () => {
+  const r = calculateBorrowing({ type: 'dogum', daysPerChild: [720, 90] });
+  assert.equal(r.totalDays, 810);
+  assert.throws(() => calculateBorrowing({ type: 'dogum', daysPerChild: [720, 800] }), /2\. doğum/);
 });

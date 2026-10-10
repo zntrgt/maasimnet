@@ -11,7 +11,21 @@ export const DAILY_CEILING_KURUS = Math.round(DATA_2026.payroll.sgkCeilingKurus 
 export const DOGUM_MAX_DAYS_PER_CHILD = 720;
 export const DOGUM_MAX_CHILDREN = 3;
 export const ASKERLIK_MAX_DAYS = 1080;
-const DAY_MS = 86_400_000;
+// SGK hizmet süresini yıl = 360, ay = 30 gün sayarak çevirir (ör. 540 gün = 1 yıl 6 ay).
+export function sgkDuration(days) {
+  return { years: Math.floor(days / 360), months: Math.floor((days % 360) / 30), days: days % 30 };
+}
+export function shiftBackSgk(iso, totalDays) {
+  const { years, months, days } = sgkDuration(totalDays);
+  const [y, m, d] = iso.split('-').map(Number);
+  let year = y - years;
+  let month = m - 1 - months;
+  while (month < 0) { month += 12; year -= 1; }
+  const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const date = new Date(Date.UTC(year, month, Math.min(d, lastDay)));
+  date.setUTCDate(date.getUTCDate() - days);
+  return date.toISOString().slice(0, 10);
+}
 
 const perDay = (pekKurus, ratePpm) => Math.round((pekKurus * ratePpm) / 1_000_000);
 
@@ -28,16 +42,16 @@ function isoDate(iso, name) {
   return d;
 }
 
-export function calculateBorrowing({ type, days, children = 1, dailyPekKurus = null, firstInsuranceDate = null, beforeFirstInsurance = false }) {
+export function calculateBorrowing({ type, days, children = 1, daysPerChild = null, dailyPekKurus = null, firstInsuranceDate = null, beforeFirstInsurance = false }) {
   const rate = RATES_PPM[type];
   if (!rate) throw new Error('Borçlanma türünü seçin.');
   let totalDays;
   if (type === 'dogum') {
-    const c = Number(children);
-    const d = Number(days ?? DOGUM_MAX_DAYS_PER_CHILD);
-    if (!Number.isInteger(c) || c < 1 || c > DOGUM_MAX_CHILDREN) throw new Error('Çocuk sayısı 1 ile 3 arasında olmalı.');
-    if (!Number.isInteger(d) || d < 1 || d > DOGUM_MAX_DAYS_PER_CHILD) throw new Error('Çocuk başına gün 1 ile 720 arasında olmalı.');
-    totalDays = c * d;
+    // Her doğum için borçlanılabilir gün ayrı: ödenmiş prim günleri, sonraki doğum veya çocuğun vefatı süreyi kısaltabilir.
+    const list = Array.isArray(daysPerChild) ? daysPerChild.map(Number) : Array(Number(children)).fill(Number(days ?? DOGUM_MAX_DAYS_PER_CHILD));
+    if (list.length < 1 || list.length > DOGUM_MAX_CHILDREN) throw new Error('Çocuk sayısı 1 ile 3 arasında olmalı.');
+    list.forEach((d, i) => { if (!Number.isInteger(d) || d < 1 || d > DOGUM_MAX_DAYS_PER_CHILD) throw new Error(`${i + 1}. doğum için gün 1 ile 720 arasında olmalı.`); });
+    totalDays = list.reduce((s, d) => s + d, 0);
   } else {
     const d = Number(days);
     if (!Number.isInteger(d) || d < 1 || d > ASKERLIK_MAX_DAYS) throw new Error('Askerlik süresi 1 ile 1.080 gün arasında olmalı.');
@@ -56,7 +70,8 @@ export function calculateBorrowing({ type, days, children = 1, dailyPekKurus = n
   };
   if (type === 'askerlik' && beforeFirstInsurance && firstInsuranceDate) {
     const first = isoDate(firstInsuranceDate, 'İlk sigorta giriş tarihi');
-    const newStart = new Date(first.getTime() - totalDays * DAY_MS).toISOString().slice(0, 10);
+    void first;
+    const newStart = shiftBackSgk(firstInsuranceDate, totalDays);
     const regime = (iso) => (iso <= '1999-09-08' ? 'eyt' : iso < '2008-05-01' ? 'transition' : 'reform');
     result.startShift = { from: firstInsuranceDate, to: newStart, fromRegime: regime(firstInsuranceDate), toRegime: regime(newStart) };
   }
