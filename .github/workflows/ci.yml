@@ -96,6 +96,9 @@ jobs:
       - name: Verify dedicated 2020-2025 gross-to-net pages and benchmark calculations
         run: npm run verify:historical-brutten-nete
 
+      - name: Verify consolidated data pages and official facts
+        run: npm run verify:official-facts
+
       - name: Verify sitewide contrast safety
         run: npm run verify:contrast
 

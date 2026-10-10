@@ -1,3 +1,5 @@
+import { consolidatedRedirectFor } from './consolidated-redirects.js';
+
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT = 5;
 const rateBuckets = new Map();
@@ -195,7 +197,8 @@ async function handleContact(request, env) {
 
 export function permanentRedirectFor(pathname) {
   const match = pathname.match(/^\/brutten-nete-(202[0-5])\/?$/);
-  return match ? `/${match[1]}-maas-hesaplama/` : null;
+  if (match) return `/${match[1]}-maas-hesaplama/`;
+  return consolidatedRedirectFor(pathname);
 }
 
 export default {

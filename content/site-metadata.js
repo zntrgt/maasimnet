@@ -16,7 +16,11 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
-  '/blog/': Object.freeze({ modifiedAt: '2026-09-17' }),
+  '/blog/': Object.freeze({ modifiedAt: '2026-10-07' }),
+  // Veri sayfası birleştirmesi: resmî değer bloğu ve Dataset şeması bu sayfalara taşındı.
+  '/blog/2026-maas-vergi-dilimleri/': Object.freeze({ modifiedAt: '2026-10-10' }),
+  '/blog/2026-sgk-tavani/': Object.freeze({ modifiedAt: '2026-10-10' }),
+  '/blog/2026-yemek-karti-istisnasi/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/blog/is-teklifinin-yillik-degeri/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/maas-teklifi-karsilastirma/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/prim-ikramiye-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
@@ -34,12 +38,12 @@ const PAGE_OVERRIDES = Object.freeze({
   '/editoryal-politika/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kaynak-politikasi/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/tazminat-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
-  '/kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-10-10' }),
   '/ihbar-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/issizlik-maasi-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/fazla-mesai-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/yillik-izin-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
-  '/asgari-ucret-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/asgari-ucret-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-10-10' }),
   '/maas-zam-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/resmi-tatil-mesai-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/hafta-tatili-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
@@ -52,7 +56,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/2022-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
   '/2021-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
   '/2020-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: HISTORICAL_PAYROLL_CHECKED_AT }),
-  '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
+  '/veriler/2026/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-10-10' }),
   '/veriler/2026/asgari-ucret/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/sgk-tavani/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt })
