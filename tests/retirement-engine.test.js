@@ -119,3 +119,44 @@ test('EYT yolu 3 Mart 2023 öncesine tarih üretmez', () => {
 test('14. yaş gününde başlayan sigortalılık kabul edilir', () => {
   assert.doesNotThrow(() => run({ gender: 'E', birthDate: '1990-01-01', startDate: '2004-01-01', currentDays: 4000 }));
 });
+
+const bk = (input) => calculateRetirement({ ...base, status: '4b', ...input });
+
+test('Bağ-Kur EYT: kadın 7200, erkek 9000 gün, yaş yok, 3 Mart 2023 tabanı', () => {
+  const k = bk({ gender: 'K', birthDate: '1975-01-01', startDate: '1995-01-01', currentDays: 6000 });
+  assert.equal(k.options[0].requiredDays, 7200);
+  assert.equal(k.options[0].age, null);
+  const e = bk({ gender: 'E', birthDate: '1960-01-01', startDate: '1985-01-01', currentDays: 14000 });
+  assert.equal(e.options[0].requiredDays, 9000);
+  assert.equal(e.options[0].eligibleDate, '2023-03-03');
+  assert.equal(e.proposal, null);
+});
+
+test('Bağ-Kur 1999–2008: 58/60 + 9000 gün veya 60/62 + 5400 gün', () => {
+  const r = bk({ gender: 'E', birthDate: '1975-06-01', startDate: '2003-01-01', currentDays: 6000 });
+  const full = r.options.find((o) => o.key === 'bk-transition-full');
+  const partial = r.options.find((o) => o.key === 'bk-transition-partial');
+  assert.equal(full.requiredDays, 9000); assert.equal(full.age, 60);
+  assert.equal(partial.requiredDays, 5400); assert.equal(partial.age, 62);
+  assert.equal(partial.ageDate, '2037-06-01');
+});
+
+test('Bağ-Kur 2008 sonrası: 9000 gün ve günün dolduğu yıla göre yaş', () => {
+  const r = bk({ gender: 'K', birthDate: '1985-01-01', startDate: '2010-01-01', currentDays: 4000 });
+  const full = r.options.find((o) => o.key === 'bk-reform-full');
+  assert.equal(full.requiredDays, 9000);
+  assert.equal(full.daysDate.slice(0, 4), '2040');
+  assert.equal(full.age, 61);
+});
+
+test('Bağ-Kur 7200 gün önerisi senaryosu yasalaşmadı etiketiyle hesaplanır', () => {
+  const r = bk({ gender: 'E', birthDate: '1975-06-01', startDate: '2003-01-01', currentDays: 6000 });
+  assert.equal(r.proposal.kind, 'bagkur7200');
+  assert.equal(r.proposal.requiredDays, 7200);
+  assert.match(r.proposal.label, /yasalaşmadı/);
+});
+
+test('SSK varsayılandır; geçersiz tür reddedilir', () => {
+  assert.equal(run({ gender: 'K', birthDate: '1980-03-15', startDate: '2002-06-01', currentDays: 4000 }).status, '4a');
+  assert.throws(() => calculateRetirement({ ...base, status: '4c', gender: 'K', birthDate: '1980-03-15', startDate: '2002-06-01', currentDays: 1 }), /tür/);
+});

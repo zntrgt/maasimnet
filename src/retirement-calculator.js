@@ -38,7 +38,12 @@ export function proposalHtml(result) {
       ? 'Bugünkü kurallara göre şartları zaten sağlıyorsunuz; öneri sizin için bir şey değiştirmez.'
       : result.proposalGainDays > 0
         ? `Öneri yasalaşırsa bugünkü kurala göre yaklaşık <strong>${esc(remainingText(p.eligibleDate, earliest))}</strong> daha erken emekli olabilirdiniz.`
-        : 'Prim gününüz bu tablonun gün şartını geç doldurduğu için öneri sizi daha erken emekli etmiyor; bugünkü kural sizin için daha erken.';
+        : result.proposalGainDays === 0
+          ? 'Sizin için yaş şartı belirleyici olduğundan öneri emeklilik tarihinizi değiştirmiyor.'
+          : 'Prim gününüz bu tablonun gün şartını geç doldurduğu için öneri sizi daha erken emekli etmiyor; bugünkü kural sizin için daha erken.';
+  if (p.kind === 'bagkur7200') {
+    return `<small>Senaryo · Yasalaşmadı</small><h3>Bağ-Kur 7.200 gün düzenlemesi yasalaşsaydı: ${esc(formatDate(p.eligibleDate))}</h3><p>TBMM'de gündeme gelen öneride Bağ-Kur'lular için 9.000 gün şartının 7.200 güne indirilmesi isteniyor; yaş şartı aynı kalır${p.age == null ? '' : ` (sizin için ${p.age} yaş)`}.</p><p>${comparison}</p>`;
+  }
   return `<small>Senaryo · Yasalaşmadı</small><h3>EMADDER önerisi yasalaşsaydı: ${esc(formatDate(p.eligibleDate))}</h3><p>${p.row.fromYear === p.row.toYear ? p.row.fromYear : `${p.row.fromYear}–${p.row.toYear}`} girişliler için önerilen şart: ${p.age} yaş ve ${formatDays(p.requiredDays)} prim günü.</p><p>${comparison}</p><p><a href="/kademeli-emeklilik/">Kademeli emeklilikte son durum →</a></p>`;
 }
 
@@ -90,6 +95,7 @@ if (typeof document !== 'undefined') {
       try {
         const result = calculateRetirement({
           gender: value('gender'),
+          status: value('status') || '4a',
           birthDate: value('birthDate'),
           startDate: value('startDate'),
           currentDays: value('currentDays') === '' ? NaN : Number(value('currentDays')),

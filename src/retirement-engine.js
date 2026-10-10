@@ -1,3 +1,5 @@
+// SSK (5510 4/a) ve Bağ-Kur (4/b) yaşlılık aylığı şartları. 4/b kaynağı: SGK "4/b Kendi Adına ve Hesabına
+// Bağımsız Çalışanlar" sayfası.
 // SSK (5510 4/a) yaşlılık aylığı şartları. Kaynak: SGK "4/a Hizmet Akdi ile Çalışanlar"
 // sayfasındaki tablolar ve 7438 sayılı Kanun (EYT, 3 Mart 2023). Son kontrol: RULES_CHECKED_AT.
 // Bağ-Kur (4/b), kamu (4/c), borçlanma, yıpranma ve malullük kapsam dışıdır.
@@ -137,13 +139,29 @@ export function calculateRetirement(input) {
   if (start.getTime() < addYears(birth, 14).getTime()) throw new Error('İlk sigorta giriş tarihi doğum tarihinden en az 14 yıl sonra olmalı.');
   if (start.getTime() > asOf.getTime()) throw new Error('İlk sigorta giriş tarihi bugünden sonra olamaz.');
 
+  const status = input.status ?? '4a';
+  if (status !== '4a' && status !== '4b') throw new Error('Sigortalılık türünü seçin.');
   const regime = regimeFor(iso(start));
   const eighteen = addYears(birth, 18);
   const serviceStart = iso(start) >= UNDER_18_RULE_FROM && start.getTime() < eighteen.getTime() ? eighteen : start;
   const when = (targetDays) => dateForDays({ asOf, start, currentDays, targetDays, daysPerYear });
   const options = [];
 
-  if (regime === 'eyt') {
+  if (status === '4b') {
+    const fullAge = gender === 'K' ? 58 : 60;
+    if (regime === 'eyt') {
+      const days = BAGKUR.eytDays[gender];
+      options.push(option({ key: 'bk-eyt-full', label: `EYT: ${days.toLocaleString('tr-TR')} gün (${gender === 'K' ? 20 : 25} tam yıl), yaş şartı yok`, requiredDays: days, age: null, start, birth, daysDate: when(days), notBefore: parse(EYT_EFFECTIVE, 'EYT') }));
+    } else if (regime === 'transition') {
+      options.push(option({ key: 'bk-transition-full', label: '9.000 gün (25 tam yıl)', requiredDays: BAGKUR.fullDays, age: fullAge, start, birth, daysDate: when(BAGKUR.fullDays) }));
+      options.push(option({ key: 'bk-transition-partial', label: '5.400 gün (15 tam yıl)', requiredDays: BAGKUR.partialDays, age: BAGKUR.transitionPartialAge[gender], start, birth, daysDate: when(BAGKUR.partialDays) }));
+    } else {
+      const fd = when(BAGKUR.fullDays);
+      options.push(option({ key: 'bk-reform-full', label: '9.000 gün', requiredDays: BAGKUR.fullDays, age: fd ? lookupByYear(REFORM_FULL_AGE[gender], fd.getUTCFullYear()) : null, ageFrom: 'days', start, birth, daysDate: fd }));
+      const pd = when(BAGKUR.partialDays);
+      options.push(option({ key: 'bk-reform-partial', label: '5.400 gün (yaştan)', requiredDays: BAGKUR.partialDays, age: pd ? lookupByYear(REFORM_PARTIAL_AGE[gender], pd.getUTCFullYear()) : null, ageFrom: 'days', start, birth, daysDate: pd }));
+    }
+  } else if (regime === 'eyt') {
     const days = lookupByDate(EYT_DAYS[gender], start);
     options.push(option({ key: 'eyt-full', label: 'EYT: yaş şartı olmadan', requiredDays: days, serviceYears: EYT_YEARS[gender], age: null, start, serviceStart, birth, daysDate: when(days), notBefore: parse(EYT_EFFECTIVE, 'EYT') }));
     options.push(option({ key: 'eyt-partial', label: '15 yıl ve 3.600 gün (yaş şartlı)', requiredDays: 3600, serviceYears: 15, age: (conditionDate) => lookupByDate(EYT_PARTIAL_AGE[gender], conditionDate), ageFrom: 'conditions', start, serviceStart, birth, daysDate: when(3600) }));
@@ -162,16 +180,21 @@ export function calculateRetirement(input) {
   const reachable = options.filter((item) => item.eligibleDate).sort((a, b) => a.eligibleDate.localeCompare(b.eligibleDate));
   const earliest = reachable[0] || null;
 
-  const row = emadderRowFor(iso(start));
   let proposal = null;
+  const row = status === '4a' ? emadderRowFor(iso(start)) : null;
   if (row) {
     const age = gender === 'K' ? row.women : row.men;
     const proposalOption = option({ key: 'emadder', label: 'EMADDER önerisi (yasalaşmadı)', requiredDays: row.days, age, start, birth, daysDate: when(row.days) });
-    proposal = { ...proposalOption, row };
+    proposal = { ...proposalOption, kind: 'emadder', row };
+  } else if (status === '4b' && regime !== 'eyt') {
+    const pd = when(BAGKUR.proposalDays);
+    const age = regime === 'transition' ? (gender === 'K' ? 58 : 60) : (pd ? lookupByYear(REFORM_FULL_AGE[gender], pd.getUTCFullYear()) : null);
+    proposal = { ...option({ key: 'bagkur-7200', label: 'Bağ-Kur 7.200 gün önerisi (yasalaşmadı)', requiredDays: BAGKUR.proposalDays, age, ageFrom: regime === 'reform' ? 'days' : null, start, birth, daysDate: pd }), kind: 'bagkur7200', row: null };
   }
 
   return {
     regime,
+    status,
     serviceStartAdjusted: serviceStart !== start ? iso(serviceStart) : null,
     rulesCheckedAt: RULES_CHECKED_AT,
     asOf: iso(asOf),
@@ -184,5 +207,10 @@ export function calculateRetirement(input) {
     proposalGainDays: proposal?.eligibleDate && earliest ? Math.round((parse(earliest.eligibleDate, 'x') - parse(proposal.eligibleDate, 'x')) / DAY_MS) : null
   };
 }
+
+// Bağ-Kur (4/b): EYT grubunda tam yıl prim (kadın 20 = 7200 gün, erkek 25 = 9000 gün), yaş yok (3 Mart 2023 sonrası).
+// 1999–2008: 58/60 yaş + 9000 gün veya 60/62 yaş + 5400 gün. 2008 sonrası: 9000 gün + REFORM_FULL_AGE,
+// 5400 gün + REFORM_PARTIAL_AGE. Önerilen (yasalaşmamış) 7200 gün eşitlemesi senaryo olarak hesaplanır.
+export const BAGKUR = Object.freeze({ eytDays: Object.freeze({ K: 7200, E: 9000 }), fullDays: 9000, partialDays: 5400, transitionPartialAge: Object.freeze({ K: 60, E: 62 }), proposalDays: 7200 });
 
 export const RULE_TABLES = Object.freeze({ EYT_DAYS, EYT_YEARS, EYT_PARTIAL_AGE, REFORM_FULL_AGE, REFORM_PARTIAL_AGE, REFORM_PARTIAL_DAYS });
