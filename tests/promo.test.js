@@ -22,7 +22,7 @@ test('dilim sınırları: 20.000 TL ve üzeri en üst dilim, alt sınırlar dahi
   assert.equal(promoForPension(ziraat, 10_000).amount, 8_000);
   assert.equal(promoForPension(ziraat, 23_552).amount, 12_000);
   const halk = PROMOS.find((p) => p.key === 'halkbank');
-  assert.equal(promoForPension(halk, 9_000).amount, null);
+  assert.equal(promoForPension(halk, 9_000).amount, 5_000);
   assert.equal(promoForPension(halk, 12_000).amount, 8_000);
 });
 
