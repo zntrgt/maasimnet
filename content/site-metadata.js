@@ -17,7 +17,6 @@ export const SITE_METADATA = Object.freeze({
 
 const PAGE_OVERRIDES = Object.freeze({
   '/blog/': Object.freeze({ modifiedAt: '2026-09-17' }),
-  '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/blog/is-teklifinin-yillik-degeri/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/maas-teklifi-karsilastirma/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/prim-ikramiye-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
@@ -27,6 +26,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kademeli-emeklilik/': Object.freeze({ publishedAt: '2026-09-18', modifiedAt: '2026-10-07' }),
+  '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),
   '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
