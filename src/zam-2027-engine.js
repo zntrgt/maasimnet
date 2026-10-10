@@ -8,6 +8,9 @@ export const KNOWN_MONTHS = Object.freeze([
   Object.freeze({ month: '2026-08', label: 'Ağustos 2026', pct: 1.84 }),
   Object.freeze({ month: '2026-09', label: 'Eylül 2026', pct: 1.84 })
 ]);
+// Aralık verisiyle birlikte TÜİK/basın 6 aylık resmî oranı açıklar; endeksten hesaplandığı için aylık oranların
+// birleşiminden birkaç yüzde puan farklı olabilir. Açıklanınca buraya yazılır (ör. 10.37); null iken birleşik oran kullanılır.
+export const OFFICIAL_SIX_MONTH_PCT = null;
 export const PERIOD_MONTHS = Object.freeze(['Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']);
 // TÜİK: Ocak–Haziran 2026 kümülatif TÜFE %17,76 (Temmuz 2026 emekli zammı). Yılbaşından bugüne değer,
 // buna KNOWN_MONTHS eklenerek hesaplanır; böylece her yeni ay eklendiğinde senaryolar kendiliğinden hizalanır.
@@ -38,8 +41,11 @@ export function impliedMonthlyPct(yearEndPct, knownMonths = KNOWN_MONTHS) {
   return (Math.pow(ratio, 1 / remainingMonths) - 1) * 100;
 }
 
+export const isFinal = () => KNOWN_MONTHS.length === 6;
+
 export function sixMonthInflationPct(assumedMonthlyPct) {
   const remaining = 6 - KNOWN_MONTHS.length;
+  if (remaining === 0 && OFFICIAL_SIX_MONTH_PCT !== null) return OFFICIAL_SIX_MONTH_PCT;
   if (!Number.isFinite(assumedMonthlyPct) || assumedMonthlyPct < -5 || assumedMonthlyPct > 15) throw new Error('Aylık enflasyon varsayımı -5 ile 15 arasında olmalı.');
   return compound([...KNOWN_MONTHS.map((m) => m.pct), ...Array(remaining).fill(assumedMonthlyPct)]);
 }
@@ -77,6 +83,6 @@ export function scenarioPresets() {
   const avgKnown = KNOWN_MONTHS.reduce((s, m) => s + m.pct, 0) / KNOWN_MONTHS.length;
   return [
     ...YEAR_END_REFERENCES.map((ref) => ({ key: ref.key, label: `${ref.label} (%${ref.yearEndPct.toLocaleString('tr-TR')})`, monthlyPct: round2(impliedMonthlyPct(ref.yearEndPct)) })),
-    { key: 'recent', label: 'Son 3 ayın ortalaması sürerse', monthlyPct: round2(avgKnown) }
+    { key: 'recent', label: `Son ${KNOWN_MONTHS.length} ayın ortalaması sürerse`, monthlyPct: round2(avgKnown) }
   ];
 }

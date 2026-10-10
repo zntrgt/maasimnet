@@ -18,7 +18,7 @@ export function compute(kind, { amountText, scenario, customText }) {
 }
 
 export function basisText(kind, result) {
-  const known = `${KNOWN_MONTHS.length} ay kesinleşen + ${6 - KNOWN_MONTHS.length} ay varsayım`;
+  const known = KNOWN_MONTHS.length === 6 ? '6 ayın tamamı kesinleşti' : `${KNOWN_MONTHS.length} ay kesinleşen + ${6 - KNOWN_MONTHS.length} ay varsayım`;
   if (kind === 'memur') return `6 aylık enflasyon ${pct(result.inflationPct)} → enflasyon farkı ${pct(result.farkPct)} + toplu sözleşme %${result.collectivePct} (${known})`;
   return `6 aylık enflasyon ${pct(result.inflationPct)} (${known})`;
 }
