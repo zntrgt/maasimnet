@@ -57,7 +57,7 @@ export async function applyCalculatorDiscovery(dist) {
 
   const hubDir = join(dist, 'hesaplama-araclari'); await mkdir(hubDir, { recursive: true }); await writeFile(join(hubDir, 'index.html'), hubPage(tools), 'utf8');
   const homeFile = distFile(dist, '/'); let home = await readFile(homeFile, 'utf8');
-  const homeTools = ['/maas-zam-hesaplama/', '/asgari-ucret-hesaplama/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/issizlik-maasi-hesaplama/', '/emeklilik-hesaplama/', '/emekli-zammi-hesaplama/', '/en-dusuk-emekli-maasi/', '/memur-zammi-hesaplama/', '/kira-artis-orani-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/isveren-maliyeti-hesaplama/', '/vergi-dilimi-hesaplama/'].map((path) => tools.find((tool) => tool.path === path)).filter(Boolean);
+  const homeTools = ['/maas-zam-hesaplama/', '/asgari-ucret-hesaplama/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/issizlik-maasi-hesaplama/', '/memur-zammi-hesaplama/', '/kira-artis-orani-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/isveren-maliyeti-hesaplama/', '/vergi-dilimi-hesaplama/'].map((path) => tools.find((tool) => tool.path === path)).filter(Boolean);
   // Emeklilik kümesi: ana sayfadan konu sayfalarına açıklayıcı bağlantılar (kademeli emeklilik bir rehber, hesaplayıcı değil).
   const retirementCards = [
     tools.find((tool) => tool.path === '/emeklilik-hesaplama/'),
