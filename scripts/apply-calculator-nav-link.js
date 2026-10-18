@@ -17,19 +17,19 @@ function addNavLinks(html) {
   if (!html.includes('href="/hesaplama-araclari/">Araçlar</a>')) {
     html = html.replace(
       /(<div class="site-nav site-nav--desktop"[^>]*><a href="\/#hesaplayici">Hesapla<\/a>)/,
-      '$1<a href="/hesaplama-araclari/">Araçlar</a><a href="/tazminat-hesaplama/">Tazminat</a>'
+      '$1\n<a href="/hesaplama-araclari/">Araçlar</a>\n<a href="/tazminat-hesaplama/">Tazminat</a>\n'
     );
   }
-  if (!html.includes('href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a><a href="/tazminat-hesaplama/">Tazminat Hesaplama</a>')) {
+  if (!/href="\/hesaplama-araclari\/">Tüm Hesaplama Araçları<\/a>\s*<a href="\/tazminat-hesaplama\/">Tazminat Hesaplama<\/a>/.test(html)) {
     html = html.replace(
       /(<div class="site-mobile-menu"[^>]*><a href="\/#hesaplayici">Hesapla<\/a>)/,
-      '$1<a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a><a href="/tazminat-hesaplama/">Tazminat Hesaplama</a>'
+      '$1\n<a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a>\n<a href="/tazminat-hesaplama/">Tazminat Hesaplama</a>\n'
     );
   }
   if (!/<nav aria-label="Hesaplayıcı bağlantıları"><a href="\/hesaplama-araclari\/">Tüm Hesaplama Araçları<\/a>/.test(html)) {
     html = html.replace(
       /(<nav aria-label="Hesaplayıcı bağlantıları">)/,
-      '$1<a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a>'
+      '$1<a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a>\n'
     );
   }
   return html;
