@@ -27,7 +27,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/blog/maas-zam-gorusmesi-nasil-yapilir/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/blog/esnek-yan-hak-butcesi/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/blog/2026-sgk-tavani/': Object.freeze({ modifiedAt: '2026-10-10' }),
-  '/blog/2026-yemek-karti-istisnasi/': Object.freeze({ modifiedAt: '2026-10-10' }),
+  '/blog/2026-yemek-karti-istisnasi/': Object.freeze({ modifiedAt: '2026-10-18' }),
   '/blog/is-teklifinin-yillik-degeri/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/maas-teklifi-karsilastirma/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/prim-ikramiye-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),

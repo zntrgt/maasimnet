@@ -6,6 +6,9 @@ export const WEBSITE_ID = `${SITE}/#website`;
 export const LOGO_PNG = `${SITE}/assets/logo-512.png`;
 export const DEFAULT_SOCIAL_IMAGE = `${SITE}/assets/og-maasim-2026.png`;
 
+// Veri derlemeleri kaynak gösterilerek yeniden kullanılabilir (resmî rakamların kaynağı ilgili kurumlardır).
+export const DATASET_LICENSE = 'https://creativecommons.org/licenses/by/4.0/';
+
 export const SAME_AS = Object.freeze([]);
 
 export const ORGANIZATION = Object.freeze({

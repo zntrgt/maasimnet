@@ -74,16 +74,18 @@ function jobChangeTaxBaseBlock() {
 }
 
 function mealAllowanceBlock() {
-  const incomeTaxDaily = DATA_2026.publishedData.mealAllowance.incomeTaxDailyKurus;
-  const sgkDaily = DATA_2026.publishedData.mealAllowance.sgkDailyKurus;
+  const meal = DATA_2026.publishedData.mealAllowance;
+  const incomeTaxDaily = meal.incomeTaxDailyKurus;
+  const sgkDaily = meal.sgkDailyKurus;
+  const sgkBefore = meal.sgkPreviousDailyKurus;
   const days = [20, 22, 26];
-  const rows = days.map((dayCount) => `<tr><td>${dayCount} gün</td><td>${formatWholeTl(incomeTaxDaily * dayCount)}</td><td>${formatWholeTl(sgkDaily * dayCount)}</td><td>${formatWholeTl((incomeTaxDaily - sgkDaily) * dayCount)}</td></tr>`).join('');
+  const rows = days.map((dayCount) => `<tr><td>${dayCount} gün</td><td>${formatWholeTl(incomeTaxDaily * dayCount)}</td><td>${formatWholeTl(sgkDaily * dayCount)}</td><td>${formatWholeTl(sgkBefore * dayCount)}</td></tr>`).join('');
 
   return wrap(
     'Maaşım.net hesabı: çalışma gününe göre yemek bedeli istisna karşılıkları',
-    `Gelir vergisi ve SGK tarafındaki günlük tutarlar aynı değildir. 2026 merkezi veri setimizde gelir vergisi için günlük ${formatWholeTl(incomeTaxDaily)}, SGK için günlük ${formatWholeTl(sgkDaily)} referansı bulunuyor.`,
-    `<div class="original-data-grid"><div><span>Günlük gelir vergisi referansı</span><strong>${formatWholeTl(incomeTaxDaily)}</strong></div><div><span>Günlük SGK referansı</span><strong>${formatWholeTl(sgkDaily)}</strong></div></div><div class="table-scroll"><table class="table original-data-table"><thead><tr><th>Fiilî çalışma</th><th>GV aylık karşılığı</th><th>SGK aylık karşılığı</th><th>İki referans arasındaki fark</th></tr></thead><tbody>${rows}</tbody></table></div>`,
-    'Tutarlar yalnızca günlük referansların fiilî çalışma günüyle çarpımıdır. Ödeme şekli, yemek kartının niteliği ve mevzuattaki koşullar ayrıca kontrol edilmelidir.'
+    `17 Nisan 2026'dan itibaren gelir vergisi ve SGK tarafındaki günlük tutarlar aynı: ${formatWholeTl(incomeTaxDaily)}. Bu tarihten önce SGK istisnası günlük ${formatWholeTl(sgkBefore)} idi; Ocak–Nisan bordrolarında bu eski tutar uygulanır.`,
+    `<div class="original-data-grid"><div><span>Günlük gelir vergisi istisnası</span><strong>${formatWholeTl(incomeTaxDaily)}</strong></div><div><span>Günlük SGK istisnası (17 Nisan 2026'dan itibaren)</span><strong>${formatWholeTl(sgkDaily)}</strong></div></div><div class="table-scroll"><table class="table original-data-table"><thead><tr><th>Fiilî çalışma günü</th><th>GV aylık karşılığı</th><th>SGK aylık karşılığı (güncel)</th><th>Aylık SGK istisnası (16 Nisan'a kadar, ${formatWholeTl(sgkBefore)}/gün)</th></tr></thead><tbody>${rows}</tbody></table></div>`,
+    'Tutarlar günlük istisnanın fiilî çalışma günüyle çarpımıdır. İstisna işyerinde yemek verilmiyorsa uygulanır; izin ve rapor günleri sayılmaz, limiti aşan kısım vergiye ve prime tabidir.'
   );
 }
 
