@@ -30,7 +30,7 @@ const TOOL_CANDIDATES = Object.freeze([
 
 function distFile(dist, route) { if (route === '/') return join(dist, 'index.html'); return join(dist, route.replace(/^\/+|\/+$/g, ''), 'index.html'); }
 async function routeExists(dist, route) { try { await access(distFile(dist, route)); return true; } catch { return false; } }
-function card(tool) { return `<a class="calculator-discovery__card" href="${tool.path}"><strong>${tool.title}</strong><span>${tool.description}</span><b>Hesapla →</b></a>`; }
+function card(tool) { return `<a class="calculator-discovery__card" href="${tool.path}"><strong>${tool.title}</strong><span>${tool.description}</span><b>${tool.cta || 'Hesapla →'}</b></a>`; }
 function block(title, intro, tools, extraClass = '') { return `<section class="calculator-discovery ${extraClass}" ${MARKER}><div class="calculator-discovery__head"><p class="calculator-discovery__eyebrow">Hesaplama araçları</p><h2>${title}</h2><p>${intro}</p></div><div class="calculator-discovery__grid">${tools.map(card).join('')}</div><p class="calculator-discovery__all"><a href="/hesaplama-araclari/">Tüm hesaplama araçlarını gör →</a></p></section>`; }
 function insertBeforeMainEnd(html, section) { if (html.includes(MARKER)) return html; return html.replace(/<\/main>/i, `${section}</main>`); }
 function insertHome(html, section) { if (html.includes(MARKER)) return html; const faqStart = html.search(/<section\b[^>]*id=["'](?:sss|faq)["']/i); if (faqStart >= 0) return html.slice(0, faqStart) + section + html.slice(faqStart); return insertBeforeMainEnd(html, section); }
@@ -57,8 +57,16 @@ export async function applyCalculatorDiscovery(dist) {
 
   const hubDir = join(dist, 'hesaplama-araclari'); await mkdir(hubDir, { recursive: true }); await writeFile(join(hubDir, 'index.html'), hubPage(tools), 'utf8');
   const homeFile = distFile(dist, '/'); let home = await readFile(homeFile, 'utf8');
-  const homeTools = ['/maas-zam-hesaplama/', '/asgari-ucret-hesaplama/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/issizlik-maasi-hesaplama/', '/emeklilik-hesaplama/', '/emekli-zammi-hesaplama/', '/en-dusuk-emekli-maasi/', '/memur-zammi-hesaplama/', '/kira-artis-orani-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/isveren-maliyeti-hesaplama/', '/vergi-dilimi-hesaplama/'].map((path) => tools.find((tool) => tool.path === path)).filter(Boolean);
-  home = insertHome(home, block('Maaştan çalışan haklarına: diğer hesaplama araçları','Maaş zammı, asgari ücret, kıdem, ihbar, işsizlik, fazla mesai, yıllık izin, vergi dilimi ve işveren maliyeti araçlarına doğrudan geçin.', homeTools, 'calculator-discovery--home')); await writeFile(homeFile, home, 'utf8');
+  const homeTools = ['/maas-zam-hesaplama/', '/asgari-ucret-hesaplama/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/issizlik-maasi-hesaplama/', '/memur-zammi-hesaplama/', '/kira-artis-orani-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/', '/isveren-maliyeti-hesaplama/', '/vergi-dilimi-hesaplama/'].map((path) => tools.find((tool) => tool.path === path)).filter(Boolean);
+  // Emeklilik kümesi: ana sayfadan konu sayfalarına açıklayıcı bağlantılar (kademeli emeklilik bir rehber, hesaplayıcı değil).
+  const retirementCards = [
+    tools.find((tool) => tool.path === '/emeklilik-hesaplama/'),
+    { path: '/kademeli-emeklilik/', title: 'Kademeli Emeklilik: Son Durum', description: '1999–2008 arasında çalışmaya başlayanlar için kanun teklifleri, EMADDER önerisi ve resmî açıklamalar.', cta: 'Son durumu oku →' },
+    tools.find((tool) => tool.path === '/emekli-zammi-hesaplama/'),
+    tools.find((tool) => tool.path === '/en-dusuk-emekli-maasi/')
+  ].filter(Boolean);
+  const retirementBlock = `<section class="calculator-discovery calculator-discovery--home"><div class="calculator-discovery__head"><p class="calculator-discovery__eyebrow">Emeklilik</p><h2>Emeklilik: ne zaman, ne kadar, son durum</h2><p>Emeklilik tarihinizi hesaplayın, kademeli emeklilikteki son gelişmeleri ve Ocak 2027 emekli zammını takip edin.</p></div><div class="calculator-discovery__grid">${retirementCards.map((tool) => card(tool)).join('')}</div></section>`;
+  home = insertHome(home, retirementBlock + block('Maaştan çalışan haklarına: diğer hesaplama araçları','Maaş zammı, asgari ücret, kıdem, ihbar, işsizlik, fazla mesai, yıllık izin, vergi dilimi ve işveren maliyeti araçlarına doğrudan geçin.', homeTools, 'calculator-discovery--home')); await writeFile(homeFile, home, 'utf8');
 
   const contextualTargets = ['/veriler/2026/', '/hesaplama-metodolojisi/', '/sss/', '/sozluk/', '/senaryolar/'];
   const contextualTools = ['/', '/maas-zam-hesaplama/', '/asgari-ucret-hesaplama/', '/tazminat-hesaplama/', '/kidem-tazminati-hesaplama/', '/ihbar-tazminati-hesaplama/', '/issizlik-maasi-hesaplama/', '/fazla-mesai-hesaplama/', '/yillik-izin-ucreti-hesaplama/'].map((path) => tools.find((tool) => tool.path === path)).filter(Boolean);
