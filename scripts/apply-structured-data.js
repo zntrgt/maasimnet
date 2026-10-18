@@ -1,6 +1,6 @@
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { ORGANIZATION, WEBSITE, ORG_ID, WEBSITE_ID, DEFAULT_SOCIAL_IMAGE } from '../content/site-identity.js';
+import { ORGANIZATION, WEBSITE, ORG_ID, WEBSITE_ID, DEFAULT_SOCIAL_IMAGE, DATASET_LICENSE } from '../content/site-identity.js';
 import { getPageMetadata } from '../content/site-metadata.js';
 import { canonicalOf, metaOf } from '../content/html-attrs.js';
 
@@ -54,6 +54,7 @@ function fillNode(node, ctx) {
     node.creator ??= orgRef;
     node.url ??= ctx.canonical;
     node.isAccessibleForFree ??= true;
+    node.license ??= DATASET_LICENSE;
     if (!node.description || node.description.length < 50) node.description = ctx.description && ctx.description.length >= 50 ? ctx.description : node.description;
   }
   return node;

@@ -71,12 +71,13 @@ export const OFFICIAL_FACT_TOPICS = Object.freeze([
     path: '/blog/2026-yemek-karti-istisnasi/',
     placement: { type: 'article' },
     name: '2026 Yemek Yardımı İstisnası: Gelir Vergisi ve SGK',
-    answer: `2026'da günlük yemek bedelinin gelir vergisi istisnası ${money(d.mealAllowance.incomeTaxDailyKurus)}, SGK prime esas kazanç istisnası ${money(d.mealAllowance.sgkDailyKurus)}'dir; iki tutar birbirinin yerine kullanılamaz.`,
+    answer: `2026'da işyerinde yemek verilmeyen çalışanlar için fiilen çalışılan gün başına yemek bedelinin gelir vergisi istisnası ${money(d.mealAllowance.incomeTaxDailyKurus)}'dir. SGK prime esas kazanç istisnası 17 Nisan 2026'dan itibaren 7577 sayılı Kanunla ${money(d.mealAllowance.sgkPreviousDailyKurus)}'den ${money(d.mealAllowance.sgkDailyKurus)}'ye çıktı; yemek kartı ve nakit ödeme SGK açısından aynı sınıra tabidir.`,
     cards: [
-      { label: 'Gelir vergisi istisnası', value: money(d.mealAllowance.incomeTaxDailyKurus), note: 'Günlük' },
-      { label: 'SGK PEK istisnası', value: money(d.mealAllowance.sgkDailyKurus), note: 'Günlük' }
+      { label: 'Gelir vergisi istisnası', value: money(d.mealAllowance.incomeTaxDailyKurus), note: 'Günlük, 2026' },
+      { label: 'SGK PEK istisnası', value: money(d.mealAllowance.sgkDailyKurus), note: 'Günlük, 17 Nisan 2026’dan itibaren' },
+      { label: 'Önceki SGK istisnası', value: money(d.mealAllowance.sgkPreviousDailyKurus), note: 'Günlük, 1 Ocak–16 Nisan 2026' }
     ],
-    sources: [s.mealIncomeTax, s.sgk]
+    sources: [s.mealIncomeTax, s.mealSgk]
   })
 ]);
 

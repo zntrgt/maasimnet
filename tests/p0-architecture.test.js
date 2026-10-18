@@ -22,7 +22,9 @@ test('resmî 2026 temel değerleri veri merkezinde sabittir', () => {
   assert.equal(DATA_2026.publishedData.severanceCeiling.firstHalfKurus, 6_494_877);
   assert.equal(DATA_2026.publishedData.severanceCeiling.secondHalfKurus, 7_372_987);
   assert.equal(DATA_2026.publishedData.mealAllowance.incomeTaxDailyKurus, 30_000);
-  assert.equal(DATA_2026.publishedData.mealAllowance.sgkDailyKurus, 15_800);
+  assert.equal(DATA_2026.publishedData.mealAllowance.sgkDailyKurus, 30_000);
+  assert.equal(DATA_2026.publishedData.mealAllowance.sgkPreviousDailyKurus, 15_800);
+  assert.equal(DATA_2026.publishedData.mealAllowance.sgkChangedAt, '2026-04-17');
 });
 
 test('P0 dönüşümü uzman profili veya reviewer iddiası üretmez', () => {

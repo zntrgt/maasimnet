@@ -1,7 +1,7 @@
 export const DATA_2026 = Object.freeze({
   year: 2026,
   validity: Object.freeze({ from: '2026-01-01', to: '2026-12-31' }),
-  checkedAt: '2026-09-04',
+  checkedAt: '2026-10-18',
   engineVersion: 'central-kurus-engine',
   sources: Object.freeze({
     minimumWage: Object.freeze({
@@ -68,6 +68,13 @@ export const DATA_2026 = Object.freeze({
       url: 'https://www.csgb.gov.tr/yayinlar/calisma-hayati-istatistikleri-e-bulteni/temmuz-2026/ucret-ve-sendikal-istatistikler.html',
       publishedAt: '2026-07-01'
     }),
+    mealSgk: Object.freeze({
+      institution: 'Sosyal Güvenlik Kurumu',
+      documentTitle: 'SGK Genelgesi 2026/12 – Yemek bedelinin prime esas kazançtan istisnası',
+      legalBasis: '5510 sayılı Kanun m.80/1-b; 7577 sayılı Kanun m.10 (RG 17.04.2026, 33227)',
+      url: 'https://www.alomaliye.com/2026/05/08/sgk-genelgesi-2026-12-yemek-bedeli/',
+      publishedAt: '2026-05-08'
+    }),
     mealIncomeTax: Object.freeze({
       institution: 'Gelir İdaresi Başkanlığı',
       documentTitle: '332 Seri No.lu Gelir Vergisi Genel Tebliği – 2026 yemek bedeli istisnası',
@@ -115,6 +122,7 @@ export const DATA_2026 = Object.freeze({
       period: '2026-01-01/2026-12-31',
       sourceKey: 'overtime'
     }),
-    mealAllowance: Object.freeze({ incomeTaxDailyKurus: 30_000, sgkDailyKurus: 15_800, period: '2026-01-01/2026-12-31', incomeTaxSourceKey: 'mealIncomeTax', sgkSourceKey: 'sgk' })
+    // SGK istisnası 17.04.2026'da 7577 sayılı Kanunla 158 TL'den 300 TL'ye çıktı; işyerinde yemek verilmiyorsa, fiilen çalışılan gün başına.
+    mealAllowance: Object.freeze({ incomeTaxDailyKurus: 30_000, sgkDailyKurus: 30_000, sgkPreviousDailyKurus: 15_800, sgkChangedAt: '2026-04-17', period: '2026-01-01/2026-12-31', incomeTaxSourceKey: 'mealIncomeTax', sgkSourceKey: 'mealSgk' })
   })
 });
