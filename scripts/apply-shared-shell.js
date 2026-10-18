@@ -25,7 +25,8 @@ const footer = `<footer class="site-footer"><div class="site-footer__inner" data
 <a href="/kademeli-emeklilik/">Kademeli Emeklilik</a>
 <a href="/veriler/2026/">2026 Verileri</a>
 <a href="/hesaplama-metodolojisi/">Hesaplama Metodolojisi</a>
-<a href="/iletisim/">İletişim</a></nav></div><div><h2>Hesaplayıcılar</h2><nav aria-label="Hesaplayıcı bağlantıları"><a href="/asgari-ucret-hesaplama/">Asgari Ücret Hesaplama</a>
+<a href="/iletisim/">İletişim</a></nav></div><div><h2>Hesaplayıcılar</h2><nav aria-label="Hesaplayıcı bağlantıları"><a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a>
+<a href="/asgari-ucret-hesaplama/">Asgari Ücret Hesaplama</a>
 <a href="/tazminat-hesaplama/">Kıdem &amp; İhbar Tazminatı</a>
 <a href="/issizlik-maasi-hesaplama/">İşsizlik Maaşı</a>
 <a href="/fazla-mesai-hesaplama/">Fazla Mesai</a>
