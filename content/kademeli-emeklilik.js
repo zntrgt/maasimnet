@@ -1,8 +1,8 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-10-10',
-  reviewedAt: '2026-10-10',
+  modifiedAt: '2026-10-19',
+  reviewedAt: '2026-10-19',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
   latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; 4 Eylül tarihli 7/48458 sayılı soru önergesine yanıt kaydı görünmüyor.',
@@ -39,6 +39,22 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-10-19',
+      label: 'Güncel kontrol',
+      text: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı teklifler hâlâ komisyonda; 7/48458 sayılı soru önergesine yanıt kaydı yok. Destici’nin duyurduğu ortak teklifin TBMM’ye sunulduğuna ve 13. Yargı Paketi metninin Meclis’e geldiğine dair bir kayıt bulunamadı. Resmî Gazete’de yeni bir kademeli emeklilik düzenlemesi yok.',
+      kind: 'verification',
+      sourceUrl: 'https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/d0adc0ec-626b-4e78-b951-01a07ab9e70e',
+      sourceLabel: '7/48458 TBMM kaydı'
+    }),
+    Object.freeze({
+      date: '2026-10-18',
+      label: 'EMADDER / Ankara basın açıklaması',
+      text: 'EMADDER, duyurduğu buluşmayı 18 Ekim’de Ankara Ulus Atatürk Anıtı önünde basın açıklaması olarak yaptı. Genel Başkan Mihriban Uğurlu, yaklaşık 4,5 milyon çalışanı ilgilendirdiğini söylediği kademeli emeklilik için TBMM’den yasal düzenleme istedi. Bu bir dernek açıklamasıdır; kanun teklifi veya resmî karar değildir.',
+      kind: 'advocacy',
+      sourceUrl: 'https://www.sondakika.com/guncel/haber-emadder-baskani-ugurlu-4-5-milyon-emekci-icin-mecl-20342493/',
+      sourceLabel: 'Basın açıklaması haberi (Son Dakika)'
+    }),
     Object.freeze({
       date: '2026-10-10',
       label: 'Güncel kontrol',
@@ -109,7 +125,7 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     Object.freeze({
       date: '2026-09-04',
       label: 'TBMM / Yeni soru önergesi',
-      text: 'Kademeli emeklilik düzenlemesi talebine ilişkin 7/48458 esas numaralı yazılı soru önergesi verildi. 10 Ekim kaynak kontrolünde TBMM kaydında yanıt görünmüyor.',
+      text: 'Kademeli emeklilik düzenlemesi talebine ilişkin 7/48458 esas numaralı yazılı soru önergesi verildi. 19 Ekim kaynak kontrolünde TBMM kaydında yanıt görünmüyor.',
       kind: 'official'
     }),
     Object.freeze({
