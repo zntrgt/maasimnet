@@ -1,7 +1,7 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-10-19',
+  modifiedAt: '2026-10-27',
   reviewedAt: '2026-10-19',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
@@ -39,6 +39,14 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-10-26',
+      label: 'DEM Parti / Kanun teklifi',
+      text: 'DEM Parti Grup Başkanvekilleri Gülistan Kılıç Koçyiğit ve Sezai Temelli, 5510 sayılı Kanun’a “Geçici Madde 113” eklenmesini öngören bir kanun teklifini TBMM Başkanlığına sundu. Teklif metnine göre 8 Eylül 1999 sonrası sigortalı olup sigortalılık süresi ve prim günü şartlarını sağlayan ancak yaş şartını karşılayamayanlar, Kuruma yazılı başvuruyla yaşlılık aylığı bağlatabilecek; gerekçede kapsam 8 Eylül 1999-30 Nisan 2008 arası olarak tarif ediliyor. Bu bir kanun teklifidir; yasalaşmış bir düzenleme değildir. Esas numarası henüz kaynaklarda yer almıyor.',
+      kind: 'proposal',
+      sourceUrl: 'https://www.demparti.org.tr/tr/kademeli-emeklilik-duzenlemesi/22922/',
+      sourceLabel: 'DEM Parti teklif metni'
+    }),
     Object.freeze({
       date: '2026-10-19',
       label: 'Güncel kontrol',

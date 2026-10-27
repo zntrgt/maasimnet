@@ -64,7 +64,11 @@ const faqs = [
   },
   {
     q: 'Kademeli emeklilik için ortak kanun teklifi verildi mi?',
-    a: `${fmt(DATA.reviewedAt)} kontrolünde hayır. BBP Genel Başkanı Mustafa Destici, Meclis açıldıktan sonra partilerle ortak bir teklif için girişimde bulunacaklarını söyledi; bu teklifin TBMM’ye sunulduğuna dair kayıt bulunamadı. TBMM’de bekleyen teklifler 2/2755 ve 2/2959 sayılı tekliflerdir.`
+    a: `${fmt(DATA.reviewedAt)} kontrolünde hayır. BBP Genel Başkanı Mustafa Destici, Meclis açıldıktan sonra partilerle ortak bir teklif için girişimde bulunacaklarını söyledi; bu ortak teklifin TBMM’ye sunulduğuna dair kayıt bulunamadı. TBMM’de 2/2755 ve 2/2959 sayılı teklifler bekliyor; DEM Parti de 26 Ekim 2026’da ayrı bir teklif sundu.`
+  },
+  {
+    q: 'DEM Parti’nin kademeli emeklilik teklifi ne öngörüyor?',
+    a: '26 Ekim 2026’da TBMM Başkanlığına sunulan teklif, 5510 sayılı Kanun’a Geçici Madde 113 eklenmesini öneriyor. Metne göre 8 Eylül 1999 sonrası sigortalı olup sigortalılık süresi ve prim günü şartını sağlayan ancak yaş şartına takılanlar yazılı başvuruyla yaşlılık aylığı alabilecek. Bu bir tekliftir; komisyon ve Genel Kurul’dan geçip yayımlanmadıkça yürürlüğe girmez.'
   },
   {
     q: 'Kademeli emeklilik dosyası Erdoğan’ın önünde mi?',
