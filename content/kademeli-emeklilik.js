@@ -1,11 +1,11 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-10-27',
-  reviewedAt: '2026-10-19',
+  modifiedAt: '2026-10-28',
+  reviewedAt: '2026-10-28',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
-  latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; 4 Eylül tarihli 7/48458 sayılı soru önergesine yanıt kaydı görünmüyor.',
+  latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; 4 Eylül tarihli 7/48458 sayılı soru önergesinin TBMM durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; yanıt kaydı yok.',
   officialTableExists: false,
   emadderProposal: Object.freeze([
     Object.freeze({ start: '9 Eylül 1999–2000', women: 43, men: 45, days: 6400 }),
@@ -39,6 +39,14 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-10-28',
+      label: 'Güncel kontrol',
+      text: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı teklifler hâlâ komisyonda (Plan ve Bütçe esas, Sağlık, Aile, Çalışma ve Sosyal İşler tali). 7/48458 sayılı soru önergesinin durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; bakanlık yanıtı yok. DEM Parti’nin 26 Ekim teklifine ait TBMM esas numarası bu kontrolde doğrulanamadı.',
+      kind: 'verification',
+      sourceUrl: 'https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/d0adc0ec-626b-4e78-b951-01a07ab9e70e',
+      sourceLabel: '7/48458 TBMM kaydı'
+    }),
     Object.freeze({
       date: '2026-10-26',
       label: 'DEM Parti / Kanun teklifi',
