@@ -142,8 +142,14 @@ async function handleContact(request, env) {
   if (contentLength > 20_000) return json({ message: 'İstek çok büyük.' }, 413);
 
   const origin = request.headers.get('origin');
-  if (origin && new URL(origin).hostname !== new URL(request.url).hostname) {
-    return json({ message: 'Geçersiz kaynak.' }, 403);
+  if (origin) {
+    let originHost = '';
+    try {
+      originHost = new URL(origin).hostname;
+    } catch {
+      return json({ message: 'Geçersiz kaynak.' }, 403);
+    }
+    if (originHost !== new URL(request.url).hostname) return json({ message: 'Geçersiz kaynak.' }, 403);
   }
 
   let body;
