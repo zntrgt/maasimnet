@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { KNOWN_MONTHS, knownCumulativePct, sixMonthInflationPct, emekliZam, memurZam, impliedMonthlyPct, scenarioPresets, MIN_PENSION_KURUS } from '../src/zam-2027-engine.js';
+import { KNOWN_MONTHS, YEAR_TO_DATE_CUMULATIVE_PCT, knownCumulativePct, sixMonthInflationPct, emekliZam, memurZam, impliedMonthlyPct, scenarioPresets, MIN_PENSION_KURUS } from '../src/zam-2027-engine.js';
 
 test('Temmuz–Ekim kesinleşen kümülatif enflasyon %8,28', () => {
   assert.equal(Math.round(knownCumulativePct() * 100) / 100, 8.28);
@@ -34,7 +34,7 @@ test('6 aylık enflasyon %7 altında kalırsa memur farkı sıfır, zam %5', () 
 test('yıl sonu tahmininden ima edilen aylık oran tutarlı', () => {
   const m = impliedMonthlyPct(28);
   const ytd = 1.1776 * (1 + knownCumulativePct() / 100);
-  assert.ok(Math.abs(ytd - 1.2752) < 0.0005, 'Ocak–Haziran + bilinen aylar TÜİK Ocak–Ekim değeriyle (%27,52) uyumlu');
+  assert.ok(Math.abs(ytd - (1 + YEAR_TO_DATE_CUMULATIVE_PCT / 100)) < 0.0005, 'Ocak–Haziran + bilinen aylar TÜİK yılbaşından bugüne değeriyle uyumlu');
   const yearEnd = (ytd * Math.pow(1 + m / 100, 6 - KNOWN_MONTHS.length) - 1) * 100;
   assert.ok(Math.abs(yearEnd - 28) < 1e-9);
   assert.equal(scenarioPresets().length, 3);

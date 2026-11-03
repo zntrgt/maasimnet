@@ -16,8 +16,9 @@ export const PERIOD_MONTHS = Object.freeze(['Temmuz', 'Ağustos', 'Eylül', 'Eki
 // TÜİK: Ocak–Haziran 2026 kümülatif TÜFE %17,76 (Temmuz 2026 emekli zammı). Yılbaşından bugüne değer,
 // buna KNOWN_MONTHS eklenerek hesaplanır; böylece her yeni ay eklendiğinde senaryolar kendiliğinden hizalanır.
 export const JAN_JUN_CUMULATIVE_PCT = 17.76;
-// Sayfa metni için TÜİK'in açıkladığı Ocak–Eylül kümülatif değeri.
-export const JAN_SEP_CUMULATIVE_PCT = 24.32;
+// Sayfa metni için TÜİK'in açıkladığı yılbaşından bugüne (Ocak–son bilinen ay) kümülatif değer.
+// Her yeni ay eklendiğinde TÜİK'in "geçen yılın aralık ayına göre" değeriyle güncellenir; ay adı KNOWN_MONTHS'tan gelir.
+export const YEAR_TO_DATE_CUMULATIVE_PCT = 27.52;
 export const YEAR_END_REFERENCES = Object.freeze([
   Object.freeze({ key: 'tcmb', label: 'TCMB 2026 yıl sonu tahmini', yearEndPct: 28 }),
   Object.freeze({ key: 'pka', label: 'Piyasa beklentisi (Ekim PKA)', yearEndPct: 29.63 })
