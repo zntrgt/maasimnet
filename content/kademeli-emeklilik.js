@@ -1,11 +1,11 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-10-28',
-  reviewedAt: '2026-10-28',
+  modifiedAt: '2026-11-03',
+  reviewedAt: '2026-11-03',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
-  latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; 4 Eylül tarihli 7/48458 sayılı soru önergesinin TBMM durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; yanıt kaydı yok.',
+  latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; DEM Parti’nin 26 Ekim teklifinin basında 2/3988 esas numarasıyla Plan ve Bütçe Komisyonuna sevk edildiği bildiriliyor; 4 Eylül tarihli 7/48458 sayılı soru önergesinin TBMM durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; yanıt kaydı yok.',
   officialTableExists: false,
   emadderProposal: Object.freeze([
     Object.freeze({ start: '9 Eylül 1999–2000', women: 43, men: 45, days: 6400 }),
@@ -39,6 +39,22 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-11-03',
+      label: 'Güncel kontrol',
+      text: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı teklifler hâlâ komisyonda (Plan ve Bütçe esas, Sağlık, Aile, Çalışma ve Sosyal İşler tali). 7/48458 sayılı soru önergesinin durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; bakanlık yanıtı yok. TBMM’de kabul edilmiş veya Resmî Gazete’de yayımlanmış yeni bir kademeli emeklilik düzenlemesi yok.',
+      kind: 'verification',
+      sourceUrl: 'https://www.tbmm.gov.tr/Yasama/KanunTeklifi/7867990f-266c-4a18-a4b1-01955ffff04a',
+      sourceLabel: '2/2959 TBMM kaydı'
+    }),
+    Object.freeze({
+      date: '2026-10-28',
+      label: 'DEM Parti teklifi / Komisyona sevk',
+      text: 'Basında yer alan haberlere göre DEM Parti’nin 26 Ekim’de sunduğu kademeli emeklilik teklifi 2/3988 esas numarasıyla kaydedildi ve 28 Ekim’de Plan ve Bütçe Komisyonuna (tali: Sağlık, Aile, Çalışma ve Sosyal İşler Komisyonu) sevk edildi. Esas numarası bu kontrolde TBMM’nin teklif sayfasından ayrıca doğrulanamadı. Komisyona sevk, teklifin görüşüldüğü veya kabul edildiği anlamına gelmez; teklif yasalaşmış değildir.',
+      kind: 'proposal',
+      sourceUrl: 'https://www.sonmuhur.com/kademeli-emeklilik-2026-son-durum-meclise-kanun-teklifi-verildi-mi-yas-sarti-kalkacak-mi',
+      sourceLabel: 'Son Mühür haberi (2 Kasım)'
+    }),
     Object.freeze({
       date: '2026-10-28',
       label: 'Güncel kontrol',
