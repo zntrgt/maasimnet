@@ -2,11 +2,12 @@
 // Kesinleşen aylar TÜİK aylık TÜFE değişimleridir; kalan aylar kullanıcı varsayımıdır.
 // Her TÜİK açıklamasından sonra KNOWN_MONTHS güncellenir.
 
-export const ZAM_DATA_CHECKED_AT = '2026-10-10';
+export const ZAM_DATA_CHECKED_AT = '2026-11-03';
 export const KNOWN_MONTHS = Object.freeze([
   Object.freeze({ month: '2026-07', label: 'Temmuz 2026', pct: 1.78 }),
   Object.freeze({ month: '2026-08', label: 'Ağustos 2026', pct: 1.84 }),
-  Object.freeze({ month: '2026-09', label: 'Eylül 2026', pct: 1.84 })
+  Object.freeze({ month: '2026-09', label: 'Eylül 2026', pct: 1.84 }),
+  Object.freeze({ month: '2026-10', label: 'Ekim 2026', pct: 2.58 })
 ]);
 // Aralık verisiyle birlikte TÜİK/basın 6 aylık resmî oranı açıklar; endeksten hesaplandığı için aylık oranların
 // birleşiminden birkaç yüzde puan farklı olabilir. Açıklanınca buraya yazılır (ör. 10.37); null iken birleşik oran kullanılır.
@@ -19,7 +20,7 @@ export const JAN_JUN_CUMULATIVE_PCT = 17.76;
 export const JAN_SEP_CUMULATIVE_PCT = 24.32;
 export const YEAR_END_REFERENCES = Object.freeze([
   Object.freeze({ key: 'tcmb', label: 'TCMB 2026 yıl sonu tahmini', yearEndPct: 28 }),
-  Object.freeze({ key: 'pka', label: 'Piyasa beklentisi (Eylül PKA)', yearEndPct: 29.61 })
+  Object.freeze({ key: 'pka', label: 'Piyasa beklentisi (Ekim PKA)', yearEndPct: 29.63 })
 ]);
 // Memur: 8. dönem toplu sözleşme (Kamu Görevlileri Hakem Kurulu, Ağustos 2025).
 export const MEMUR_RATES = Object.freeze({ h2_2026: 7, h1_2027: 5 });
