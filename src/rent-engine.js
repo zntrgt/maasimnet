@@ -3,8 +3,9 @@
 // geçici sınırı 1 Temmuz 2024'te sona erdi.
 // RENT_CAPS: yenileme ayı → o ay uygulanabilecek azami oran (bir önceki ayın TÜİK 12 aylık ortalaması).
 // Yeni TÜİK verisi açıklanınca dizinin BAŞINA eklenir. Yalnız en az iki kaynağın aynı verdiği değerler.
-export const RENT_DATA_CHECKED_AT = '2026-10-10';
+export const RENT_DATA_CHECKED_AT = '2026-11-04';
 export const RENT_CAPS = Object.freeze([
+  Object.freeze({ renewal: '2026-11', label: 'Kasım 2026', basis: 'Ekim 2026', pct: 31.23 }),
   Object.freeze({ renewal: '2026-10', label: 'Ekim 2026', basis: 'Eylül 2026', pct: 31.49 }),
   Object.freeze({ renewal: '2026-09', label: 'Eylül 2026', basis: 'Ağustos 2026', pct: 31.79 }),
   Object.freeze({ renewal: '2026-08', label: 'Ağustos 2026', basis: 'Temmuz 2026', pct: 31.90 }),

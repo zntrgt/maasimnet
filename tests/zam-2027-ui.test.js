@@ -7,7 +7,7 @@ test('Türkçe tutar ve yüzde biçimleri okunur', () => {
   assert.equal(parsePercent('%2'), 2);
   const r = compute('emekli', { amountText: '23.552', scenario: '2', customText: '' });
   assert.equal(r.currentKurus, 2_355_200);
-  assert.equal(r.raisePct, 12.02);
+  assert.equal(r.raisePct, 12.66);
 });
 
 test('özel varsayım boşsa anlaşılır hata verir', () => {

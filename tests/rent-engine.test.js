@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { RENT_CAPS, latestCap, calculateRent } from '../src/rent-engine.js';
 
 test('oranlar en yeni ay başta, aylar benzersiz ve sıralı', () => {
-  assert.equal(latestCap().renewal, '2026-10');
-  assert.equal(latestCap().pct, 31.49);
+  assert.equal(latestCap().renewal, '2026-11');
+  assert.equal(latestCap().pct, 31.23);
   const months = RENT_CAPS.map((c) => c.renewal);
   assert.deepEqual([...months].sort().reverse(), months);
   assert.equal(new Set(months).size, months.length);
