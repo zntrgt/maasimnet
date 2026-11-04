@@ -37,7 +37,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kademeli-emeklilik/': Object.freeze({ publishedAt: '2026-09-18', modifiedAt: '2026-11-03' }),
-  '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-10-10', reviewedAt: '2026-10-10' }),
+  '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-11-04', reviewedAt: '2026-11-04' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
   '/test-raporu/': Object.freeze({ publishedAt: '2026-08-01', modifiedAt: '2026-08-01' }),
   '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
