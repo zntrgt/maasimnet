@@ -51,10 +51,10 @@ const PAGE_OVERRIDES = Object.freeze({
   '/issizlik-maasi-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/emeklilik-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
   '/emekli-calisan-maas-hesaplama/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-10-10' }),
-  '/kira-artis-orani-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
+  '/kira-artis-orani-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-11-04' }),
   '/borclanma-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
-  '/emekli-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
-  '/memur-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-10-10' }),
+  '/emekli-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-11-04' }),
+  '/memur-zammi-hesaplama/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: '2026-11-04' }),
   // Sayfa tarihi zam verisiyle birlikte değişir (TÜİK günü görevi KNOWN_MONTHS'u güncellediğinde).
   '/en-dusuk-emekli-maasi/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: ZAM_DATA_CHECKED_AT }),
   '/emekli-promosyonu/': Object.freeze({ publishedAt: '2026-10-10', modifiedAt: PROMO_CHECKED_AT }),
