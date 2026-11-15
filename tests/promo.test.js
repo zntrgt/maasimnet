@@ -22,7 +22,7 @@ test('dilim sınırları: 20.000 TL ve üzeri en üst dilim, alt sınırlar dahi
   assert.equal(promoForPension(ziraat, 10_000).amount, 8_000);
   assert.equal(promoForPension(ziraat, 23_552).amount, 12_000);
   const halk = PROMOS.find((p) => p.key === 'halkbank');
-  assert.equal(promoForPension(halk, 9_000).amount, 5_000);
+  assert.equal(promoForPension(halk, 9_000).amount, null);
   assert.equal(promoForPension(halk, 12_000).amount, 8_000);
 });
 
@@ -34,7 +34,10 @@ test('karşılaştırma: önce kesin dilimler, belirsiz koşulsuz tutarlar en so
   const qnb = rows.find((r) => r.key === 'qnb');
   assert.equal(qnb.amount, 20_000);
   assert.equal(qnb.exact, true);
-  assert.match(amountText(rows.find((r) => r.key === 'ing')), /En fazla/);
+  // ING'nin dilimleri Kasım 2026'da iki kaynakta açıklandı; dilimsiz satır biçimi sentetik satırla korunur.
+  assert.equal(amountText(rows.find((r) => r.key === 'ing')), '15.000 TL');
+  assert.match(amountText({ amount: 12_000, exact: false, uncertain: false }), /En fazla .*dilim sınırları açıklanmadı/);
+  assert.match(amountText(comparePromos(9_000).find((r) => r.key === 'halkbank')), /açıklanmadı/);
   assert.throws(() => comparePromos(0), /maaş/);
 });
 
