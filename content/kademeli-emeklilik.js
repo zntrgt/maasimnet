@@ -1,8 +1,8 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-11-03',
-  reviewedAt: '2026-11-03',
+  modifiedAt: '2026-11-05',
+  reviewedAt: '2026-11-05',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
   latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; DEM Parti’nin 26 Ekim teklifinin basında 2/3988 esas numarasıyla Plan ve Bütçe Komisyonuna sevk edildiği bildiriliyor; 4 Eylül tarihli 7/48458 sayılı soru önergesinin TBMM durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; yanıt kaydı yok.',
@@ -39,6 +39,14 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-11-03',
+      label: 'TBMM Plan ve Bütçe Komisyonu / Bakanlık bütçesi',
+      text: 'Çalışma ve Sosyal Güvenlik Bakanlığının 2027 bütçesinin görüşüldüğü komisyon toplantısında İYİ Parti Bursa Milletvekili Selçuk Türkoğlu “kademeli emeklilik düzenlemesini hayata geçirin” dedi; basına yansıyan haberlere göre CHP Ankara Milletvekili Semra Dinçer de 8 Eylül 1999 sonrası sigortalılar için düzenleme çağrısında bulundu. Bakan Vedat Işıkhan’ın sunumuna ilişkin haberlerde kademeli emekliliğe dair bir ifade yer almadı. Bunlar milletvekili talepleridir; kanun teklifi veya hükümet kararı değildir.',
+      kind: 'advocacy',
+      sourceUrl: 'https://ankahaber.net/haber/tbmm-plan-ve-butce-komisyonu-iyi-partili-turkoglu-bakan-isikhan-a-sordu-emeklinin-maasina-ne-kadar-zam-yapacaksiniz-54bbd5d7',
+      sourceLabel: 'ANKA haberi (3 Kasım)'
+    }),
     Object.freeze({
       date: '2026-11-03',
       label: 'Güncel kontrol',
