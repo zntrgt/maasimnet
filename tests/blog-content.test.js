@@ -11,7 +11,7 @@ test('2027 yazısı kesin zam oranı iddia etmez', () => {
 });
 
 test('güncel resmî veriler ve kaynak alan adları bulunur', () => {
-  for (const value of ['%29,73', '%24,32', '%15', '%21', '%22,69', '%29,61', '%23,70', '%18,32']) {
+  for (const value of ['%29,77', '%27,52', '%15', '%21', '%23,33', '%29,63', '%23,89', '%17,94']) {
     assert.match(source, new RegExp(value));
   }
   assert.match(source, /veriportali\.tuik\.gov\.tr/);
@@ -27,7 +27,7 @@ test('Article FAQ Breadcrumb ve Collection schema üretilir', () => {
 });
 
 test('görseller açıklayıcı alt metin ve SVG erişilebilirlik metni taşır', () => {
-  assert.match(source, /alt="Eylül 2026 yıllık TÜFE/);
+  assert.match(source, /alt="Ekim 2026 yıllık TÜFE/);
   assert.match(source, /alt="Kasım başında Ekim enflasyonu, 12 Kasım/);
   assert.match(source, /aria-labelledby="t d"/);
   assert.match(source, /<figcaption>/);
