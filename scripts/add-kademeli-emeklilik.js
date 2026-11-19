@@ -213,7 +213,7 @@ const page = `<!doctype html>
       </div>
       <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)} <a href="${S.proposal3988}">2/3988 sayılı teklifin TBMM kaydı</a>.</div>
       <p class="ke-calc-cta"><a href="/emeklilik-hesaplama/"><strong>Ne zaman emekli olursunuz?</strong> Bugünkü kurala ve EMADDER önerisine göre tarihinizi hesaplayın →</a></p>
-      <p><a href="#1999-2008">Yürürlükteki 4/A şartları</a> · <a href="#emadder-tablosu">EMADDER öneri tablosu</a></p>
+      <p><a href="#1999-2008">Yürürlükteki 4/A şartları</a> · <a href="#emadder-tablosu">EMADDER öneri tablosu</a> · <a href="#ornek-emeklilik-hesabi">Örnek emeklilik hesabı</a></p>
     </header>
 
     <div class="ke-layout">
@@ -291,6 +291,24 @@ const page = `<!doctype html>
             <p class="ke-proposal-note"><strong>Kaynak:</strong> <a href="${S.emadderPresentation}" target="_blank" rel="noopener noreferrer">EMADDER, “Emadder Sunum” PDF, s. 7</a> · <a href="${S.emadderDocuments}" target="_blank" rel="noopener noreferrer">Derneğin dokümanlar sayfası</a>. Belgedeki emekli sayısı ve oranı tahminleri bu özete alınmadı.</p>
           </div>
           <div class="ke-warning"><strong>Bu tablo mevcut emeklilik şartı değildir.</strong> EMADDER’ın savunduğu model, TBMM’de kabul edilmiş bir kanun veya SGK’nın uyguladığı resmî tablo değildir. Sunumdaki “2008” satırı ay ve gün ayrımı yapmıyor; hangi tarihlerin kapsanacağı ancak yürürlüğe giren bir kanunla belirlenebilir.</div>
+        </section>
+
+        <section id="ornek-emeklilik-hesabi">
+          <h2>Kademeli emeklilik çıkarsa ne zaman emekli olurum?</h2>
+          <p>Emeklilik tarihi, yürürlüğe girecek düzenlemenin kapsamına ve şartlarına bağlı. Aşağıdaki örnek, bugünkü 4/A kurallarıyla EMADDER’ın önerisini aynı kişi için karşılaştırıyor.</p>
+          <p><strong>Kurgusal örnek</strong> · Erkek, 4/A (SSK), doğum tarihi 15 Mayıs 1985, ilk sigorta başlangıcı 1 Haziran 2006. 7.000 prim gününün tamamlandığını ve statünün değişmediğini varsayıyoruz.</p>
+          <div class="ke-table-wrap" role="region" aria-label="Örnek emeklilik karşılaştırması" tabindex="0">
+            <table class="ke-table">
+              <caption>2006 girişli bir 4/A çalışanı için emeklilik karşılaştırması</caption>
+              <thead><tr><th scope="col">Senaryo</th><th scope="col">Yaş ve prim şartı</th><th scope="col">Örnekte şartların tamamlandığı tarih</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Yürürlükteki 4/A kuralı</th><td>60 yaş ve 7.000 gün</td><td><time datetime="2045-05-15">15 Mayıs 2045</time></td></tr>
+                <tr><th scope="row">EMADDER önerisi (yasalaşmadı)</th><td>51 yaş ve 6.850 gün</td><td><time datetime="2036-05-15">15 Mayıs 2036</time> (varsayımsal)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Bu örnekte iki senaryoda da belirleyici şart yaş. Mevcut 25 yıl sigortalılık ve 4.500 gün seçeneği de 60 yaşta sonuç veriyor. Öneri satırı, EMADDER’ın 2006 girişliler için yayımladığı şartların bu kişiye aynen uygulanması varsayımıyla hesaplandı.</p>
+          <p><a href="${S.sgk4a}">SGK 4/A şartları</a> · <a href="${S.emadderPresentation}">EMADDER önerisi (PDF, s. 7)</a> · <a href="/emeklilik-hesaplama/">Kendi bilgilerinle emeklilik hesabı yap</a></p>
         </section>
 
         <section id="kimleri-kapsar">
