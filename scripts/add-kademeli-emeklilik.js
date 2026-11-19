@@ -193,7 +193,12 @@ const page = `<!doctype html>
   <meta property="og:image" content="${SITE}/assets/logo.svg">
   <meta property="article:published_time" content="${DATA.publishedAt}">
   <meta property="article:modified_time" content="${DATA.modifiedAt}">
-  <style>${css}</style>
+  <style>${css}  .ke-scenario-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr)); gap:1rem; margin:1rem 0; }
+  .ke-scenario-fields label { display:grid; align-content:end; gap:.35rem; }
+  .ke-scenario-fields input, .ke-scenario-fields select, #emadder-scenario-form button { font:inherit; padding:.6rem; border:1px solid #64748b; border-radius:.4rem; }
+  #emadder-scenario-form button { color:#fff; background:#1e3a5f; cursor:pointer; }
+  #emadder-scenario-result { margin-top:1rem; }
+</style>
   <script type="application/ld+json">${JSON.stringify(schema)}</script>
 </head>
 <body>
@@ -212,7 +217,7 @@ const page = `<!doctype html>
         <div class="ke-stat"><span>Son kaynak kontrolü</span><strong>${esc(fmt(DATA.reviewedAt))}</strong></div>
       </div>
       <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)} <a href="${S.proposal3988}">2/3988 sayılı teklifin TBMM kaydı</a>.</div>
-      <p class="ke-calc-cta"><a href="/emeklilik-hesaplama/"><strong>Ne zaman emekli olursunuz?</strong> Bugünkü kurala ve EMADDER önerisine göre tarihinizi hesaplayın →</a></p>
+      <p class="ke-calc-cta"><a href="#emadder-hesaplama"><strong>EMADDER önerisi uygulanırsa ne zaman emekli olurdunuz?</strong> Senaryonuzu hesaplayın →</a></p>
       <p><a href="#1999-2008">Yürürlükteki 4/A şartları</a> · <a href="#emadder-tablosu">EMADDER öneri tablosu</a> · <a href="#ornek-emeklilik-hesabi">Örnek emeklilik hesabı</a></p>
     </header>
 
@@ -291,6 +296,25 @@ const page = `<!doctype html>
             <p class="ke-proposal-note"><strong>Kaynak:</strong> <a href="${S.emadderPresentation}" target="_blank" rel="noopener noreferrer">EMADDER, “Emadder Sunum” PDF, s. 7</a> · <a href="${S.emadderDocuments}" target="_blank" rel="noopener noreferrer">Derneğin dokümanlar sayfası</a>. Belgedeki emekli sayısı ve oranı tahminleri bu özete alınmadı.</p>
           </div>
           <div class="ke-warning"><strong>Bu tablo mevcut emeklilik şartı değildir.</strong> EMADDER’ın savunduğu model, TBMM’de kabul edilmiş bir kanun veya SGK’nın uyguladığı resmî tablo değildir. Sunumdaki “2008” satırı ay ve gün ayrımı yapmıyor; hangi tarihlerin kapsanacağı ancak yürürlüğe giren bir kanunla belirlenebilir.</div>
+        </section>
+
+        <section id="emadder-hesaplama">
+          <h2>EMADDER önerisine göre emeklilik hesaplama</h2>
+          <p id="emadder-scenario-note" class="ke-warning"><strong>EMADDER önerisi yasalaşmadı.</strong> Sonuç, önerideki şartlar aynen yürürlüğe girer ve size uygulanırsa yaş ve prim koşullarını ne zaman tamamlayabileceğinizi gösteren varsayımsal bir tarihtir. Kapsam, geçiş hükümleri ve yürürlük tarihi nihai yasaya bağlıdır.</p>
+          <form id="emadder-scenario-form" aria-describedby="emadder-scenario-note">
+            <p>Bu hesap 9 Eylül 1999–30 Nisan 2008 arasında ilk kez sigortalı olan 4/A (SSK) çalışanlarını kapsar. Girilen bilgiler tarayıcınızda işlenir.</p>
+            <div class="ke-scenario-fields">
+              <label>Cinsiyet <select id="scenario-gender" required><option value="">Seçin</option><option value="K">Kadın</option><option value="E">Erkek</option></select></label>
+              <label>Doğum tarihi <input id="scenario-birth" type="date" required></label>
+              <label>İlk sigorta giriş tarihi <input id="scenario-start" type="date" min="1999-09-09" max="2008-04-30" required></label>
+              <label>Bugünkü toplam prim günü <input id="scenario-days" type="number" min="0" max="20000" step="1" required></label>
+              <label>Bundan sonra yılda ödenecek prim günü <input id="scenario-rate" type="number" min="0" max="360" step="1" value="360" required></label>
+            </div>
+            <button type="submit" disabled>EMADDER senaryosunu hesapla</button>
+            <noscript>Hesaplama için JavaScript’i etkinleştirin.</noscript>
+          </form>
+          <div id="emadder-scenario-result" class="ke-answer" role="status" aria-live="polite" hidden></div>
+          <p><a href="${S.emadderPresentation}">Hesabın dayanağı: EMADDER önerisi (PDF, s. 7)</a> · <a href="/emeklilik-hesaplama/">Yürürlükteki şartlara göre hesapla</a></p>
         </section>
 
         <section id="ornek-emeklilik-hesabi">
@@ -392,6 +416,7 @@ const page = `<!doctype html>
       </aside>
     </div>
   </main>
+<script type="module" src="/assets/emadder-scenario.js"></script>
 </body>
 </html>`;
 

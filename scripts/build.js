@@ -90,7 +90,7 @@ for (const file of [
   'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
   'estimate-2027.js','offer-comparison.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
   'unemployment-engine.js','unemployment-calculator.js','unemployment-calculator.css',
-  'retirement-engine.js','retirement-calculator.js','retirement-calculator.css',
+  'retirement-engine.js','emadder-scenario.js','retirement-calculator.js','retirement-calculator.css',
   'retired-worker-engine.js','rw-calculator.js','rw-calculator.css',
   'rent-engine.js','rent-calculator.js','rent-calculator.css',
   'borrowing-engine.js','borrowing-calculator.js','borrowing-calculator.css',
