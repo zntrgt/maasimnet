@@ -1,11 +1,11 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-11-03',
+  modifiedAt: '2026-11-19',
   reviewedAt: '2026-11-03',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
-  latestOfficialUpdate: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı kanun teklifleri komisyonda; DEM Parti’nin 26 Ekim teklifinin basında 2/3988 esas numarasıyla Plan ve Bütçe Komisyonuna sevk edildiği bildiriliyor; 4 Eylül tarihli 7/48458 sayılı soru önergesinin TBMM durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; yanıt kaydı yok.',
+  latestOfficialUpdate: '26 Ekim 2026’da sunulan 2/3988 sayılı kanun teklifi, 28 Ekim’de Plan ve Bütçe Komisyonuna esas, Sağlık, Aile, Çalışma ve Sosyal İşler Komisyonuna tali olarak havale edildi. Teklif TBMM kaydında komisyonda görünüyor.',
   officialTableExists: false,
   emadderProposal: Object.freeze([
     Object.freeze({ start: '9 Eylül 1999–2000', women: 43, men: 45, days: 6400 }),
@@ -22,6 +22,7 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     sgk4a: 'https://www.sgk.gov.tr/Content/Post/785eac3b-d260-47b5-8103-ae591b2ac320/4a-Hizmet-Akdi-ile-Calisanlar-2024-01-11-02-39-38',
     officialGazetteEyt: 'https://www.resmigazete.gov.tr/eskiler/2023/03/20230303-8.htm',
     proposal2755: 'https://www.tbmm.gov.tr/Yasama/KanunTeklifi/ac4513e4-0434-4882-b725-0193972c74d8',
+    proposal3988: 'https://tbmm.gov.tr/Yasama/KanunTeklifi/03ad5e7d-4edb-48f6-aeca-01a17c1f731c',
     proposal2959: 'https://www.tbmm.gov.tr/Yasama/KanunTeklifi/7867990f-266c-4a18-a4b1-01955ffff04a',
     question37366: 'https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/2af485ac-131a-4ada-8f59-019afd1c62cd',
     question45214: 'https://tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/55739033-1d8d-4756-9ee0-019e8d8562e2',
@@ -50,15 +51,15 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     Object.freeze({
       date: '2026-10-28',
       label: 'DEM Parti teklifi / Komisyona sevk',
-      text: 'Basında yer alan haberlere göre DEM Parti’nin 26 Ekim’de sunduğu kademeli emeklilik teklifi 2/3988 esas numarasıyla kaydedildi ve 28 Ekim’de Plan ve Bütçe Komisyonuna (tali: Sağlık, Aile, Çalışma ve Sosyal İşler Komisyonu) sevk edildi. Esas numarası bu kontrolde TBMM’nin teklif sayfasından ayrıca doğrulanamadı. Komisyona sevk, teklifin görüşüldüğü veya kabul edildiği anlamına gelmez; teklif yasalaşmış değildir.',
+      text: '2/3988 sayılı teklif Plan ve Bütçe Komisyonuna esas, Sağlık, Aile, Çalışma ve Sosyal İşler Komisyonuna tali olarak havale edildi.',
       kind: 'proposal',
-      sourceUrl: 'https://www.sonmuhur.com/kademeli-emeklilik-2026-son-durum-meclise-kanun-teklifi-verildi-mi-yas-sarti-kalkacak-mi',
-      sourceLabel: 'Son Mühür haberi (2 Kasım)'
+      sourceUrl: 'https://tbmm.gov.tr/Yasama/KanunTeklifi/03ad5e7d-4edb-48f6-aeca-01a17c1f731c',
+      sourceLabel: '2/3988 sayılı teklifin TBMM kaydı'
     }),
     Object.freeze({
       date: '2026-10-28',
       label: 'Güncel kontrol',
-      text: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı teklifler hâlâ komisyonda (Plan ve Bütçe esas, Sağlık, Aile, Çalışma ve Sosyal İşler tali). 7/48458 sayılı soru önergesinin durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; bakanlık yanıtı yok. DEM Parti’nin 26 Ekim teklifine ait TBMM esas numarası bu kontrolde doğrulanamadı.',
+      text: 'TBMM kayıtlarında 2/2755 ve 2/2959 sayılı teklifler hâlâ komisyonda (Plan ve Bütçe esas, Sağlık, Aile, Çalışma ve Sosyal İşler tali). 7/48458 sayılı soru önergesinin durumu “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi”; bakanlık yanıtı yok.',
       kind: 'verification',
       sourceUrl: 'https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/d0adc0ec-626b-4e78-b951-01a07ab9e70e',
       sourceLabel: '7/48458 TBMM kaydı'
@@ -66,10 +67,10 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     Object.freeze({
       date: '2026-10-26',
       label: 'DEM Parti / Kanun teklifi',
-      text: 'DEM Parti Grup Başkanvekilleri Gülistan Kılıç Koçyiğit ve Sezai Temelli, 5510 sayılı Kanun’a “Geçici Madde 113” eklenmesini öngören bir kanun teklifini TBMM Başkanlığına sundu. Teklif metnine göre 8 Eylül 1999 sonrası sigortalı olup sigortalılık süresi ve prim günü şartlarını sağlayan ancak yaş şartını karşılayamayanlar, Kuruma yazılı başvuruyla yaşlılık aylığı bağlatabilecek; gerekçede kapsam 8 Eylül 1999-30 Nisan 2008 arası olarak tarif ediliyor. Bu bir kanun teklifidir; yasalaşmış bir düzenleme değildir. Esas numarası henüz kaynaklarda yer almıyor.',
+      text: 'DEM Parti Grup Başkanvekilleri Gülistan Kılıç Koçyiğit ve Sezai Temelli, 5510 sayılı Kanun’a “Geçici Madde 113” eklenmesini öngören bir kanun teklifini TBMM Başkanlığına sundu. Teklif metnine göre 8 Eylül 1999 sonrası sigortalı olup sigortalılık süresi ve prim günü şartlarını sağlayan ancak yaş şartını karşılayamayanlar, Kuruma yazılı başvuruyla yaşlılık aylığı bağlatabilecek; gerekçede kapsam 8 Eylül 1999-30 Nisan 2008 arası olarak tarif ediliyor. Bu bir kanun teklifidir; yasalaşmış bir düzenleme değildir. Teklifin TBMM esas numarası 2/3988.',
       kind: 'proposal',
-      sourceUrl: 'https://www.demparti.org.tr/tr/kademeli-emeklilik-duzenlemesi/22922/',
-      sourceLabel: 'DEM Parti teklif metni'
+      sourceUrl: 'https://tbmm.gov.tr/Yasama/KanunTeklifi/03ad5e7d-4edb-48f6-aeca-01a17c1f731c',
+      sourceLabel: '2/3988 sayılı teklifin TBMM kaydı'
     }),
     Object.freeze({
       date: '2026-10-19',
