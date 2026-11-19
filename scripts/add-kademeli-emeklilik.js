@@ -197,7 +197,15 @@ const page = `<!doctype html>
   .ke-scenario-fields label { display:grid; align-content:end; gap:.35rem; }
   .ke-scenario-fields input, .ke-scenario-fields select, #emadder-scenario-form button { font:inherit; padding:.6rem; border:1px solid #64748b; border-radius:.4rem; }
   #emadder-scenario-form button { color:#fff; background:#1e3a5f; cursor:pointer; }
-  #emadder-scenario-result { margin-top:1rem; }
+  #emadder-scenario-result { margin-top:1.25rem; }
+  .ke-result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
+  .ke-result-card { padding:1rem; border:1px solid #ccd5e1; border-radius:.75rem; background:#fff; color:#172033; }
+  .ke-result-card--proposal { border-color:#86bbb3; background:#eef8f6; }
+  .ke-result-card .ke-result-label { margin:0; font-size:.95rem; }
+  .ke-result-card .ke-result-date { margin:.4rem 0; font-size:1.4rem; font-weight:750; line-height:1.2; }
+  .ke-result-card .ke-result-detail, .ke-result-card .ke-result-note { margin:.35rem 0 0; font-size:.9rem; line-height:1.4; }
+  .ke-result-card .ke-result-note { font-weight:650; }
+  @media (max-width:580px) { .ke-result-grid { grid-template-columns:1fr; } }
 </style>
   <script type="application/ld+json">${JSON.stringify(schema)}</script>
 </head>
@@ -310,10 +318,10 @@ const page = `<!doctype html>
               <label>Bugünkü toplam prim günü <input id="scenario-days" type="number" min="0" max="20000" step="1" required></label>
               <label>Bundan sonra yılda ödenecek prim günü <input id="scenario-rate" type="number" min="0" max="360" step="1" value="360" required></label>
             </div>
-            <button type="submit" disabled>EMADDER senaryosunu hesapla</button>
+            <button type="submit" disabled>Emeklilik tarihlerini karşılaştır</button>
             <noscript>Hesaplama için JavaScript’i etkinleştirin.</noscript>
           </form>
-          <div id="emadder-scenario-result" class="ke-answer" role="status" aria-live="polite" hidden></div>
+          <div id="emadder-scenario-result" class="ke-scenario-results" role="status" aria-live="polite" aria-atomic="true" hidden></div>
           <p><a href="${S.emadderPresentation}">Hesabın dayanağı: EMADDER önerisi (PDF, s. 7)</a> · <a href="/emeklilik-hesaplama/">Yürürlükteki şartlara göre hesapla</a></p>
         </section>
 
