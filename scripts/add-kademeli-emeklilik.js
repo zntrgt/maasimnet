@@ -5,7 +5,7 @@ import { KADEMELI_EMEKLILIK as DATA } from '../content/kademeli-emeklilik.js';
 const SITE = 'https://maasim.net';
 const PATH = DATA.path;
 const URL = `${SITE}${PATH}`;
-const TITLE = 'Kademeli Emeklilik 2026: Son Durum ve EMADDER Öneri Tablosu';
+const TITLE = 'Kademeli Emeklilik 2026 Son Durum';
 const DESCRIPTION = 'Kademeli emeklilik çıktı mı? EMADDER’ın 1999-2008 yaş ve prim günü öneri tablosu, kaynak PDF, TBMM teklifleri ve yürürlükteki SGK şartları.';
 const AUTHOR_ID = `${SITE}/#editorial-team`;
 
@@ -203,7 +203,7 @@ const page = `<!doctype html>
     <header class="ke-hero">
       <span class="ke-eyebrow">Sürekli Güncellenen Dosya</span>
       <h1>${esc(TITLE)}</h1>
-      <p class="ke-lead">Kademeli emeklilikle ilgili yürürlükteki mevzuatı, TBMM’deki teklifleri, Bakanlık yanıtlarını ve EMADDER gibi sivil toplum kuruluşlarının girişimlerini birbirine karıştırmadan takip ediyoruz. Bu sayfa yalnız doğrulanabilir bir gelişme olduğunda güncellenir.</p>
+      <p class="ke-lead">Kademeli emeklilik henüz yasalaşmadı. 2/3988 sayılı kanun teklifi TBMM’de komisyon aşamasında.</p>
 
       <div class="ke-status" aria-label="Kademeli emeklilik güncel durum">
         <div class="ke-status__main"><span>2026 güncel durum</span><strong>${esc(DATA.status)}</strong></div>
@@ -211,8 +211,9 @@ const page = `<!doctype html>
         <div class="ke-stat"><span>Resmî 2026 tablosu var mı?</span><strong>Hayır</strong></div>
         <div class="ke-stat"><span>Son kaynak kontrolü</span><strong>${esc(fmt(DATA.reviewedAt))}</strong></div>
       </div>
-      <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)}</div>
+      <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)} <a href="${S.proposal3988}">2/3988 sayılı teklifin TBMM kaydı</a>.</div>
       <p class="ke-calc-cta"><a href="/emeklilik-hesaplama/"><strong>Ne zaman emekli olursunuz?</strong> Bugünkü kurala ve EMADDER önerisine göre tarihinizi hesaplayın →</a></p>
+      <p><a href="#1999-2008">Yürürlükteki 4/A şartları</a> · <a href="#emadder-tablosu">EMADDER öneri tablosu</a></p>
     </header>
 
     <div class="ke-layout">
