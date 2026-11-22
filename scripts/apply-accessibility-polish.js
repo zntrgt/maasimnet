@@ -26,7 +26,7 @@ export async function applyAccessibilityPolish(distDir) {
   const shellPath = join(distDir, 'assets', 'site-shell.css');
   let shellCss = await readFile(shellPath, 'utf8');
   if (!shellCss.includes(marker)) {
-    shellCss += `\n\n${marker}\n.site-brand span:last-child { color: #475569; }\n`;
+    shellCss += `\n\n${marker}\n.site-brand span:last-child { color: #475569; }\n.site-footer .site-brand > span { color: #fff; }\n.site-footer .site-brand span span { color: #34d399; }\n`;
     await writeFile(shellPath, shellCss);
   }
 

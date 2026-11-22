@@ -113,9 +113,10 @@ function init(root) {
   });
 
   const january = getHistoricalPeriod(year, 0);
-  root.querySelector('[data-official-minimum]').textContent = `${formatKurus(january.minimumGrossKurus)} brüt · ${formatKurus(january.referenceMinimumNetKurus)} net`;
+  const officialMinimum = root.querySelector('[data-official-minimum]') || document.querySelector('[data-official-minimum]');
+  if (officialMinimum) officialMinimum.textContent = `${formatKurus(january.minimumGrossKurus)} brüt · ${formatKurus(january.referenceMinimumNetKurus)} net`;
   const july = getHistoricalPeriod(year, 6);
-  const julyBox = root.querySelector('[data-official-minimum-july]');
+  const julyBox = root.querySelector('[data-official-minimum-july]') || document.querySelector('[data-official-minimum-july]');
   if (julyBox) {
     if (july.minimumGrossKurus !== january.minimumGrossKurus) {
       julyBox.hidden = false;
