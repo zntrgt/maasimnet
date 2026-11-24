@@ -220,7 +220,7 @@ const page = `<!doctype html>
     <header class="ke-hero">
       <span class="ke-eyebrow">Sürekli Güncellenen Dosya</span>
       <h1>${esc(TITLE)}</h1>
-      <p class="ke-lead">Kademeli emeklilik henüz yasalaşmadı. 2/3988 sayılı kanun teklifi TBMM’de komisyon aşamasında.</p>
+      <p class="ke-lead">Kademeli emeklilik henüz yasalaşmadı. 2/3988 ve 2/4068 sayılı kanun teklifleri TBMM’de komisyon aşamasında.</p>
 
       <div class="ke-status" aria-label="Kademeli emeklilik güncel durum">
         <div class="ke-status__main"><span>2026 güncel durum</span><strong>${esc(DATA.status)}</strong></div>
@@ -228,7 +228,7 @@ const page = `<!doctype html>
         <div class="ke-stat"><span>Resmî 2026 tablosu var mı?</span><strong>Hayır</strong></div>
         <div class="ke-stat"><span>Son kaynak kontrolü</span><strong>${esc(fmt(DATA.reviewedAt))}</strong></div>
       </div>
-      <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)} <a href="${S.proposal3988}">2/3988 sayılı teklifin TBMM kaydı</a>.</div>
+      <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)} <a href="${S.proposal4068List}">TBMM Plan ve Bütçe Komisyonu iş listesi (2/4068)</a> · <a href="${S.proposal3988}">2/3988 sayılı teklifin TBMM kaydı</a>.</div>
       <p class="ke-calc-cta"><a href="#emadder-hesaplama"><strong>EMADDER önerisi uygulanırsa ne zaman emekli olurdunuz?</strong> Senaryonuzu hesaplayın →</a></p>
       <p><a href="#1999-2008">Yürürlükteki 4/A şartları</a> · <a href="#emadder-tablosu">EMADDER öneri tablosu</a> · <a href="#ornek-emeklilik-hesabi">Örnek emeklilik hesabı</a></p>
     </header>

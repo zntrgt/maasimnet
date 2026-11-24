@@ -5,7 +5,7 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
   reviewedAt: '2026-11-24',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
-  latestOfficialUpdate: '26 Ekim 2026’da sunulan 2/3988 sayılı kanun teklifi, 28 Ekim’de Plan ve Bütçe Komisyonuna esas, Sağlık, Aile, Çalışma ve Sosyal İşler Komisyonuna tali olarak havale edildi. Teklif TBMM kaydında komisyonda görünüyor. 7/48458 sayılı soru önergesinin TBMM durumu 3 Kasım kontrolünde “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi” idi.',
+  latestOfficialUpdate: '2/4068 esas numaralı Sosyal Sigortalar ve Genel Sağlık Sigortası Kanununda Değişiklik Yapılmasına Dair Kanun Teklifi, 18 Kasım 2026’da Plan ve Bütçe Komisyonuna esas komisyon olarak havale edildi ve TBMM komisyon listesinde “Komisyonda” görünüyor; haberlere göre teklif YENİ Parti Burdur Milletvekili İzzet Akbulut’a ait. Daha önce sunulan 2/3988 sayılı DEM Parti teklifi de 28 Ekim’den bu yana komisyonda. 7/48458 sayılı soru önergesinin TBMM durumu 3 Kasım kontrolünde “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi” idi.',
   officialTableExists: false,
   emadderProposal: Object.freeze([
     Object.freeze({ start: '9 Eylül 1999–2000', women: 43, men: 45, days: 6400 }),
@@ -22,6 +22,7 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     sgk4a: 'https://www.sgk.gov.tr/Content/Post/785eac3b-d260-47b5-8103-ae591b2ac320/4a-Hizmet-Akdi-ile-Calisanlar-2024-01-11-02-39-38',
     officialGazetteEyt: 'https://www.resmigazete.gov.tr/eskiler/2023/03/20230303-8.htm',
     proposal2755: 'https://www.tbmm.gov.tr/Yasama/KanunTeklifi/ac4513e4-0434-4882-b725-0193972c74d8',
+    proposal4068List: 'https://tbmm.gov.tr/ihtisas-komisyonlari/HavaleEdilenIsListesi?Ad=plan-ve-butce-komisyonu&Id=f72877d1-b469-037b-e050-007f01005610&Islem=f23daffa-eb3d-4289-adae-0ba21309580d&EsasTali=00000000-0000-0000-0000-000000000000',
     proposal3988: 'https://tbmm.gov.tr/Yasama/KanunTeklifi/03ad5e7d-4edb-48f6-aeca-01a17c1f731c',
     proposal2959: 'https://www.tbmm.gov.tr/Yasama/KanunTeklifi/7867990f-266c-4a18-a4b1-01955ffff04a',
     question37366: 'https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/2af485ac-131a-4ada-8f59-019afd1c62cd',
