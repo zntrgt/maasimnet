@@ -72,7 +72,7 @@ const faqs = [
   },
   {
     q: 'YENİ Parti’nin kademeli emeklilik teklifi ne öngörüyor?',
-    a: 'Haberlere göre YENİ Parti Burdur Milletvekili İzzet Akbulut’un 16 Kasım 2026’da sunduğu teklif, 9 Eylül 1999-30 Nisan 2008 arasında ilk kez sigortalı olanlar için giriş yılına göre kadın ve erkekte ayrı yıllık yaş kademeleri öneriyor; prim günü ve sigortalılık süresi değişmiyor. Haberlerde yaş rakamları yer almadı. Bu bir tekliftir; komisyon ve Genel Kurul’dan geçip Resmî Gazete’de yayımlanmadıkça yürürlüğe girmez.'
+    a: 'Haberlere göre YENİ Parti Burdur Milletvekili İzzet Akbulut’un 16 Kasım 2026’da sunduğu ve TBMM’de 2/4068 esas numarasıyla 18 Kasım’da Plan ve Bütçe Komisyonuna havale edilen teklif, 9 Eylül 1999-30 Nisan 2008 arasında ilk kez sigortalı olanlar için giriş yılına göre kadın ve erkekte ayrı yıllık yaş kademeleri öneriyor; prim günü ve sigortalılık süresi değişmiyor. Haberlerde yaş rakamları yer almadı. Bu bir tekliftir; komisyon ve Genel Kurul’dan geçip Resmî Gazete’de yayımlanmadıkça yürürlüğe girmez.'
   },
   {
     q: 'Kademeli emeklilik dosyası Erdoğan’ın önünde mi?',

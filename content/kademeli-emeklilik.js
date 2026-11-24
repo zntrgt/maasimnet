@@ -43,12 +43,12 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     Object.freeze({
       date: '2026-11-16',
       label: 'YENİ Parti / Kanun teklifi',
-      text: 'Basına yansıyan haberlere göre YENİ Parti Burdur Milletvekili İzzet Akbulut, 5510 sayılı Kanun’a “Geçici Madde 113” eklenmesini öngören bir kanun teklifini 16 Kasım 2026’da TBMM Başkanlığına sundu; teklifin 18 Kasım’da Plan ve Bütçe ile Sağlık, Aile, Çalışma ve Sosyal İşler komisyonlarına havale edildiği bildirildi. Haberlere göre teklif, 9 Eylül 1999-30 Nisan 2008 arasında ilk kez sigortalı olanlar için sigortalılık başlangıç tarihine göre kadın ve erkekte ayrı, yıllık kademeli yaş şartı öngörüyor; prim günü ve sigortalılık süresi şartları değişmiyor. Haberlerde yaş rakamları verilmedi. Haberlerde geçen 2/4068 esas numarası bu kontrolde TBMM kaydından doğrulanamadı. Bu bir kanun teklifidir; yasalaşmış bir düzenleme değildir.',
+      text: 'Basına yansıyan haberlere göre YENİ Parti Burdur Milletvekili İzzet Akbulut, 5510 sayılı Kanun’a “Geçici Madde 113” eklenmesini öngören bir kanun teklifini 16 Kasım 2026’da TBMM Başkanlığına sundu; teklifin 18 Kasım’da Plan ve Bütçe ile Sağlık, Aile, Çalışma ve Sosyal İşler komisyonlarına havale edildiği bildirildi. Haberlere göre teklif, 9 Eylül 1999-30 Nisan 2008 arasında ilk kez sigortalı olanlar için sigortalılık başlangıç tarihine göre kadın ve erkekte ayrı, yıllık kademeli yaş şartı öngörüyor; prim günü ve sigortalılık süresi şartları değişmiyor. Haberlerde yaş rakamları verilmedi. TBMM Plan ve Bütçe Komisyonunun havale edilen işler listesinde 2/4068 esas numaralı “Sosyal Sigortalar ve Genel Sağlık Sigortası Kanununda Değişiklik Yapılmasına Dair Kanun Teklifi” 18 Kasım 2026 havale tarihiyle esas komisyon olarak ve “Komisyonda” durumuyla görünüyor. Bu bir kanun teklifidir; yasalaşmış bir düzenleme değildir.',
       kind: 'proposal',
-      sourceUrl: 'https://www.ankaramasasi.com.tr/haber/2230497/yeni-parti-den-emeklilik-hamlesi-kademeli-emeklilik-teklifi-meclis-te',
-      sourceLabel: 'Teklif haberi (Ankara Masası)',
-      reportUrl: 'https://www.karar.com/ekonomi-haberleri/kademeli-emeklilik-teklifi-komisyonda-milyonlarca-calisani-2085457',
-      reportLabel: 'Karar haberi'
+      sourceUrl: 'https://tbmm.gov.tr/ihtisas-komisyonlari/HavaleEdilenIsListesi?Ad=plan-ve-butce-komisyonu&Id=f72877d1-b469-037b-e050-007f01005610&Islem=f23daffa-eb3d-4289-adae-0ba21309580d&EsasTali=00000000-0000-0000-0000-000000000000',
+      sourceLabel: 'TBMM Plan ve Bütçe Komisyonu iş listesi (2/4068)',
+      reportUrl: 'https://www.ankaramasasi.com.tr/haber/2230497/yeni-parti-den-emeklilik-hamlesi-kademeli-emeklilik-teklifi-meclis-te',
+      reportLabel: 'Teklif haberi (Ankara Masası)'
     }),
     Object.freeze({
       date: '2026-11-03',
