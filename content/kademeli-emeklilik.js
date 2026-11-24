@@ -1,11 +1,11 @@
 export const KADEMELI_EMEKLILIK = Object.freeze({
   path: '/kademeli-emeklilik/',
   publishedAt: '2026-09-18',
-  modifiedAt: '2026-11-19',
-  reviewedAt: '2026-11-03',
+  modifiedAt: '2026-11-24',
+  reviewedAt: '2026-11-24',
   status: 'Henüz yasalaşmadı',
   statusShort: 'Yürürlükte yeni bir kademeli emeklilik düzenlemesi yok',
-  latestOfficialUpdate: '26 Ekim 2026’da sunulan 2/3988 sayılı kanun teklifi, 28 Ekim’de Plan ve Bütçe Komisyonuna esas, Sağlık, Aile, Çalışma ve Sosyal İşler Komisyonuna tali olarak havale edildi. Teklif TBMM kaydında komisyonda görünüyor.',
+  latestOfficialUpdate: '26 Ekim 2026’da sunulan 2/3988 sayılı kanun teklifi, 28 Ekim’de Plan ve Bütçe Komisyonuna esas, Sağlık, Aile, Çalışma ve Sosyal İşler Komisyonuna tali olarak havale edildi. Teklif TBMM kaydında komisyonda görünüyor. 7/48458 sayılı soru önergesinin TBMM durumu 3 Kasım kontrolünde “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi” idi.',
   officialTableExists: false,
   emadderProposal: Object.freeze([
     Object.freeze({ start: '9 Eylül 1999–2000', women: 43, men: 45, days: 6400 }),
@@ -40,6 +40,16 @@ export const KADEMELI_EMEKLILIK = Object.freeze({
     desticiReport: 'https://www.pusulahaber.com.tr/kademeli-emeklilik-bekleyenleri-heyecanlandiran-gelisme-1837384h.htm'
   }),
   timeline: Object.freeze([
+    Object.freeze({
+      date: '2026-11-16',
+      label: 'YENİ Parti / Kanun teklifi',
+      text: 'Basına yansıyan haberlere göre YENİ Parti Burdur Milletvekili İzzet Akbulut, 5510 sayılı Kanun’a “Geçici Madde 113” eklenmesini öngören bir kanun teklifini 16 Kasım 2026’da TBMM Başkanlığına sundu; teklifin 18 Kasım’da Plan ve Bütçe ile Sağlık, Aile, Çalışma ve Sosyal İşler komisyonlarına havale edildiği bildirildi. Haberlere göre teklif, 9 Eylül 1999-30 Nisan 2008 arasında ilk kez sigortalı olanlar için sigortalılık başlangıç tarihine göre kadın ve erkekte ayrı, yıllık kademeli yaş şartı öngörüyor; prim günü ve sigortalılık süresi şartları değişmiyor. Haberlerde yaş rakamları verilmedi. Haberlerde geçen 2/4068 esas numarası bu kontrolde TBMM kaydından doğrulanamadı. Bu bir kanun teklifidir; yasalaşmış bir düzenleme değildir.',
+      kind: 'proposal',
+      sourceUrl: 'https://www.ankaramasasi.com.tr/haber/2230497/yeni-parti-den-emeklilik-hamlesi-kademeli-emeklilik-teklifi-meclis-te',
+      sourceLabel: 'Teklif haberi (Ankara Masası)',
+      reportUrl: 'https://www.karar.com/ekonomi-haberleri/kademeli-emeklilik-teklifi-komisyonda-milyonlarca-calisani-2085457',
+      reportLabel: 'Karar haberi'
+    }),
     Object.freeze({
       date: '2026-11-03',
       label: 'Güncel kontrol',
