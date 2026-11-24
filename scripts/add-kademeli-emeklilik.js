@@ -64,11 +64,15 @@ const faqs = [
   },
   {
     q: 'Kademeli emeklilik için ortak kanun teklifi verildi mi?',
-    a: `${fmt(DATA.reviewedAt)} kontrolünde hayır. BBP Genel Başkanı Mustafa Destici, Meclis açıldıktan sonra partilerle ortak bir teklif için girişimde bulunacaklarını söyledi; bu ortak teklifin TBMM’ye sunulduğuna dair kayıt bulunamadı. TBMM’de 2/2755 ve 2/2959 sayılı teklifler bekliyor; DEM Parti de 26 Ekim 2026’da ayrı bir teklif sundu.`
+    a: `${fmt(DATA.reviewedAt)} kontrolünde hayır. BBP Genel Başkanı Mustafa Destici, Meclis açıldıktan sonra partilerle ortak bir teklif için girişimde bulunacaklarını söyledi; bu ortak teklifin TBMM’ye sunulduğuna dair kayıt bulunamadı. TBMM’de 2/2755 ve 2/2959 sayılı teklifler bekliyor; DEM Parti 26 Ekim 2026’da, haberlere göre YENİ Parti Burdur Milletvekili İzzet Akbulut da 16 Kasım 2026’da ayrı birer teklif sundu.`
   },
   {
     q: 'DEM Parti’nin kademeli emeklilik teklifi ne öngörüyor?',
     a: '26 Ekim 2026’da TBMM Başkanlığına sunulan teklif, 5510 sayılı Kanun’a Geçici Madde 113 eklenmesini öneriyor. Metne göre 8 Eylül 1999 sonrası sigortalı olup sigortalılık süresi ve prim günü şartını sağlayan ancak yaş şartına takılanlar yazılı başvuruyla yaşlılık aylığı alabilecek. Bu bir tekliftir; komisyon ve Genel Kurul’dan geçip yayımlanmadıkça yürürlüğe girmez.'
+  },
+  {
+    q: 'YENİ Parti’nin kademeli emeklilik teklifi ne öngörüyor?',
+    a: 'Haberlere göre YENİ Parti Burdur Milletvekili İzzet Akbulut’un 16 Kasım 2026’da sunduğu ve TBMM’de 2/4068 esas numarasıyla 18 Kasım’da Plan ve Bütçe Komisyonuna havale edilen teklif, 9 Eylül 1999-30 Nisan 2008 arasında ilk kez sigortalı olanlar için giriş yılına göre kadın ve erkekte ayrı yıllık yaş kademeleri öneriyor; prim günü ve sigortalılık süresi değişmiyor. Haberlerde yaş rakamları yer almadı. Bu bir tekliftir; komisyon ve Genel Kurul’dan geçip Resmî Gazete’de yayımlanmadıkça yürürlüğe girmez.'
   },
   {
     q: 'Kademeli emeklilik dosyası Erdoğan’ın önünde mi?',
@@ -83,7 +87,7 @@ const faqs = [
 const timelineHtml = DATA.timeline.map((item) => `
   <li class="ke-timeline__item">
     <time datetime="${esc(item.date)}">${esc(fmt(item.date))}</time>
-    <div><strong>${esc(item.label)}</strong><p>${esc(item.text)}</p>${item.sourceUrl ? `<p class="ke-timeline__sources"><a href="${esc(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(item.sourceLabel)}</a>${item.reportUrl ? ` · <a href="${esc(item.reportUrl)}" target="_blank" rel="noopener noreferrer">22 Eylül tarihli haber</a>` : ''}</p>` : ''}</div>
+    <div><strong>${esc(item.label)}</strong><p>${esc(item.text)}</p>${item.sourceUrl ? `<p class="ke-timeline__sources"><a href="${esc(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(item.sourceLabel)}</a>${item.reportUrl ? ` · <a href="${esc(item.reportUrl)}" target="_blank" rel="noopener noreferrer">${esc(item.reportLabel || '22 Eylül tarihli haber')}</a>` : ''}</p>` : ''}</div>
   </li>`).join('');
 
 const emadderRowsHtml = DATA.emadderProposal.map((row) => `
@@ -216,7 +220,7 @@ const page = `<!doctype html>
     <header class="ke-hero">
       <span class="ke-eyebrow">Sürekli Güncellenen Dosya</span>
       <h1>${esc(TITLE)}</h1>
-      <p class="ke-lead">Kademeli emeklilik henüz yasalaşmadı. 2/3988 sayılı kanun teklifi TBMM’de komisyon aşamasında.</p>
+      <p class="ke-lead">Kademeli emeklilik henüz yasalaşmadı. 2/3988 ve 2/4068 sayılı kanun teklifleri TBMM’de komisyon aşamasında.</p>
 
       <div class="ke-status" aria-label="Kademeli emeklilik güncel durum">
         <div class="ke-status__main"><span>2026 güncel durum</span><strong>${esc(DATA.status)}</strong></div>
@@ -224,7 +228,7 @@ const page = `<!doctype html>
         <div class="ke-stat"><span>Resmî 2026 tablosu var mı?</span><strong>Hayır</strong></div>
         <div class="ke-stat"><span>Son kaynak kontrolü</span><strong>${esc(fmt(DATA.reviewedAt))}</strong></div>
       </div>
-      <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)} <a href="${S.proposal3988}">2/3988 sayılı teklifin TBMM kaydı</a>.</div>
+      <div class="ke-update-note"><strong>Son resmî gelişme:</strong> ${esc(DATA.latestOfficialUpdate)} <a href="${S.proposal4068List}">TBMM Plan ve Bütçe Komisyonu iş listesi (2/4068)</a> · <a href="${S.proposal3988}">2/3988 sayılı teklifin TBMM kaydı</a>.</div>
       <p class="ke-calc-cta"><a href="#emadder-hesaplama"><strong>EMADDER önerisi uygulanırsa ne zaman emekli olurdunuz?</strong> Senaryonuzu hesaplayın →</a></p>
       <p><a href="#1999-2008">Yürürlükteki 4/A şartları</a> · <a href="#emadder-tablosu">EMADDER öneri tablosu</a> · <a href="#ornek-emeklilik-hesabi">Örnek emeklilik hesabı</a></p>
     </header>
@@ -252,7 +256,7 @@ const page = `<!doctype html>
           <h2>2026’da kademeli emeklilik çıkacak mı?</h2>
           <p><strong>${esc(fmt(DATA.reviewedAt))} itibarıyla 2026 içinde yasalaşacağına dair kesinleşmiş resmî bir takvim bulunmuyor.</strong> Buna karşılık konu 2026 boyunca TBMM’de yazılı soru önergeleriyle gündeme gelmeye devam etti.</p>
           <p>3 Haziran 2026 tarihli 7/45214 esas numaralı önerge doğrudan kademeli emeklilik düzenlemesi yapılması yönündeki talepleri konu aldı ve 17 Ağustos 2026’da cevaplandı. <a href="${S.question45214}" target="_blank" rel="noopener noreferrer">TBMM’deki önerge kaydını görüntüleyin</a>.</p>
-          <p>Daha güncel olarak 4 Eylül 2026 tarihinde <strong>7/48458</strong> esas numaralı bir yazılı soru önergesi verildi. ${esc(fmt(DATA.reviewedAt))} kaynak kontrolünde TBMM kaydında yanıt görünmüyor. Sayfadaki “15 günlük cevaplanma süresi devam ediyor” ibaresi güncel bir yasa takvimi olarak yorumlanmamalı. <a href="${S.question48458}" target="_blank" rel="noopener noreferrer">TBMM kaydı</a>.</p>
+          <p>Daha güncel olarak 4 Eylül 2026 tarihinde <strong>7/48458</strong> esas numaralı bir yazılı soru önergesi verildi. 3 Kasım 2026 kaynak kontrolünde TBMM kaydında yanıt görünmüyordu; durum “Cevaplanmadığı Gelen Kağıtlarda İlan Edildi” idi. Sayfadaki “15 günlük cevaplanma süresi devam ediyor” ibaresi güncel bir yasa takvimi olarak yorumlanmamalı. <a href="${S.question48458}" target="_blank" rel="noopener noreferrer">TBMM kaydı</a>.</p>
         </section>
 
         <section id="1999-2008">
