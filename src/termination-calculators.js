@@ -81,6 +81,7 @@ function renderSeverance(root, result, stampExemptionProvided = false) {
   setText(root, '[data-result="dressed-gross"]', formatMoney(result.dressedGrossKurus));
   setText(root, '[data-result="annual-benefits-monthly"]', formatMoney(result.annualRegularBenefitsMonthlyKurus));
   setText(root, '[data-result="severance-ceiling"]', formatMoney(result.ceilingKurus));
+  setText(root, '[data-result="severance-ceiling-period"]', result.ceilingPeriod);
   setText(root, '[data-result="severance-basis"]', formatMoney(result.basisKurus));
   setText(root, '[data-result="severance-gross"]', formatMoney(result.grossKurus));
   setText(root, '[data-result="severance-stamp-exemption"]', formatMoney(result.stampTaxExemptionAppliedKurus));
