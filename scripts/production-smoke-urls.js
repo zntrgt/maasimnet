@@ -18,6 +18,8 @@ const urls = [
   'https://maasim.net/test-raporu/',
   'https://maasim.net/blog/',
   'https://maasim.net/iletisim/',
+  'https://maasim.net/editoryal-politika/',
+  'https://maasim.net/kaynak-politikasi/',
   'https://maasim.net/cerez-politikasi/',
   'https://maasim.net/hesaplama-araclari/',
   'https://maasim.net/kademeli-emeklilik/',
