@@ -3,6 +3,7 @@ export const BENEFIT_2026=Object.freeze({
  year:2026,checkedAt:'2026-11-25',sicknessMinDays:90,sicknessWaitingDays:2,limitedDays:180,
  dailyMinimumKurus:DATA_2026.payroll.minimumGrossKurus/30,
  sources:Object.freeze({
+  law:'https://mevzuat.adalet.gov.tr/mevzuat/102950?query=Madde+60',
   amendment:'https://cdn.tbmm.gov.tr/KKBSPublicFile/D28/Y2/KanunMetni/19f11649-9ebd-4f26-aad5-782852ec88c5.htm',
   gazette:'https://resmigazete.gov.tr/eskiler/2024/12/20241227-15.htm',
   sickness:'https://www.sgk.gov.tr/Content/Post/e33fffdb-16b9-4722-a9c1-2bd0a2a220d1/Hastalik-Hali-2025-02-27-11-27-26',
@@ -25,9 +26,10 @@ export function calculateTemporaryBenefit({kind,priorDays,priorPekKurus,reportDa
  const rawDaily=priorPekKurus/priorDays;
  if(rawDaily>DATA_2026.payroll.sgkCeilingKurus/30)throw new RangeError('Günlük ortalama kazanç 2026 PEK üst sınırını aşıyor; girişlerini kontrol et.');
  const cap=priorDays<p.limitedDays?p.dailyMinimumKurus*2:null;
- const dailyBase=cap===null?rawDaily:Math.min(rawDaily,cap);
+ const flooredDaily=Math.max(rawDaily,p.dailyMinimumKurus);
+ const dailyBase=cap===null?flooredDaily:Math.min(flooredDaily,cap);
  const waiting=kind==='sickness'?Math.min(reportDays,p.sicknessWaitingDays):0;
  const payableDays=reportDays-waiting;
  const daily=dailyBase*(treatment==='inpatient'?1/2:2/3);
- return {status:'calculated',waitingDays:waiting,payableDays,rawDailyKurus:Math.round(rawDaily),dailyBaseKurus:Math.round(dailyBase),capKurus:cap,capApplied:cap!==null&&rawDaily>cap,dailyPaymentKurus:Math.round(daily),totalKurus:Math.round(daily*payableDays)};
+ return {status:'calculated',waitingDays:waiting,payableDays,rawDailyKurus:Math.round(rawDaily),dailyBaseKurus:Math.round(dailyBase),capKurus:cap,floorApplied:rawDaily<p.dailyMinimumKurus,capApplied:cap!==null&&rawDaily>cap,dailyPaymentKurus:Math.round(daily),totalKurus:Math.round(daily*payableDays)};
 }
