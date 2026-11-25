@@ -170,3 +170,7 @@ for(const [route,kind,expected,count] of [
 const bonusHtml=await readFile(join(dist,'prim-ikramiye-maas-hesaplama','index.html'),'utf8');
 if(!bonusHtml.includes('net artış 30.645,50 TL, toplam Haziran neti 96.398,53 TL'))throw new Error('A15 prim GEO cevabı senaryo ile eşleşmiyor');
 console.log('A15: 9 senaryo ve 12 aylık zam tablosu motor sonuçlarıyla doğrulandı.');
+
+// A18: static policy validation is not proof of verified crawler access through Cloudflare.
+const {verifyAiCrawlerPolicy}=await import('./ai-crawl-policy.js');
+console.log('A18 robots: '+JSON.stringify(verifyAiCrawlerPolicy(await readFile(join(dist,'robots.txt'),'utf8'))));
