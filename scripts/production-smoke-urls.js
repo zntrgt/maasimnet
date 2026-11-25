@@ -51,6 +51,7 @@ const urls = [
   'https://maasim.net/2022-maas-hesaplama/',
   'https://maasim.net/2021-maas-hesaplama/',
   'https://maasim.net/2020-maas-hesaplama/',
+  'https://maasim.net/ads.txt',
   'https://maasim.net/sitemap.xml',
   'https://maasim.net/robots.txt',
   'https://maasim.net/llms.txt',

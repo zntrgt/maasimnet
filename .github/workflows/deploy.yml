@@ -128,6 +128,18 @@ jobs:
             wait_for_200 "$url"
           done
 
+          # Check actual response content, not only status. Do not generate ad clicks or GA4 events.
+          check_dir="$(mktemp -d)"
+          trap 'rm -rf "$check_dir"' EXIT
+          for file in index.html ads.txt sitemap.xml robots.txt; do
+            url="https://maasim.net/$file"
+            if [ "$file" = index.html ]; then url="https://maasim.net/"; fi
+            curl --fail --silent --show-error --retry 3 --connect-timeout 10 --max-time 30 \
+              -H 'Cache-Control: no-cache' \
+              "${url}?integration_check=${DEPLOY_SHA}" -o "$check_dir/$file"
+          done
+          node scripts/verify-google-integration.js "$check_dir"
+
       - name: Production cache and security header smoke test
         id: headers
         env:

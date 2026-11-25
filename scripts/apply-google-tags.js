@@ -2,7 +2,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const GA_MEASUREMENT_ID = 'G-988BB5B64E';
-const ADSENSE_CLIENT = 'ca-pub-8614552230353945';
+import { AD_CLIENT as ADSENSE_CLIENT } from '../content/ad-slots.js';
 const CONSENT_MODE_MARKER = 'data-maasim-consent-mode';
 const GOOGLE_TAG_MARKER = 'data-maasim-google-tag';
 const CALCULATOR_ANALYTICS_MARKER = 'data-maasim-calculator-analytics';
@@ -68,22 +68,30 @@ const googleTagLoader = `<script data-cookieconsent="ignore" ${GOOGLE_TAG_MARKER
     }
   };
 
+  let reloadPending = false;
+  const enforceRevocation = () => {
+    if (reloadPending) return true;
+    const statisticsDenied = window.Cookiebot?.consent?.statistics !== true;
+    const marketingDenied = window.Cookiebot?.consent?.marketing !== true;
+    if ((analyticsLoaded && statisticsDenied) || (adsLoaded && marketingDenied)) {
+      reloadPending = true;
+      if (marketingDenied) document.documentElement.dataset.ads = 'off';
+      window.location.reload();
+      return true;
+    }
+    return false;
+  };
+
   const applyConsent = () => {
+    // A saved partial consent can also revoke a previously granted category.
+    if (enforceRevocation()) return;
     enableAnalytics();
     enableAds();
   };
 
-  const enforceRevocation = () => {
-    const statisticsDenied = window.Cookiebot?.consent?.statistics !== true;
-    const marketingDenied = window.Cookiebot?.consent?.marketing !== true;
-    if ((analyticsLoaded && statisticsDenied) || (adsLoaded && marketingDenied)) {
-      window.location.reload();
-    }
-  };
-
   window.addEventListener('CookiebotOnConsentReady', applyConsent);
   window.addEventListener('CookiebotOnAccept', applyConsent);
-  window.addEventListener('CookiebotOnDecline', enforceRevocation);
+  window.addEventListener('CookiebotOnDecline', applyConsent);
   applyConsent();
 })();
 </script>`;

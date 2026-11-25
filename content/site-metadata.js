@@ -46,7 +46,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/100000-brut-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/blog/100000-tl-brut-maas-neti-2026/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-11-25' }),
-  '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-11-25' }),
   '/kademeli-emeklilik/': Object.freeze({ publishedAt: '2026-09-18', modifiedAt: '2026-11-24' }),
   '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-10-10', reviewedAt: '2026-10-10' }),
   '/hesaplama-metodolojisi/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),

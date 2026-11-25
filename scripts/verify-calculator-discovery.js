@@ -81,3 +81,11 @@ assert.ok(hub.includes('href="/gunluk-ucret-hesaplama/"'));
 assert.ok(sitemap.includes('<loc>https://maasim.net/gunluk-ucret-hesaplama/</loc>'));
 await access(join(dist,'assets','daily-wage-engine.js'));
 await access(join(dist,'assets','daily-wage-calculator.js'));
+
+// A17: existing tools belong in the hub; no duplicate URLs or new indexable pages.
+for(const route of ["/part-time-maas-hesaplama/","/eksik-gun-maas-hesaplama/","/sgk-prim-hesaplama/","/maas-teklifi-karsilastirma/","/resmi-tatil-mesai-ucreti-hesaplama/","/hafta-tatili-ucreti-hesaplama/","/prim-ikramiye-maas-hesaplama/"]){
+  assert.equal([...hub.matchAll(/<a\b[^>]*class="calculator-discovery__card"[^>]*href="([^"]+)"/g)].filter(m=>m[1]===route).length,1,'A17 kart tek olmalı: '+route);
+  assert.ok(hub.includes('"url":"https://maasim.net'+route+'"'),'A17 ItemList eksik: '+route);
+  assert.ok(sitemap.includes('<loc>https://maasim.net'+route+'</loc>'),'A17 sitemap eksik: '+route);
+  await access(join(dist,route.slice(1),'index.html'));
+}
