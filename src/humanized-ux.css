@@ -5,7 +5,9 @@ body[data-humanized-ux="v1"] .enterprise-hero__eyebrow{margin-bottom:12px;letter
 body[data-humanized-ux="v1"] .enterprise-hero h1{max-width:760px!important;font-size:clamp(2.4rem,4.7vw,4.15rem)!important;line-height:1.02!important}
 body[data-humanized-ux="v1"] .enterprise-hero__lead{max-width:700px!important;margin-top:18px!important;font-size:clamp(1rem,1.5vw,1.16rem)!important}
 body[data-humanized-ux="v1"] .enterprise-hero__meta{margin-top:18px}
-body[data-humanized-ux="v1"] .enterprise-trust-strip{grid-template-columns:1fr!important;margin-bottom:24px;border-radius:14px;box-shadow:none}
+body[data-humanized-ux="v1"] .enterprise-trust-strip{grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch;margin-bottom:24px;border-radius:14px;box-shadow:none}
+body[data-humanized-ux="v1"] .enterprise-trust-item a{color:#0f766e;text-decoration:underline;text-underline-offset:2px}
+@media(max-width:900px){body[data-humanized-ux="v1"] .enterprise-trust-strip{grid-template-columns:1fr!important}body[data-humanized-ux="v1"] .enterprise-trust-item + .enterprise-trust-item{border-left:0;border-top:1px solid #e2e8f0}}
 body[data-humanized-ux="v1"] .enterprise-trust-item[hidden]{display:none!important}
 body[data-humanized-ux="v1"] .enterprise-trust-item{grid-template-columns:30px minmax(0,1fr);padding:12px 14px}
 body[data-humanized-ux="v1"] .enterprise-trust-item__icon{width:30px;height:30px;border-radius:9px}
@@ -59,3 +61,8 @@ body[data-humanized-ux="v1"] .metric-hero[data-result-mode="net"] .enterprise-ta
 body[data-humanized-ux="v1"] .metric-hero #toggle-net-gross-table:not([hidden]){display:block;min-height:44px;margin-top:16px;white-space:normal;text-align:left;max-width:100%}
 body[data-humanized-ux="v1"] .metric-hero #stat-avg-net{overflow-wrap:anywhere;max-width:100%}
 @media(max-width:700px){body[data-humanized-ux="v1"] .metric-hero #stat-hero-gross{font-size:clamp(2.45rem,12vw,3.35rem)!important}}
+
+/* A16: do not show a result-specific disclaimer before a committed calculation. */
+.calculation-result-trust{display:none;font-size:12px;line-height:1.55;margin-top:10px;color:#e2e8f0;overflow-wrap:anywhere}
+body[data-calculation-committed="true"] .metric-hero.has-human-result .calculation-result-trust{display:block}
+.calculation-result-trust a{color:inherit;text-decoration:underline;text-underline-offset:2px}

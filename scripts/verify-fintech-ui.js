@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { DATA_2026 } from '../src/data-2026.js';
+import { runPayrollAudit } from '../src/payroll-audit.js';
 
 const root = process.cwd();
 const dist = join(root, 'dist');
@@ -190,3 +192,14 @@ for (const token of ["hero.dataset.resultMode = grossMode ? 'gross' : 'net'", "n
 }
 if (!app.includes(".dataset.januaryNet = formatCurrency(januaryNet)")) throw new Error('A4 Ocak neti merkezi sonuçtan alınmalı.');
 console.log('A4 brüt/net sonuç hiyerarşisi, detay ve aylık dağılım kontrolü doğrulandı.');
+
+const trustStrip=html.match(/<section\b[^>]*data-trust-disclosure="a16"[^>]*>[\s\S]*?<\/section>/i)?.[0]||'';
+const audit=runPayrollAudit();
+if((trustStrip.match(/<article class="enterprise-trust-item">/g)||[]).length!==3)throw new Error('A16: exactly three visible trust cards required');
+for(const token of ['datetime="'+DATA_2026.checkedAt+'"',audit.passed+'/'+audit.total+' bordro sınır testi geçti','href="/veriler/2026/"','href="/test-raporu/"','href="/hesaplama-metodolojisi/"','href="/gizlilik/"','data-cookiebot-renew','İstatistik izniyle ücret aralığı ve özet kullanım bilgileri ölçülebilir'])if(!trustStrip.includes(token))throw new Error('A16 trust strip missing: '+token);
+if(/<article\b[^>]*\bhidden\b/i.test(trustStrip)||humanizedJs.includes("trustItems.slice(1)"))throw new Error('A16 cards must remain visible after hydration');
+const resultTrust=html.match(/<aside\b[^>]*data-result-trust="a16"[^>]*>[\s\S]*?<\/aside>/i)?.[0]||'';
+for(const token of ['gerçek bordron farklı olabilir','href="/hesaplama-metodolojisi/"','href="/iletisim/"'])if(!resultTrust.includes(token))throw new Error('A16 result note missing: '+token);
+const trustCss=await readFile(join(root,'src','humanized-ux.css'),'utf8');
+for(const token of ['grid-template-columns:repeat(3,minmax(0,1fr))!important','@media(max-width:900px)','body[data-calculation-committed="true"] .metric-hero.has-human-result .calculation-result-trust{display:block}'])if(!trustCss.includes(token))throw new Error('A16 responsive/state rule missing: '+token);
+console.log('A16: üç güven kartı, merkezi kontrol tarihi, gerçek bordro sınır testi sayısı, istatistik izni açıklaması ve sonuç kapsamı doğrulandı.');

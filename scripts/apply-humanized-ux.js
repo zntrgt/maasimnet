@@ -1,6 +1,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { DATA_2026 } from '../src/data-2026.js';
+import { formatSiteDateTr } from '../content/site-metadata.js';
+import { runPayrollAudit } from '../src/payroll-audit.js';
+
 const VERSION = 'v1';
 const ASSET_VERSION = '4';
 const SCRIPT_SRC = `/assets/humanized-ux.js?v=${ASSET_VERSION}`;
@@ -185,6 +189,15 @@ function initializeHomeUx`);
   return output;
 }
 
+export function renderTrustStrip() {
+  const audit = runPayrollAudit();
+  return `<section class="enterprise-trust-strip" aria-label="Hesaplama güven bilgileri" data-enterprise-trust="v2" data-trust-disclosure="a16">
+    <article class="enterprise-trust-item"><span class="enterprise-trust-item__icon" aria-hidden="true">✓</span><div><strong>2026 mevzuatı kontrol edildi</strong><span>Kayıtlı bordro veri kontrolü: <time datetime="${DATA_2026.checkedAt}">${formatSiteDateTr(DATA_2026.checkedAt)}</time> · <a href="/veriler/2026/">Veriler ve kaynaklar</a></span></div></article>
+    <article class="enterprise-trust-item"><span class="enterprise-trust-item__icon" aria-hidden="true">₺</span><div><strong>${audit.passed}/${audit.total} bordro sınır testi geçti</strong><span>Kuruş bazlı hesap · <a href="/test-raporu/">Test raporu</a> · <a href="/hesaplama-metodolojisi/">Yöntem</a></span></div></article>
+    <article class="enterprise-trust-item"><span class="enterprise-trust-item__icon" aria-hidden="true">⌁</span><div><strong>Hesaplama tarayıcında</strong><span>İstatistik izniyle ücret aralığı ve özet kullanım bilgileri ölçülebilir. <a href="/gizlilik/">Gizlilik</a> · <a href="/cerez-politikasi/#cookie-declaration" data-cookiebot-renew>Çerez tercihleri</a></span></div></article>
+  </section>`;
+}
+
 function staticHomeMarkup(html) {
   let output = html;
 
@@ -195,9 +208,7 @@ function staticHomeMarkup(html) {
 
   output = output.replace(
     /<section\b[^>]*class=["'][^"']*enterprise-trust-strip[^"']*["'][^>]*>[\s\S]*?<\/section>/i,
-    `<section class="enterprise-trust-strip" aria-label="Hesaplama güven bilgileri" data-enterprise-trust="v2">
-      <article class="enterprise-trust-item"><span class="enterprise-trust-item__icon" aria-hidden="true">✓</span><div><strong>2026 mevzuatı kontrol edildi</strong><span>SGK, GİB ve ÇSGB kaynaklarıyla güncel parametreler.</span></div></article>
-    </section>`
+    renderTrustStrip()
   );
 
   output = output.replace(
@@ -230,6 +241,9 @@ function staticHomeMarkup(html) {
   }
 
   output = output.replace('>Aylık Ort. Net</p>', '>Aylık ortalama net maaşın</p>');
+  const resultAnchor = /(<p id="stat-avg-net-context"[^>]*>[\s\S]*?<\/p>)/;
+  if (!resultAnchor.test(output)) throw new Error('A16 sonuç açıklaması bulunamadı.');
+  output = output.replace(resultAnchor, '$1<aside class="calculation-result-trust" data-result-trust="a16" aria-label="Sonuç kapsamı">Girdiğin bilgiler ve 2026 kurallarına göre hesaplanır; gerçek bordron farklı olabilir. <a href="/hesaplama-metodolojisi/">Yöntem ve sınırlar</a> · <a href="/iletisim/">Hata bildir</a></aside>');
   return output;
 }
 

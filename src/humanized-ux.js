@@ -92,15 +92,7 @@ function humanizeHomeHero() {
     meta.innerHTML = '<span>12 aylık bordro</span><span>Vergi dilimleri</span><span>İşveren maliyeti</span>';
   }
 
-  const trustItems = qsa('.enterprise-trust-item');
-  if (trustItems.length) {
-    const first = trustItems[0];
-    const title = qs('strong', first);
-    const description = qs('span:not(.enterprise-trust-item__icon)', first);
-    if (title) title.textContent = '2026 mevzuatı kontrol edildi';
-    if (description) description.textContent = 'SGK, GİB ve ÇSGB kaynaklarıyla güncel parametreler.';
-    trustItems.slice(1).forEach((item) => item.setAttribute('hidden', ''));
-  }
+  // Trust cards are rendered from central build data; preserve their links and dates.
 }
 
 function setFormHeadingCopy() {
