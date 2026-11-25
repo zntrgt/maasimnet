@@ -50,7 +50,7 @@ for(const [ordinal, post] of employeeGuides.entries()){
  const text=html.match(/<article\b[\s\S]*?<\/article>/)[0].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
  assert.ok(text.split(' ').length>=300,post.slug+' useful article length');
  const schemas=[...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1])).flatMap(n=>n['@graph']||[n]);
- const faq=schemas.find(n=>n['@type']==='FAQPage');const visible=[...html.matchAll(/<summary>(.*?)<\/summary>/g)].map(m=>m[1]);
+ const faq=schemas.find(n=>n['@type']==='FAQPage');const faqSection=html.match(/<section class="faq">([\s\S]*?)<\/section>/i)?.[1]||'';const visible=[...faqSection.matchAll(/<summary>(.*?)<\/summary>/g)].map(m=>m[1]);
  assert.equal(schemas.find(n=>n['@type']==='Article').image,`https://maasim.net${coverPath}`,post.slug+' structured image');
  assert.deepEqual(faq.mainEntity.map(q=>q.name),visible,post.slug+' FAQ alignment');
 }
