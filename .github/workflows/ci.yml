@@ -46,7 +46,7 @@ jobs:
         run: npm run verify:content-dates
 
       - name: Verify structured data and technical SEO
-        run: npm run verify:structured-data && npm run verify:technical-seo
+        run: npm run verify:structured-data && npm run verify:technical-seo && npm run verify:query-ownership
 
       - name: Verify Search, AI visibility and GA4 dashboard contract
         run: npm run verify:growth-dashboard
