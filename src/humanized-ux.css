@@ -5,7 +5,9 @@ body[data-humanized-ux="v1"] .enterprise-hero__eyebrow{margin-bottom:12px;letter
 body[data-humanized-ux="v1"] .enterprise-hero h1{max-width:760px!important;font-size:clamp(2.4rem,4.7vw,4.15rem)!important;line-height:1.02!important}
 body[data-humanized-ux="v1"] .enterprise-hero__lead{max-width:700px!important;margin-top:18px!important;font-size:clamp(1rem,1.5vw,1.16rem)!important}
 body[data-humanized-ux="v1"] .enterprise-hero__meta{margin-top:18px}
-body[data-humanized-ux="v1"] .enterprise-trust-strip{grid-template-columns:1fr!important;margin-bottom:24px;border-radius:14px;box-shadow:none}
+body[data-humanized-ux="v1"] .enterprise-trust-strip{grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch;margin-bottom:24px;border-radius:14px;box-shadow:none}
+body[data-humanized-ux="v1"] .enterprise-trust-item a{color:#0f766e;text-decoration:underline;text-underline-offset:2px}
+@media(max-width:900px){body[data-humanized-ux="v1"] .enterprise-trust-strip{grid-template-columns:1fr!important}body[data-humanized-ux="v1"] .enterprise-trust-item + .enterprise-trust-item{border-left:0;border-top:1px solid #e2e8f0}}
 body[data-humanized-ux="v1"] .enterprise-trust-item[hidden]{display:none!important}
 body[data-humanized-ux="v1"] .enterprise-trust-item{grid-template-columns:30px minmax(0,1fr);padding:12px 14px}
 body[data-humanized-ux="v1"] .enterprise-trust-item__icon{width:30px;height:30px;border-radius:9px}
