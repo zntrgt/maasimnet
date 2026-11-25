@@ -29,7 +29,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/veriler/2027/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: DATA_2027.checkedAt, reviewedAt: DATA_2027.checkedAt }),
   '/blog/': Object.freeze({ modifiedAt: '2026-10-10' }),
   // Veri sayfası birleştirmesi: resmî değer bloğu ve Dataset şeması bu sayfalara taşındı.
-  '/blog/2026-maas-vergi-dilimleri/': Object.freeze({ modifiedAt: '2026-10-10' }),
+  '/blog/2026-maas-vergi-dilimleri/': Object.freeze({ modifiedAt: '2026-11-25' }),
   // Rehber birleştirmesi: 95 şablon rehberin cevapları bu sayfalara taşındı.
   '/blog/is-yerinde-finansal-saglik/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/blog/netten-brute-maas-neden-aylik-degisir/': Object.freeze({ modifiedAt: '2026-10-10' }),
