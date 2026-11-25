@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { DATA_2026 as D } from '../src/data-2026.js';
 import { DATA_2027 as Y } from '../src/data-2027.js';
 import { calculatePayrollYear, summarizePayroll } from '../src/payroll-engine.js';
+import { createBonusComparison } from './bonus-comparison.js';
 import { employerCost } from '../src/employer-cost-engine.js';
 import { HISTORICAL_PAYROLL_DATA } from '../src/historical-payroll-data.js';
 import { DAILY_FLOOR_KURUS, RATES_PPM } from '../src/borrowing-engine.js';
@@ -29,6 +30,7 @@ export function salaryExamples(){
  });
 }
 const ref=salaryExamples()[3];
+const juneBonus=createBonusComparison();
 const standardCost=employerCost(10000000,'other').employerCostKurus;
 const minimumCost=employerCost(P.minimumGrossKurus,'other').employerCostKurus;
 const cumulative=pct((1.0178*1.0184*1.0184*1.0258-1)*100);
@@ -62,7 +64,7 @@ export const GEO_ANSWERS=Object.freeze([
  entry('/sgk-prim-hesaplama/',`1 Ocak–31 Aralık 2026’da standart çalışan SGK payı %14, işsizlik primi %1 ve aylık prime esas kazanç üst sınırı ${fmt(P.sgkCeilingKurus)}’dir.`,[wage,sgk]),
  ...Object.values(HISTORICAL_PAYROLL_DATA).map(d=>entry('/'+d.year+'-maas-hesaplama/',`${d.year} Ocak döneminde aylık brüt asgari ücret ${fmt(d.periods[0].minimumGrossKurus)}, referans net asgari ücret ${fmt(d.periods[0].referenceMinimumNetKurus)}’dir${d.agiEnabled?' (bekâr, çocuksuz çalışan için AGİ dahil)':''}; hesaplama o yılın kurallarına göre yapılır.`,[[d.sourceUrls[0],'ÇSGB geçmiş yıl ücret arşivi'],[d.sourceUrls.at(-1),'GİB']])),
  entry('/maas-teklifi-karsilastirma/','2026’da iki maaş teklifi aynı aylık net tutarı verse bile yıllık toplam değer 12 aylık net maaş, prim ve yan haklarla birlikte karşılaştırılmalıdır.',[method]),
- entry('/prim-ikramiye-maas-hesaplama/','2026’da örnek olarak 50.000 TL aylık brüte 10.000 TL brüt ikramiye eklenirse o ay toplam brüt 60.000 TL olur; net artış kümülatif matraha ve prim kurallarına bağlıdır.',[tax,sgk,method])
+ entry('/prim-ikramiye-maas-hesaplama/',`2026’da 100.000 TL sabit aylık brüte Haziran ayında 50.000 TL brüt prim eklenirse o ay net artış ${fmt(juneBonus.paymentDelta)}, toplam Haziran neti ${fmt(juneBonus.withBonus[5].netKurus)} olur. Standart çalışan, 12 tam ay, sıfır başlangıç matrahı ve başka ek ödeme yok varsayımıyla.`,[tax,sgk,method])
 ]);
 const sourcesHtml=items=>items.map(([url,label])=>`<a href="${escape(url)}">${escape(label)}</a>`).join(' · ');
 const style='<style data-geo-answer-style="v1">.geo-direct-answer{margin:12px 0 16px;padding:12px 14px;border-left:3px solid #0f766e;background:#f0fdfa;color:#134e4a;font-size:15px;line-height:1.55}.geo-direct-answer a,.geo-salary-examples a{color:#0f766e;text-decoration:underline;text-underline-offset:2px}.geo-direct-answer small{display:block;margin-top:4px;font-size:12px}.geo-salary-examples{margin:24px 0;padding:18px;border:1px solid #dbe4ee;border-radius:14px;background:#fff;color:#0f172a}.geo-salary-examples h2{font-size:clamp(20px,3vw,26px);margin:0 0 12px}.geo-salary-scroll{overflow-x:auto}.geo-salary-examples table{width:100%;min-width:540px;border-collapse:collapse;font-size:14px}.geo-salary-examples th,.geo-salary-examples td{padding:10px;border-bottom:1px solid #dbe4ee;text-align:right;white-space:nowrap}.geo-salary-examples th:first-child{text-align:left}.geo-salary-examples p{font-size:14px;line-height:1.6;margin:12px 0 0}</style>';
