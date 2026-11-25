@@ -201,6 +201,7 @@ export function calculateSeverance({
     annualRegularBenefitsMonthlyKurus,
     dressedGrossKurus,
     ceilingKurus,
+    ceilingPeriod: endIso < '2026-07-01' ? '1 Ocak–30 Haziran 2026' : '1 Temmuz–31 Aralık 2026',
     basisKurus,
     grossKurus,
     calculatedStampTaxKurus,
