@@ -15,6 +15,7 @@ import { normalizeBlogIndexImages } from './normalize-blog-index-images.js';
 import { applyBlogOriginalData } from './apply-blog-original-data.js';
 import { applyBlogOriginalDataSecondary } from './apply-blog-original-data-secondary.js';
 import { add2027EstimateCalculator } from './add-2027-estimate-calculator.js';
+import { addEmployerCostCalculator } from './add-employer-cost-calculator.js';
 import { addAnnualDataHub } from './add-annual-data-hub.js';
 import { apply2027QueryOwnership } from './apply-2027-query-ownership.js';
 import { addOfferComparison } from './add-offer-comparison.js';
@@ -89,7 +90,7 @@ await mkdir(assetsDir, { recursive: true });
 for (const file of [
   'app.js','data-2026.js','parameters-2026.js','payroll-engine.js','mobile-payroll-view.js',
   'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
-  'estimate-2027.js','data-2027.js','offer-comparison.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
+  'employer-cost-engine.js','employer-cost-calculator.js','estimate-2027.js','data-2027.js','offer-comparison.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
   'unemployment-engine.js','unemployment-calculator.js','unemployment-calculator.css',
   'retirement-engine.js','emadder-scenario.js','retirement-calculator.js','retirement-calculator.css',
   'retired-worker-engine.js','rw-calculator.js','rw-calculator.css',
@@ -141,6 +142,7 @@ await applyHistoricalPayrollFreshness(distDir);
 await addContactPage(distDir);
 await applyP0Architecture(distDir);
 await addAnnualDataHub(distDir);
+await addEmployerCostCalculator(distDir);
 const editorialAuthorityResult = await addEditorialAuthority(distDir);
 await addKademeliEmeklilik(distDir);
 await addHomeFreshness(distDir);
