@@ -64,7 +64,8 @@ export const OFFICIAL_FACT_TOPICS = Object.freeze([
       { label: '1 Ocak–30 Haziran', value: money(d.severanceCeiling.firstHalfKurus) },
       { label: '1 Temmuz–31 Aralık', value: money(d.severanceCeiling.secondHalfKurus), note: 'Güncel dönem' }
     ],
-    sources: [s.severance]
+    reviewedAt: d.severanceCeiling.reviewedAt,
+    sources: [s.severance, s.severanceVerification]
   }),
   Object.freeze({
     key: 'meal-allowance',
