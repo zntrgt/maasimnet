@@ -59,7 +59,8 @@ for (const token of [
   if (!html.includes(token)) throw new Error(`2027 tahmin sayfası eksik: ${token}`);
 }
 
-if ((html.match(/<details>/g) || []).length !== 8) {
+const faqHtml = html.match(/<div class="estimate-faq">([\s\S]*?)<\/div>/i)?.[1] || '';
+if ((faqHtml.match(/<details\b/g) || []).length !== 8) {
   throw new Error('2027 tahmin sayfasında görünür 8 SSS bulunmalı.');
 }
 if ((html.match(/"@type":"Question"/g) || []).length !== 8) {

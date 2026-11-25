@@ -1,10 +1,9 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { EDITORIAL_AUTHORITY, editorialTeamSchema } from '../content/editorial-authority.js';
-import { SITE_METADATA } from '../content/site-metadata.js';
+import { getPageMetadata, formatSiteDateTr } from '../content/site-metadata.js';
 
 const SITE = EDITORIAL_AUTHORITY.site.origin;
-const PUBLISHED = SITE_METADATA.releaseModifiedAt;
 const esc = (value = '') => String(value)
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
@@ -33,6 +32,7 @@ const css = `
 
 function graph({ path, title, description, type = 'WebPage' }) {
   const url = `${SITE}${path}`;
+  const metadata = getPageMetadata(path);
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -53,8 +53,8 @@ function graph({ path, title, description, type = 'WebPage' }) {
         name: title,
         description,
         inLanguage: 'tr-TR',
-        datePublished: PUBLISHED,
-        dateModified: SITE_METADATA.releaseModifiedAt,
+        datePublished: metadata.publishedAt,
+        dateModified: metadata.modifiedAt,
         isPartOf: { '@id': `${SITE}/#website` },
         publisher: { '@id': EDITORIAL_AUTHORITY.site.organizationId }
       },
@@ -71,6 +71,7 @@ function graph({ path, title, description, type = 'WebPage' }) {
 
 function page({ path, title, description, eyebrow, body, type }) {
   const schema = graph({ path, title, description, type });
+  const metadata = getPageMetadata(path);
   return `<!doctype html>
 <html lang="tr">
 <head>
@@ -98,7 +99,8 @@ function page({ path, title, description, eyebrow, body, type }) {
     ${body}
     <aside class="freshness" aria-label="Güncellik bilgisi">
       <strong>Güncellik</strong>
-      <span>Son güncelleme: ${SITE_METADATA.releaseModifiedAt}</span>
+      <span>İlk yayın: <time datetime="${metadata.publishedAt}">${formatSiteDateTr(metadata.publishedAt)}</time></span>
+      <span>Son güncelleme: <time datetime="${metadata.modifiedAt}">${formatSiteDateTr(metadata.modifiedAt)}</time></span>
       <span>Politika ve yöntem değişiklikleri yalnız anlamlı içerik güncellemesinde tarih yeniler.</span>
     </aside>
     <dl class="authority-meta">
@@ -128,10 +130,10 @@ const editorialBody = `
 <li><strong>Hesap veya iddia yeniden üretilebilir hale getirilir.</strong> Maaşım.net motorundan türetilen örnekler varsayımlarıyla birlikte gösterilir.</li>
 <li><strong>Editoryal kontrol yapılır.</strong> Başlık, erken cevap, kaynak bağlantıları, tarih, yöntem, iç linkler ve kullanıcıyı yanıltabilecek kesinlik ifadeleri gözden geçirilir.</li>
 <li><strong>Yayın sonrası güncellik izlenir.</strong> Mevzuat veya parametre değişirse ilgili içerik güncellenir; yalnız build çalıştığı için son güncelleme tarihi değiştirilmez.</li>
-<li><strong>Düzeltmeler görünür biçimde uygulanır.</strong> Maddi hata tespit edilirse içerik düzeltilir; karar etkisi olan değişikliklerde güncelleme tarihi yenilenir.</li>
+<li><strong>Düzeltmeler görünür biçimde uygulanır.</strong> Maddi hata tespit edilirse içerik düzeltilir; karar etkisi olan değişikliklerde güncelleme tarihi yenilenir. Sayfadaki son güncelleme kaydı, ayrıntılı bir geçmişin mevcut olmadığı durumlarda tam değişiklik geçmişi gibi sunulmaz.</li>
 </ol></section>
 <section class="authority-grid">
-<article class="authority-card"><h2>Yazarlık</h2><p>Kurumsal içeriklerin yazarı <strong>Maaşım.net Editoryal Ekibi</strong> olarak gösterilir. Gerçek bir uzman incelemesi olmadığı sürece kişisel uzman adı veya unvanı üretilmez.</p></article>
+<article class="authority-card"><h2>Yazarlık</h2><p>Kurumsal içeriklerin yazarı <strong>Maaşım.net Editoryal Ekibi</strong> olarak gösterilir. Kurumsal yazar bilgisi, bağımsız bir mali müşavir, avukat veya bordro uzmanının inceleme yaptığı anlamına gelmez. Teknik test, kaynak kontrolü ve bağımsız uzman incelemesi ayrı bilgilerdir; doğrulanmış uzman bilgisi yoksa kişisel isim, unvan veya onay gösterilmez.</p></article>
 <article class="authority-card"><h2>Yapay zekâ kullanımı</h2><p>Yapay zekâ araçları yapı, dil ve analiz desteğinde kullanılabilir; ancak mevzuat, finansal parametre veya akademik bulgu yalnız model çıktısına dayanarak yayımlanmaz. Kaynak ve hesap kontrolü ayrıca yapılır.</p></article>
 <article class="authority-card"><h2>Ticari içerik</h2><p>Sponsorlu veya ticari iş birliği içeriği yayımlanırsa bunun editoryal içerikten ayrıldığı açık biçimde belirtilir. Ticari ilişki bordro motorundaki resmî parametreleri değiştirmez.</p></article>
 <article class="authority-card"><h2>Güncellik</h2><p>Yayın tarihi ile son güncelleme tarihi aynı kavram değildir. <code>dateModified</code> yalnız içerikte anlamlı bir değişiklik olduğunda yenilenir.</p></article>
@@ -147,7 +149,7 @@ const sourceBody = `
 </ol></section>
 <section class="authority-grid">
 <article class="authority-card"><h2>Rakamlar</h2><p>Rakam içeren bordro içerikleri mümkün olduğunda merkezi veri katmanı veya bordro motorundan üretilir. Aynı parametrenin farklı sayfalarda elle kopyalanması azaltılır.</p></article>
-<article class="authority-card"><h2>Kaynak tarihi</h2><p>Dış bağlantının yalnız varlığı yeterli kabul edilmez. Belgenin geçerlilik dönemi ve içerikle ilişkisi kontrol edilir; özellikle yıllık parametrelerde dönem açıkça belirtilir.</p></article>
+<article class="authority-card"><h2>Kaynak tarihi</h2><p>Dış bağlantının yalnız varlığı yeterli kabul edilmez. Belgenin geçerlilik dönemi ve içerikle ilişkisi kontrol edilir. Kaynak kaydında kurum, belge adı, varsa kanun/tebliğ/karar numarası, ilgili madde, yayın tarihi ve erişim ya da kontrol tarihi ayrı alanlardır. Belirlenemeyen bilgiler uydurulmaz; güncelleme tarihi kaynak erişim tarihi yerine kullanılmaz.</p></article>
 <article class="authority-card"><h2>Piyasa verileri</h2><p>Kaynağı, örneklemi veya dönemi bilinmeyen maaş ortalamaları kesin piyasa verisi gibi yayımlanmaz. Örnek ücretler kişisel öneri değil, senaryo olarak etiketlenir.</p></article>
 <article class="authority-card"><h2>Çelişkili kaynaklar</h2><p>Kaynaklar farklı sonuç veriyorsa fark gizlenmez. Yetki, tarih ve kapsam karşılaştırılır; gerekli olduğunda sonuç yerine belirsizlik açıklanır.</p></article>
 </section>
