@@ -19,6 +19,7 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
+  '/vergi-dilimi-hesaplama/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/isveren-maliyeti-hesaplama/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/2027-maas-hesaplama/': Object.freeze({ publishedAt: '2026-07-30', modifiedAt: DATA_2027.checkedAt, reviewedAt: DATA_2027.checkedAt }),
   '/veriler/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: DATA_2027.checkedAt }),
@@ -85,6 +86,7 @@ const PAGE_OVERRIDES = Object.freeze({
 });
 
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
+  '/vergi-dilimi-hesaplama/',
   '/isveren-maliyeti-hesaplama/',
   '/veriler/',
   '/veriler/2027/',

@@ -10,6 +10,7 @@ const preferred = [
 const urls = [
   'https://maasim.net/version.json',
   'https://maasim.net/isveren-maliyeti-hesaplama/',
+  'https://maasim.net/vergi-dilimi-hesaplama/',
   'https://maasim.net/veriler/',
   'https://maasim.net/veriler/2027/',
   'https://maasim.net/2027-maas-hesaplama/',
