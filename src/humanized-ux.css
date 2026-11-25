@@ -61,3 +61,8 @@ body[data-humanized-ux="v1"] .metric-hero[data-result-mode="net"] .enterprise-ta
 body[data-humanized-ux="v1"] .metric-hero #toggle-net-gross-table:not([hidden]){display:block;min-height:44px;margin-top:16px;white-space:normal;text-align:left;max-width:100%}
 body[data-humanized-ux="v1"] .metric-hero #stat-avg-net{overflow-wrap:anywhere;max-width:100%}
 @media(max-width:700px){body[data-humanized-ux="v1"] .metric-hero #stat-hero-gross{font-size:clamp(2.45rem,12vw,3.35rem)!important}}
+
+/* A16: do not show a result-specific disclaimer before a committed calculation. */
+.calculation-result-trust{display:none;font-size:12px;line-height:1.55;margin-top:10px;color:#475569;overflow-wrap:anywhere}
+body[data-calculation-committed="true"] .metric-hero.has-human-result .calculation-result-trust{display:block}
+.calculation-result-trust a{color:inherit;text-decoration:underline;text-underline-offset:2px}
