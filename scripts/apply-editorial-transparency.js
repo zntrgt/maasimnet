@@ -8,7 +8,7 @@ import { DATA_2027 } from '../src/data-2027.js';
 
 export const TRANSPARENCY_ROUTES=Object.freeze([...new Set([
  ...indexableBlogPosts.map(blogRoute),...GEO_CONTENT_ROUTES,
- '/100000-brut-maas-hesaplama/','/net-maastan-kidem-tazminati-hesaplama/',
+ '/senaryolar/','/temmuz-zam-senaryosu/','/100000-brut-maas-hesaplama/','/net-maastan-kidem-tazminati-hesaplama/',
  '/is-goremezlik-odenegi-hesaplama/','/gunluk-ucret-hesaplama/',
  '/kademeli-emeklilik/','/veriler/2026/','/veriler/2027/'
 ])]);
@@ -33,7 +33,7 @@ function sourceRecords(html){
  });
  return '<p>Temel kaynaklar ve ilgili belge bağlantıları sayfanın kendi kaynak bölümlerinde yer alır. Aşağıdaki kayıtlar, bu sayfada bağlantısı bulunan ve merkezi veri katmanında ayrıntıları kayıtlı belgeleri gösterir. Eksik tarih ve belge bilgileri tahmin edilmez.</p>'+(items.length?'<ul>'+items.join('')+'</ul>':'<p>Bu sayfanın merkezi kaynak kaydı ayrı olarak eşleştirilmemiştir; sayfadaki özgün kaynak bağlantılarını kullan.</p>');
 }
-const monthly2026=new Set(['/','/100000-brut-maas-hesaplama/','/isveren-maliyeti-hesaplama/','/vergi-dilimi-hesaplama/','/asgari-ucret-hesaplama/','/asgari-ucret-isveren-maliyeti/','/emekli-calisan-maas-hesaplama/','/net-maastan-kidem-tazminati-hesaplama/','/prim-ikramiye-maas-hesaplama/','/sgk-prim-hesaplama/','/veriler/2026/']);
+const monthly2026=new Set(['/','/senaryolar/','/temmuz-zam-senaryosu/','/100000-brut-maas-hesaplama/','/isveren-maliyeti-hesaplama/','/vergi-dilimi-hesaplama/','/asgari-ucret-hesaplama/','/asgari-ucret-isveren-maliyeti/','/emekli-calisan-maas-hesaplama/','/net-maastan-kidem-tazminati-hesaplama/','/prim-ikramiye-maas-hesaplama/','/sgk-prim-hesaplama/','/veriler/2026/']);
 const year2026=new Set([...monthly2026,'/tazminat-hesaplama/','/kidem-tazminati-hesaplama/','/ihbar-tazminati-hesaplama/','/issizlik-maasi-hesaplama/','/fazla-mesai-hesaplama/','/yillik-izin-ucreti-hesaplama/','/resmi-tatil-mesai-ucreti-hesaplama/','/hafta-tatili-ucreti-hesaplama/','/part-time-maas-hesaplama/','/eksik-gun-maas-hesaplama/','/gunluk-ucret-hesaplama/','/is-goremezlik-odenegi-hesaplama/']);
 function scope(path){
  if(path==='/2027-maas-hesaplama/'||path==='/veriler/2027/')return '2027 senaryosu / açıklanma durumu; kesinleşmemiş veriler tahmin veya beklemede.';
