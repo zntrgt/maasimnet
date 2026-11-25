@@ -241,6 +241,9 @@ function staticHomeMarkup(html) {
   }
 
   output = output.replace('>Aylık Ort. Net</p>', '>Aylık ortalama net maaşın</p>');
+  const resultAnchor = /(<p id="stat-avg-net-context"[^>]*>[\s\S]*?<\/p>)/;
+  if (!resultAnchor.test(output)) throw new Error('A16 sonuç açıklaması bulunamadı.');
+  output = output.replace(resultAnchor, '$1<aside class="calculation-result-trust" data-result-trust="a16" aria-label="Sonuç kapsamı">Girdiğin bilgiler ve 2026 kurallarına göre hesaplanır; gerçek bordron farklı olabilir. <a href="/hesaplama-metodolojisi/">Yöntem ve sınırlar</a> · <a href="/iletisim/">Hata bildir</a></aside>');
   return output;
 }
 
