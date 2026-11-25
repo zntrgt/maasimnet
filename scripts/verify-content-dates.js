@@ -1,7 +1,8 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getPageMetadata, formatSiteDateTr, STANDARD_FRESHNESS_PATHS } from '../content/site-metadata.js';
+import { getPageMetadata, formatSiteDateTr, STANDARD_FRESHNESS_PATHS, GEO_CONTENT_ROUTES } from '../content/site-metadata.js';
+import { GEO_ANSWERS, salaryExamples } from './add-geo-answers.js';
 import { runPayrollAudit } from '../src/payroll-audit.js';
 
 async function walkHtml(dir, output = []) {
@@ -88,6 +89,26 @@ export async function verifyContentDates(distDir) {
     }
   }
 
+  const expectedRoutes = GEO_ANSWERS.map(a=>a.path).sort();
+  if (JSON.stringify(expectedRoutes)!==JSON.stringify([...GEO_CONTENT_ROUTES].sort())) failures.push('GEO rota listesi ile içerik tarihleri uyumsuz.');
+  for (const a of GEO_ANSWERS) {
+    const html = await readFile(join(distDir,a.path.replace(/^\/+|\/+$/g,''),'index.html'),'utf8');
+    const answers=[...html.matchAll(/<p\b[^>]*data-geo-answer="v1"[^>]*>[\s\S]*?<\/p>/gi)];
+    if(answers.length!==1) failures.push(a.path+': tek görünür GEO cevabı bulunmalı.');
+    const prefix=html.slice(html.search(/<main\b/i),answers[0]?.index??0).replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean);
+    if(prefix.length>=100) failures.push(a.path+': cevap ilk 100 kelime içinde değil.');
+    if(answers[0]&&!/\d/.test(answers[0][0])) failures.push(a.path+': sayısal cevap eksik.');
+    for(const [source] of a.sources) if(!answers[0]?.[0].includes(source.replace(/&/g,'&amp;'))) failures.push(a.path+': cevap kaynağı eksik: '+source);
+  }
+  const home=await readFile(join(distDir,'index.html'),'utf8');
+  const exampleTable=home.match(/<section\b[^>]*id="2026-brut-net-ornekleri"[^>]*>[\s\S]*?<\/section>/i)?.[0]||'';
+  const examples=salaryExamples();
+  if(examples.length!==5||examples[3].januaryKurus!==7595303||examples[3].decemberKurus!==6715680||examples[3].averageKurus!==6949014||examples[3].annualKurus!==83388163) failures.push('A6 100.000 TL referans bordro vakası uyuşmuyor.');
+  if(!exampleTable||[...exampleTable.matchAll(/<tr>/g)].length!==6) failures.push('A6 5 örnek satırlı statik tablo eksik.');
+  for(const row of examples) for(const key of ['grossKurus','januaryKurus','decemberKurus','averageKurus']) {
+    const value=(row[key]/100).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+    if(!exampleTable.includes(value)) failures.push('A6 örnek tablosunda tutar eksik: '+value);
+  }
   const audit = runPayrollAudit();
   const reportPath = join(distDir, 'test-raporu', 'index.html');
   await access(reportPath);

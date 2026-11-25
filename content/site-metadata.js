@@ -91,6 +91,46 @@ export const STANDARD_FRESHNESS_PATHS = Object.freeze([
   '/isveren-maliyeti-hesaplama/', '/vergi-dilimi-hesaplama/'
 ]);
 
+// A6: Bu rotalarda 25 Kasım 2026'da görünür cevap içeriği eklendi.
+// Kaynak kontrol tarihi değişmez; daha sonraki gerçek güncellemeler önceliklidir.
+export const GEO_CONTENT_ROUTES = Object.freeze([
+  "/",
+  "/asgari-ucret-hesaplama/",
+  "/maas-zam-hesaplama/",
+  "/isveren-maliyeti-hesaplama/",
+  "/vergi-dilimi-hesaplama/",
+  "/asgari-ucret-isveren-maliyeti/",
+  "/emekli-calisan-maas-hesaplama/",
+  "/2027-maas-hesaplama/",
+  "/tazminat-hesaplama/",
+  "/kidem-tazminati-hesaplama/",
+  "/ihbar-tazminati-hesaplama/",
+  "/issizlik-maasi-hesaplama/",
+  "/emeklilik-hesaplama/",
+  "/emekli-zammi-hesaplama/",
+  "/memur-zammi-hesaplama/",
+  "/en-dusuk-emekli-maasi/",
+  "/emekli-promosyonu/",
+  "/borclanma-hesaplama/",
+  "/kira-artis-orani-hesaplama/",
+  "/fazla-mesai-hesaplama/",
+  "/yillik-izin-ucreti-hesaplama/",
+  "/resmi-tatil-mesai-ucreti-hesaplama/",
+  "/hafta-tatili-ucreti-hesaplama/",
+  "/part-time-maas-hesaplama/",
+  "/eksik-gun-maas-hesaplama/",
+  "/sgk-prim-hesaplama/",
+  "/maas-teklifi-karsilastirma/",
+  "/prim-ikramiye-maas-hesaplama/",
+  "/2020-maas-hesaplama/",
+  "/2021-maas-hesaplama/",
+  "/2022-maas-hesaplama/",
+  "/2023-maas-hesaplama/",
+  "/2024-maas-hesaplama/",
+  "/2025-maas-hesaplama/"
+]);
+const GEO_CONTENT_MODIFIED_AT = '2026-11-25';
+
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
   '/vergi-dilimi-hesaplama/',
   '/isveren-maliyeti-hesaplama/',
@@ -172,6 +212,7 @@ export function getPageMetadata(pathname = '/') {
           : isBlogPage ? SITE_METADATA.blogReviewedAt : undefined)
   };
 
+  if (GEO_CONTENT_ROUTES.includes(path) && metadata.modifiedAt < GEO_CONTENT_MODIFIED_AT) metadata.modifiedAt = GEO_CONTENT_MODIFIED_AT;
   for (const [name, value] of Object.entries(metadata)) {
     if (name.endsWith('At') && value !== undefined && !ISO_DATE.test(value)) throw new Error(`Geçersiz merkezi içerik tarihi: ${name}=${value}`);
   }
