@@ -4,7 +4,7 @@ Bu kayıt mevcut repository ve doğrulanmış görevlerin kapanış kontrolüdü
 
 ## A17: araç portföyü
 
-Önce mevcut kanonik araçların keşfini iyileştir: part-time, eksik gün, SGK primi, maaş teklifi karşılaştırması, resmî tatil mesai ücreti, hafta tatili ücreti ve prim/ikramiye senaryosu hesaplama araçları merkezine eklendi. Yeni URL açılmadı; sorgu niyeti, kaynak ve hesaplama motoru korunur.
+Önce mevcut kanonik araçların keşfini iyileştir: part-time, eksik gün, SGK primi, resmî tatil mesai ücreti ve hafta tatili ücreti zaten Tier C grubunda bulunuyordu; bu grup korunur. Maaş teklifi karşılaştırması ve prim/ikramiye senaryosu hesaplama araçları merkezine eklendi. Yedi hedefin her biri için tek görünür kart ve ItemList kaydı doğrulanır. Yeni URL açılmadı; sorgu niyeti, kaynak ve hesaplama motoru korunur.
 
 Yeni araç için adaylar (pazar talebi veya sıralama tahmini değildir):
 - Yıllık izin **hakkı / gün sayısı**: mevcut kullanılmayan izin **ücreti** aracından farklı niyet. İş Kanunu, yaş ve kıdem, özel kapsam ve istisnalar doğrulanmalı.
