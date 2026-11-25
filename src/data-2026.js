@@ -68,6 +68,13 @@ export const DATA_2026 = Object.freeze({
       url: 'https://www.csgb.gov.tr/yayinlar/calisma-hayati-istatistikleri-e-bulteni/temmuz-2026/ucret-ve-sendikal-istatistikler.html',
       publishedAt: '2026-07-01'
     }),
+    severanceVerification: Object.freeze({
+      institution: 'Çalışma ve Sosyal Güvenlik Bakanlığı',
+      documentTitle: 'Çalışma Hayatı İstatistikleri E-Bülteni – Eylül 2026',
+      legalBasis: '1475 sayılı İş Kanunu m.14; 2026 I. ve II. yarıyıl tavanları',
+      url: 'https://www.csgb.gov.tr/yayinlar/calisma-hayati-istatistikleri-e-bulteni/eylul-2026/ucret-ve-sendikal-istatistikler.html',
+      reviewedAt: '2026-11-25'
+    }),
     mealSgk: Object.freeze({
       institution: 'Sosyal Güvenlik Kurumu',
       documentTitle: 'SGK Genelgesi 2026/12 – Yemek bedelinin prime esas kazançtan istisnası',
@@ -101,7 +108,7 @@ export const DATA_2026 = Object.freeze({
   publishedData: Object.freeze({
     minimumWage: Object.freeze({ grossKurus: 3_303_000, netKurus: 2_807_550, period: '2026-01-01/2026-12-31', sourceKey: 'minimumWage' }),
     sgkCeiling: Object.freeze({ dailyKurus: 990_900, monthlyKurus: 29_727_000, multiplier: 9, period: '2026-01-01/2026-12-31', sourceKey: 'sgk' }),
-    severanceCeiling: Object.freeze({ firstHalfKurus: 6_494_877, secondHalfKurus: 7_372_987, currentKurus: 7_372_987, currentPeriod: '2026-07-01/2026-12-31', sourceKey: 'severance' }),
+    severanceCeiling: Object.freeze({ firstHalfKurus: 6_494_877, secondHalfKurus: 7_372_987, currentKurus: 7_372_987, currentPeriod: '2026-07-01/2026-12-31', sourceKey: 'severance', reviewedAt: '2026-11-25' }),
     unemployment: Object.freeze({
       benefitRatePpm: 400_000,
       monthlyGrossCapRatePpm: 800_000,

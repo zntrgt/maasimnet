@@ -64,3 +64,8 @@ assert.match(css, /\.termination-grid>\*\{min-width:0;max-width:100%\}/, 'Grid �
 assert.match(css, /\.termination-field input\{[^}]*width:100%;max-width:100%;min-width:0/, 'Form inputları kendi kolonuna sığmalı');
 
 console.log(`Tazminat hesaplayıcı doğrulaması başarılı: ${pages.length} sayfa, humanized copy, doğru kaynaklar, formül, scoped sonuçlar, layout güvenliği ve consent-gated analytics.`);
+
+const severancePage=await readFile(join(dist,'kidem-tazminati-hesaplama','index.html'),'utf8');
+for(const token of ['64.948,77 TL','73.729,87 TL','data-result="severance-ceiling-period"','toplam hizmet günü / 365','2027 Ocak–Haziran kıdem tazminatı tavanı','https://www.csgb.gov.tr/yayinlar/calisma-hayati-istatistikleri-e-bulteni/eylul-2026/ucret-ve-sendikal-istatistikler.html','Tavan verisi kontrolü'])assert.ok(severancePage.includes(token),'A9 eksik: '+token);
+assert.ok(!severancePage.includes('tam yıl + ay / 12 + gün / 365'),'Eski formül açıklaması kalmış');
+assert.ok(ui.includes('result.ceilingPeriod'));
