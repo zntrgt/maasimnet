@@ -5,6 +5,7 @@ import { consolidatedRedirectFor } from '../src/consolidated-redirects.js';
 
 const ORIGIN='https://maasim.net';
 const labels=Object.freeze({
+ '/net-maastan-kidem-tazminati-hesaplama/':'Net maaştan kıdem tazminatı hesaplama',
  '/':'Brütten nete ve netten brüte maaş hesaplama',
  '/veriler/':'Yıllara göre bordro veri merkezi',
  '/veriler/2026/':'2026 resmî bordro verileri',
@@ -38,6 +39,7 @@ const labels=Object.freeze({
  '/test-raporu/':'Hesap motoru doğrulama testleri'
 });
 export const CONTEXTUAL_LINKS=Object.freeze({
+ '/net-maastan-kidem-tazminati-hesaplama/':['/kidem-tazminati-hesaplama/','/','/vergi-dilimi-hesaplama/'],
  '/':['/veriler/','/vergi-dilimi-hesaplama/','/isveren-maliyeti-hesaplama/'],
  '/veriler/':['/veriler/2026/','/veriler/2027/'],
  '/veriler/2026/':['/veriler/','/veriler/2027/','/vergi-dilimi-hesaplama/','/isveren-maliyeti-hesaplama/'],
@@ -56,7 +58,7 @@ export const CONTEXTUAL_LINKS=Object.freeze({
  '/blog/prim-ikramiye-net-maasi-neden-dusurur/':['/prim-ikramiye-maas-hesaplama/','/vergi-dilimi-hesaplama/'],
  '/maas-teklifi-karsilastirma/':['/blog/is-teklifinin-yillik-degeri/','/isveren-maliyeti-hesaplama/'],
  '/blog/is-teklifinin-yillik-degeri/':['/maas-teklifi-karsilastirma/'],
- '/kidem-tazminati-hesaplama/':['/blog/kidem-tazminatina-dahil-odemeler/','/ihbar-tazminati-hesaplama/','/yillik-izin-ucreti-hesaplama/'],
+ '/kidem-tazminati-hesaplama/':['/net-maastan-kidem-tazminati-hesaplama/','/blog/kidem-tazminatina-dahil-odemeler/','/ihbar-tazminati-hesaplama/','/yillik-izin-ucreti-hesaplama/'],
  '/ihbar-tazminati-hesaplama/':['/kidem-tazminati-hesaplama/','/tazminat-hesaplama/'],
  '/blog/kidem-tazminatina-dahil-odemeler/':['/kidem-tazminati-hesaplama/','/tazminat-hesaplama/'],
  '/tazminat-hesaplama/':['/kidem-tazminati-hesaplama/','/ihbar-tazminati-hesaplama/'],
