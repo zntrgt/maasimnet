@@ -305,19 +305,42 @@ function humanizeSalaryJourney() {
 function setResultCopy() {
   const hero = qs('.metric-hero');
   if (!hero) return;
+  const grossMode = isGrossMode();
+  const valid = hasUsableHomeResult();
+  hero.dataset.resultMode = grossMode ? 'gross' : 'net';
   const metricTitle = qs('.metric-title', hero);
-  if (metricTitle) metricTitle.textContent = 'Aylık ortalama net maaşın';
-
+  if (metricTitle) metricTitle.textContent = grossMode ? 'Aylık ortalama net maaşın' : 'Gerekli aylık ortalama brüt maaş';
+  const grossValue = qs('#stat-hero-gross', hero);
+  const netValue = qs('#stat-avg-net', hero);
   const context = qs('#stat-avg-net-context', hero);
   const annualNet = qs('#stat-total-net')?.textContent?.trim();
-  if (context && hasUsableHomeResult() && annualNet) {
-    context.textContent = `12 aylık ortalama · Yıllık toplam netin ${annualNet}`;
+  const averageGross = qs('#representative-gross-value')?.textContent?.trim();
+  const info = qs('.metric-info', hero);
+  if (info) info.hidden = !grossMode;
+  if (netValue) netValue.hidden = !grossMode;
+  if (grossValue) {
+    grossValue.hidden = grossMode || !valid;
+    const value = valid && averageGross ? averageGross : '—';
+    if (grossValue.textContent !== value) grossValue.textContent = value;
   }
+  if (context && valid) {
+    context.textContent = grossMode
+      ? `Ocak netin ${context.dataset.januaryNet || '—'} · Yıllık toplam netin ${annualNet || '—'}`
+      : `Hedef aylık netin ${netValue?.textContent?.trim() || '—'}. Aynı neti korumak için gerekli brüt maaş aylara göre değişebilir.`;
+  }
+
+  const representative = qs('#representative-gross');
+  const toggle = qs('#toggle-net-gross-table');
+  if (representative && toggle && !representative.dataset.a4Prepared) {
+    representative.dataset.a4Prepared = 'true';
+    context?.insertAdjacentElement('afterend', toggle);
+  }
+  if (toggle) toggle.hidden = grossMode || !valid;
 
   const secondary = qs('.secondary-metrics');
   if (secondary && !secondary.dataset.humanDefaultApplied) {
     secondary.dataset.humanDefaultApplied = 'true';
-    if (window.matchMedia(MOBILE_QUERY).matches) secondary.removeAttribute('open');
+    secondary.removeAttribute('open');
   }
 }
 
