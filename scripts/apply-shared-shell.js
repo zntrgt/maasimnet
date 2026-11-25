@@ -14,6 +14,7 @@ const header = `<nav class="site-header" data-site-header><div class="site-heade
 <a href="/sss/">SSS</a></div><a class="site-header__cta" href="/#hesaplayici">Maaş Hesapla</a><button class="site-menu-button" type="button" aria-expanded="false" aria-controls="site-mobile-menu" aria-label="Menüyü aç"><span></span><span></span><span></span></button></div><div class="site-mobile-menu" id="site-mobile-menu" data-nosnippet hidden><a href="/hesaplama-araclari/">Hesaplama Araçları</a>
 <a href="/isveren-maliyeti-hesaplama/">İşveren Maliyeti</a>
 <a href="/tazminat-hesaplama/">Kıdem &amp; İhbar</a>
+<a href="/veriler/">Veri Merkezi</a>
 <a href="/veriler/2026/">2026 Verileri</a>
 <a href="/sss/">Sık Sorulan Sorular</a>
 <a href="/blog/">Blog</a>
@@ -23,10 +24,12 @@ const footer = `<footer class="site-footer"><div class="site-footer__inner" data
 <a href="/hakkimizda/">Hakkımızda</a>
 <a href="/blog/">Blog</a>
 <a href="/kademeli-emeklilik/">Kademeli Emeklilik</a>
+<a href="/veriler/">Veri Merkezi</a>
 <a href="/veriler/2026/">2026 Verileri</a>
 <a href="/hesaplama-metodolojisi/">Hesaplama Metodolojisi</a>
 <a href="/iletisim/">İletişim</a></nav></div><div><h2>Hesaplayıcılar</h2><nav aria-label="Hesaplayıcı bağlantıları"><a href="/hesaplama-araclari/">Tüm Hesaplama Araçları</a>
 <a href="/asgari-ucret-hesaplama/">Asgari Ücret Hesaplama</a><a href="/vergi-dilimi-hesaplama/">Vergi Dilimi Hesaplama</a>
+<a href="/isveren-maliyeti-hesaplama/">İşveren Maliyeti Hesaplama</a>
 <a href="/tazminat-hesaplama/">Kıdem &amp; İhbar Tazminatı</a>
 <a href="/issizlik-maasi-hesaplama/">İşsizlik Maaşı</a>
 <a href="/fazla-mesai-hesaplama/">Fazla Mesai</a>
