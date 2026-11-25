@@ -117,6 +117,9 @@ jobs:
       - name: Verify mobile calculator UX contract
         run: npm run verify:mobile-ux
 
+      - name: Verify 2027 salary estimate and YDO scenarios
+        run: npm run verify:2027-estimate
+
       - name: Smoke test generated output
         run: npm run smoke
 

@@ -18,6 +18,7 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
+  '/2027-maas-hesaplama/': Object.freeze({ publishedAt: '2026-07-30', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/blog/': Object.freeze({ modifiedAt: '2026-10-10' }),
   // Veri sayfası birleştirmesi: resmî değer bloğu ve Dataset şeması bu sayfalara taşındı.
   '/blog/2026-maas-vergi-dilimleri/': Object.freeze({ modifiedAt: '2026-10-10' }),

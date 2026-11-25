@@ -39,6 +39,13 @@ for (const token of [
   '2027 netten brüte maaş nasıl hesaplanır?',
   'Temkinli, orta ve yüksek 2027 senaryoları',
   'İlk yayın: 30 Temmuz 2026',
+  'Son kontrol: 25 Kasım 2026',
+  '%27,83',
+  'https://www.resmigazete.gov.tr/eskiler/2026/11/20261124-3.htm',
+  'value="242877"',
+  'value="511320"',
+  'value="1917450"',
+  'value="6774990"',
   'Durum: Resmî 2027 parametreleri bekleniyor',
   'href="/hesaplama-metodolojisi/"',
   'href="/blog/2026-maas-vergi-dilimleri/"',
@@ -64,6 +71,7 @@ for (const token of [
   "currentMode = 'gross'",
   "setMode('net')",
   'incomeTaxBrackets',
+  'brackets: [242877, 511320, 1917450, 6774990]',
   'formatRates(row.incomeTaxRatesPpm)',
   "applyPreset('middle')"
 ]) {
