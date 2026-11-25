@@ -12,7 +12,7 @@ if(form)form.addEventListener('submit',e=>{
  el('tb-daily-base').textContent=r.status==='calculated'?fmt(r.dailyBaseKurus):'—';
  el('tb-daily').textContent=r.status==='calculated'?fmt(r.dailyPaymentKurus):'—';
  el('tb-waiting').textContent=r.status==='calculated'?r.waitingDays+' gün':'—';
- el('tb-note').textContent=r.status==='ineligible'?r.reason:(r.capApplied?'180 günden az prim nedeniyle günlük kazanç tavanı uygulandı. ':'')+'Tutar tahminidir; nihai ödeme SGK tarafından belirlenir.';
+ el('tb-note').textContent=r.status==='ineligible'?r.reason:(r.floorApplied?'2026 günlük asgari kazanç alt sınırı uygulandı. ':'')+(r.capApplied?'180 günden az prim nedeniyle günlük kazanç tavanı uygulandı. ':'')+'Tutar tahminidir; nihai ödeme SGK tarafından belirlenir.';
  el('tb-result').hidden=false;
  }catch(err){el('tb-error').textContent=err.message;el('tb-error').hidden=false;}
 });
