@@ -5,6 +5,8 @@ import { consolidatedRedirectFor } from '../src/consolidated-redirects.js';
 
 const ORIGIN='https://maasim.net';
 const labels=Object.freeze({
+ '/eksik-gun-maas-hesaplama/':'Eksik gün maaş hesaplama',
+ '/is-goremezlik-odenegi-hesaplama/':'Rapor parası ve iş göremezlik ödeneği hesaplama',
  '/net-maastan-kidem-tazminati-hesaplama/':'Net maaştan kıdem tazminatı hesaplama',
  '/':'Brütten nete ve netten brüte maaş hesaplama',
  '/veriler/':'Yıllara göre bordro veri merkezi',
@@ -39,6 +41,7 @@ const labels=Object.freeze({
  '/test-raporu/':'Hesap motoru doğrulama testleri'
 });
 export const CONTEXTUAL_LINKS=Object.freeze({
+ '/is-goremezlik-odenegi-hesaplama/':['/sgk-prim-hesaplama/','/eksik-gun-maas-hesaplama/','/veriler/2026/'],
  '/net-maastan-kidem-tazminati-hesaplama/':['/kidem-tazminati-hesaplama/','/','/vergi-dilimi-hesaplama/'],
  '/':['/veriler/','/vergi-dilimi-hesaplama/','/isveren-maliyeti-hesaplama/'],
  '/veriler/':['/veriler/2026/','/veriler/2027/'],
@@ -52,7 +55,7 @@ export const CONTEXTUAL_LINKS=Object.freeze({
  '/blog/is-degisikliginde-vergi-matrahi/':['/vergi-dilimi-hesaplama/','/'],
  '/blog/netten-brute-maas-neden-aylik-degisir/':['/','/vergi-dilimi-hesaplama/'],
  '/asgari-ucret-hesaplama/':['/isveren-maliyeti-hesaplama/','/veriler/2026/'],
- '/sgk-prim-hesaplama/':['/blog/2026-sgk-tavani/','/isveren-maliyeti-hesaplama/'],
+ '/sgk-prim-hesaplama/':['/is-goremezlik-odenegi-hesaplama/','/blog/2026-sgk-tavani/','/isveren-maliyeti-hesaplama/'],
  '/blog/2026-sgk-tavani/':['/sgk-prim-hesaplama/','/isveren-maliyeti-hesaplama/'],
  '/prim-ikramiye-maas-hesaplama/':['/blog/prim-ikramiye-net-maasi-neden-dusurur/','/vergi-dilimi-hesaplama/'],
  '/blog/prim-ikramiye-net-maasi-neden-dusurur/':['/prim-ikramiye-maas-hesaplama/','/vergi-dilimi-hesaplama/'],

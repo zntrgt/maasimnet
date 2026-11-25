@@ -76,7 +76,7 @@ export async function auditTechnicalSeo(dist,{repair=false}={}){
  for(const loc of urls)if(!pages.has(loc))errors.push(loc+': sitemap hedefi uygun statik HTML olarak bulunamadı');
  if(urls.size!==locs.length)errors.push('Sitemap tekrar eden URL içeriyor');
  const groups=[
-   ['Maaş ve çalışan hakları hesaplama araçları',['/','/hesaplama-araclari/','/net-maastan-kidem-tazminati-hesaplama/',...GEO_CONTENT_ROUTES.filter(r=>r!=='/')]],
+   ['Maaş ve çalışan hakları hesaplama araçları',['/','/hesaplama-araclari/','/is-goremezlik-odenegi-hesaplama/','/net-maastan-kidem-tazminati-hesaplama/',...GEO_CONTENT_ROUTES.filter(r=>r!=='/')]],
    ['Veri ve doğrulama',['/veriler/','/veriler/2026/','/veriler/2027/','/hesaplama-metodolojisi/','/test-raporu/','/kaynak-politikasi/','/editoryal-politika/']],
    ['Rehber ve iletişim',['/kademeli-emeklilik/','/blog/','/sss/','/sozluk/','/hakkimizda/','/iletisim/']]
  ];

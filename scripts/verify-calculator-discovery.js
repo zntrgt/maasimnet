@@ -67,3 +67,10 @@ for (const route of ['/hesaplama-araclari/', '/maas-zam-hesaplama/', '/issizlik-
 }
 
 console.log(`Hesaplayıcı keşif mimarisi doğrulandı: hub + ana sayfa + sade enterprise header + ${contextual} bağlamsal otorite sayfası + maaş zam aracı.`);
+
+const temporaryBenefit=await read('/is-goremezlik-odenegi-hesaplama/');
+for(const token of ['id="tb-form"','id="tb-kind"','id="tb-treatment"','id="tb-prior-days"','id="tb-pek"','id="tb-total"','2.202,00 TL','5.872,00 TL','"@type":"WebApplication"','"@type":"FAQPage"','/assets/temporary-benefit-calculator.js','https://www.turkiye.gov.tr/4ab-isgoremezlik-odemesi-gorme'])assert.ok(temporaryBenefit.includes(token),'A11 eksik: '+token);
+assert.ok(hub.includes('href="/is-goremezlik-odenegi-hesaplama/"'));
+assert.ok(sitemap.includes('<loc>https://maasim.net/is-goremezlik-odenegi-hesaplama/</loc>'));
+await access(join(dist,'assets','temporary-benefit-engine.js'));
+await access(join(dist,'assets','temporary-benefit-calculator.js'));
