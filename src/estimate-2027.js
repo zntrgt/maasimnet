@@ -6,6 +6,8 @@ import {
   kurusToTl
 } from './payroll-engine.js';
 
+import { ESTIMATE_PRESETS_2027 } from './data-2027.js';
+
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const RATE_PPM = [150000, 200000, 270000, 350000, 400000];
 let currentMode = 'gross';
@@ -146,12 +148,7 @@ function setMode(mode) {
 }
 
 function applyPreset(name) {
-  const presets = {
-    cautious: { minimum: 39636, ceiling: 356724, brackets: [228000, 480000, 1800000, 6360000] },
-    middle: { minimum: 42939, ceiling: 386451, brackets: [242877, 511320, 1917450, 6774990] },
-    high: { minimum: 46242, ceiling: 416178, brackets: [266000, 560000, 2100000, 7420000] }
-  };
-  const preset = presets[name];
+  const preset = ESTIMATE_PRESETS_2027[name];
   if (!preset) return;
   document.getElementById('estimate-minimum-gross').value = preset.minimum;
   document.getElementById('estimate-sgk-ceiling').value = preset.ceiling;

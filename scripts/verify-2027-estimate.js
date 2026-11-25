@@ -1,5 +1,7 @@
 import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import assert from 'node:assert/strict';
+import { DATA_2027, ESTIMATE_PRESETS_2027 } from '../src/data-2027.js';
 
 const dist = join(process.cwd(), 'dist');
 const pagePath = join(dist, '2027-maas-hesaplama', 'index.html');
@@ -71,7 +73,7 @@ for (const token of [
   "currentMode = 'gross'",
   "setMode('net')",
   'incomeTaxBrackets',
-  'brackets: [242877, 511320, 1917450, 6774990]',
+  'ESTIMATE_PRESETS_2027[name]',
   'formatRates(row.incomeTaxRatesPpm)',
   "applyPreset('middle')"
 ]) {
@@ -118,3 +120,18 @@ if (html.includes('/assets/site-shell.css')) {
 // Counting repeated wording across metadata and JSON-LD does not verify visibility.
 
 console.log('2027 dedicated URL arama niyeti, çift yönlü hesaplama, SEO/GEO içeriği, SSS, sitewide iç link ve cannibalization guardrail ile doğrulandı.');
+
+assert.equal(DATA_2027.revaluation.valueBps, 2783);
+assert.deepEqual(ESTIMATE_PRESETS_2027.middle.brackets, [242877, 511320, 1917450, 6774990]);
+assert.equal(ESTIMATE_PRESETS_2027.middle.minimum, 42939);
+assert.equal(ESTIMATE_PRESETS_2027.middle.ceiling, 386451);
+assert.ok(DATA_2027.pending.every(p => p.status === 'pending' && p.value === null));
+for (const route of ['veriler', 'veriler/2027']) {
+  const dataHtml = await readFile(join(dist, route, 'index.html'), 'utf8');
+  assert.ok(dataHtml.includes('https://maasim.net/' + route + '/'));
+  assert.ok(sitemap.includes('<loc>https://maasim.net/' + route + '/</loc>'));
+  assert.ok(dataHtml.includes('%27,83'));
+}
+const annualHtml = await readFile(join(dist, 'veriler/2027/index.html'), 'utf8');
+assert.ok(annualHtml.includes('[TAHMİN]') && annualHtml.includes(DATA_2027.revaluation.sourceUrl));
+assert.ok((await readFile(join(dist,'llms.txt'),'utf8')).includes('https://maasim.net/veriler/2027/'));
