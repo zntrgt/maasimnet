@@ -1,7 +1,7 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getPageMetadata } from '../content/site-metadata.js';
+import { getPageMetadata, formatSiteDateTr, STANDARD_FRESHNESS_PATHS } from '../content/site-metadata.js';
 import { runPayrollAudit } from '../src/payroll-audit.js';
 
 async function walkHtml(dir, output = []) {
@@ -36,13 +36,15 @@ function validateStructuredDates(node, metadata, page, failures) {
   }
   if (!node || typeof node !== 'object') return;
 
-  const contentTypes = ['WebPage', 'Article', 'BlogPosting', 'TechArticle', 'Report', 'Dataset', 'WebApplication'];
+  const contentTypes = ['WebPage', 'CollectionPage', 'Article', 'BlogPosting', 'TechArticle', 'Report', 'Dataset', 'WebApplication'];
   if (hasType(node, contentTypes) || Object.hasOwn(node, 'dateModified')) {
     const expected = hasType(node, ['Dataset']) && metadata.reviewedAt
       ? metadata.reviewedAt
       : metadata.modifiedAt;
     if (node.dateModified !== expected) failures.push(`${page}: JSON-LD dateModified ${node.dateModified} yerine ${expected} olmalı.`);
   }
+
+  if (STANDARD_FRESHNESS_PATHS.includes(page) && hasType(node, ['WebPage','CollectionPage','Article','BlogPosting','TechArticle','Report']) && node.datePublished !== metadata.publishedAt) failures.push(`${page}: JSON-LD datePublished merkezi yayın tarihiyle uyuşmuyor.`);
 
   if (metadata.reviewedAt && (hasType(node, ['Article', 'BlogPosting', 'TechArticle', 'Report']) || Object.hasOwn(node, 'lastReviewed'))) {
     if (node.lastReviewed !== metadata.reviewedAt) failures.push(`${page}: JSON-LD lastReviewed ${node.lastReviewed} yerine ${metadata.reviewedAt} olmalı.`);
@@ -70,6 +72,13 @@ export async function verifyContentDates(distDir) {
       failures.push(`${path}: article:modified_time eksik veya yanlış.`);
     }
 
+    if (STANDARD_FRESHNESS_PATHS.includes(path)) {
+      const block = html.match(/<(aside|div)\b[^>]*data-standard-freshness="v1"[^>]*>[\s\S]*?<\/\1>/i)?.[0] || '';
+      if (!block) failures.push(`${path}: görünür güncellik alanı eksik.`);
+      for (const value of [metadata.publishedAt, metadata.modifiedAt, metadata.reviewedAt].filter(Boolean)) {
+        if (!html.includes(`<time datetime="${value}">${formatSiteDateTr(value)}</time>`)) failures.push(`${path}: görünür tarih ${value} eksik.`);
+      }
+    }
     for (const match of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
       try {
         validateStructuredDates(JSON.parse(match[1].trim()), metadata, path, failures);
