@@ -9,7 +9,7 @@ const read=id=>{
   return Math.round(Number(input.value)*100);
 };
 if(form){
-  const error=el('tax-bracket-error'),results=el('tax-bracket-results');
+  const error=el('tax-bracket-error'),results=el('tax-bracket-results'),summary=el('tax-summary');
   function render(){
     try{
       const r=forecastTaxBrackets({grossKurus:read('tax-gross'),priorBaseKurus:read('tax-prior'),startMonth:Number(el('tax-start-month').value)});
@@ -22,8 +22,8 @@ if(form){
       el('tax-unemployment').textContent=money(r.employeeUnemploymentKurus);
       el('tax-transition-body').innerHTML=r.transitions.map(t=>`<tr><th scope="row">${rate(t.ratePpm)}</th><td>${money(t.thresholdKurus)}</td><td>${t.alreadyCrossed?'Önceden geçildi':t.month?MONTHS_TR[t.month-1]:'Bu yıl geçilmiyor'}</td></tr>`).join('');
       el('tax-month-body').innerHTML=r.rows.map(row=>`<tr><th scope="row">${MONTHS_TR[row.month-1]}</th><td>${money(row.monthlyBaseKurus)}</td><td>${money(row.cumulativeKurus)}</td><td>${row.rates.map(rate).join(' → ')}</td><td>${money(row.calculatedTaxKurus)}</td></tr>`).join('');
-      error.hidden=true;results.hidden=false;
-    }catch(e){error.textContent=e.message;error.hidden=false;results.hidden=true;}
+      error.hidden=true;results.hidden=false;summary.hidden=false;
+    }catch(e){error.textContent=e.message;error.hidden=false;results.hidden=true;summary.hidden=true;}
   }
   form.addEventListener('submit',e=>{e.preventDefault();render();});
   form.addEventListener('input',render);
