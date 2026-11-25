@@ -109,7 +109,7 @@ jobs:
         run: npm run verify:home-seo-2026
 
       - name: Verify calculator discovery and SEO internal linking
-        run: npm run verify:calculator-discovery
+        run: npm run verify:calculator-discovery && npm run verify:contextual-links
 
       - name: Verify sitewide layout safety
         run: npm run verify:layout
