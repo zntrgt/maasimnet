@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { TRANSPARENCY_ROUTES } from './apply-editorial-transparency.js';
 import { EDITORIAL_AUTHORITY } from '../content/editorial-authority.js';
 import { SITE_METADATA, getPageMetadata } from '../content/site-metadata.js';
 import { indexableBlogPosts, blogOutputPath } from '../content/blog-manifest.js';
@@ -69,6 +70,25 @@ for (const post of indexableBlogPosts) {
   if (article.publisher?.['@id'] !== EDITORIAL_AUTHORITY.site.organizationId) failures.push(`${post.slug}: publisher merkezi Organization @id kullanmıyor`);
   if (article.lastReviewed !== getPageMetadata(`/blog/${post.slug}/`).reviewedAt) failures.push(`${post.slug}: lastReviewed merkezi tarihle eşleşmiyor`);
 }
+
+const sitemap=await readFile(join(dist,'sitemap.xml'),'utf8');
+const llms=await readFile(join(dist,'llms.txt'),'utf8');
+for(const route of ['/editoryal-politika/','/kaynak-politikasi/']){
+ const html=await readFile(join(dist,route.slice(1),'index.html'),'utf8');
+ const meta=getPageMetadata(route);
+ const page=jsonLdNodes(html,route).find(n=>n.url===EDITORIAL_AUTHORITY.site.origin+route&&hasType(n,'WebPage'));
+ if(page?.datePublished!==meta.publishedAt||page?.dateModified!==meta.modifiedAt)failures.push(route+': politika tarihleri merkezi kayıtla uyuşmuyor');
+ if(!sitemap.includes('<loc>https://maasim.net'+route+'</loc>')||!llms.includes('(https://maasim.net'+route+')'))failures.push(route+': sitemap/llms kaydı eksik');
+}
+for(const route of TRANSPARENCY_ROUTES){
+ const html=await readFile(join(dist,route.replace(/^\/+|\/+$/g,''),'index.html'),'utf8');
+ const block=html.match(/<section\b[^>]*data-editorial-transparency="v1"[^>]*>[\s\S]*?<\/section>/i)?.[0]||'';
+ const meta=getPageMetadata(route);
+ for(const token of ['Hazırlayan','Teknik kontrol','Hukuki / bağımsız uzman kontrolü','İlk yayın','Son güncelleme','Kayıtlı içerik / veri kontrolü','Geçerlilik kapsamı','Hesaplama / veri sürümü','Temel kaynak kayıtları ve değişiklik geçmişi','href="/iletisim/"','datetime="'+meta.publishedAt+'"','datetime="'+meta.modifiedAt+'"','doğrulanmış bağımsız uzman onayı yayımlanmıyor'])if(!block.includes(token))failures.push(route+': A14 şeffaflık alanı eksik: '+token);
+ if(meta.reviewedAt&&!block.includes('datetime="'+meta.reviewedAt+'"'))failures.push(route+': kayıtlı kontrol tarihi eksik');
+ if(!meta.reviewedAt&&!block.includes('Ayrı kayıt bulunmuyor'))failures.push(route+': bilinmeyen kontrol tarihi belirtilmeli');
+}
+console.log('A14 şeffaflık kontrolü: '+TRANSPARENCY_ROUTES.length+' sayfa.');
 
 if (failures.length) {
   console.error('Editoryal otorite doğrulaması başarısız:\n- ' + failures.join('\n- '));
