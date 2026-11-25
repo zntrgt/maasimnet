@@ -180,3 +180,13 @@ if (!css.includes('@media (max-width: 700px)')) throw new Error('Enterprise UI m
 if (!css.includes('@media (prefers-reduced-motion: reduce)')) throw new Error('Reduced-motion erişilebilirlik kuralı eksik.');
 
 console.log('Enterprise fintech UI v2 doğrulandı: revisioned app graph, first-paint beyaz shell, desktop/mobile, humanized hero, hızlı tutar etkileşimi, aylık net hover/focus/tap tooltipleri, result-state sync, live output, paylaşım, trust ve sitewide token sistemi.');
+
+for (const token of ['id="stat-hero-gross"', 'id="stat-avg-net"', 'id="toggle-net-gross-table"']) {
+  if (!html.includes(token)) throw new Error('A4 sonuç işareti eksik: '+token);
+}
+if (/<details class="secondary-metrics"[^>]*\bopen\b/.test(html)) throw new Error('A4 detaylar ilk açılışta kapalı olmalı.');
+for (const token of ["hero.dataset.resultMode = grossMode ? 'gross' : 'net'", "netValue.hidden = !grossMode", "grossValue.hidden = grossMode || !valid", "toggle.hidden = grossMode || !valid", "context.dataset.januaryNet", "Gerekli aylık ortalama brüt maaş", "secondary.removeAttribute('open')"]) {
+  if (!humanizedJs.includes(token)) throw new Error('A4 sonuç modu eksik: '+token);
+}
+if (!app.includes(".dataset.januaryNet = formatCurrency(januaryNet)")) throw new Error('A4 Ocak neti merkezi sonuçtan alınmalı.');
+console.log('A4 brüt/net sonuç hiyerarşisi, detay ve aylık dağılım kontrolü doğrulandı.');

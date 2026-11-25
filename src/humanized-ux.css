@@ -50,3 +50,12 @@ body[data-humanized-ux="v1"] .enterprise-personal-settings .enterprise-exception
 body[data-humanized-ux="v1"].enterprise-input-active [data-human-home-sticky]{display:none!important}
 @media(max-width:700px){body[data-humanized-ux="v1"] .enterprise-hero{padding:16px 2px 12px}body[data-humanized-ux="v1"] .enterprise-hero__meta{display:none}body[data-humanized-ux="v1"] .enterprise-trust-strip{margin-bottom:12px}body[data-humanized-ux="v1"] .enterprise-form-heading{display:none}.human-quick-amounts{grid-template-columns:repeat(4,minmax(0,1fr))}body[data-humanized-ux="v1"] .enterprise-advanced>summary{min-height:44px}body[data-humanized-ux="v1"] .enterprise-advanced>summary small{display:none}}
 [data-human-home-sticky][hidden]{display:none!important}
+
+/* A4: Tek baskın sonuç, hesaplama yönüne göre değişir. */
+body[data-humanized-ux="v1"] #representative-gross{display:none!important}
+body[data-humanized-ux="v1"] .metric-hero [hidden]{display:none!important}
+body[data-humanized-ux="v1"] .metric-hero #stat-hero-gross{margin:10px 0 0!important;font-size:clamp(2.8rem,5.5vw,4.8rem)!important;line-height:1.06!important;font-weight:900!important;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:inherit!important}
+body[data-humanized-ux="v1"] .metric-hero[data-result-mode="net"] .enterprise-tax-visual{display:none!important}
+body[data-humanized-ux="v1"] .metric-hero #toggle-net-gross-table:not([hidden]){display:block;min-height:44px;margin-top:16px;white-space:normal;text-align:left;max-width:100%}
+body[data-humanized-ux="v1"] .metric-hero #stat-avg-net{overflow-wrap:anywhere;max-width:100%}
+@media(max-width:700px){body[data-humanized-ux="v1"] .metric-hero #stat-hero-gross{font-size:clamp(2.45rem,12vw,3.35rem)!important}}
