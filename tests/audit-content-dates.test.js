@@ -4,18 +4,20 @@ import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { applyContentDates } from '../scripts/apply-content-dates.js';
-import { getPageMetadata } from '../content/site-metadata.js';
+import { getPageMetadata, formatSiteDateTr } from '../content/site-metadata.js';
 
 test('visible attributed fields and schema use the same page dates', async()=>{
   const dir=await mkdtemp(join(tmpdir(),'maasim-dates-'));
   try {
-    await writeFile(join(dir,'index.html'),`<html><head><link rel="canonical" href="https://maasim.net/"><script type="application/ld+json">{"@type":"WebPage","datePublished":"2026-07-29","dateModified":"2026-07-29"}</script></head><body><dt class="label">Son güncelleme</dt><dd class="value">29 Temmuz 2026</dd><aside>İlk yayın 2026-07-29 · Son güncelleme 2026-07-29 · Son mevzuat kontrolü 2026-09-04</aside></body></html>`);
+    await writeFile(join(dir,'index.html'),`<html><head><link rel="canonical" href="https://maasim.net/"><script type="application/ld+json">{"@type":"WebPage","datePublished":"2026-07-29","dateModified":"2026-07-29"}</script></head><body><dt class="label">Son güncelleme</dt><dd class="value">29 Temmuz 2026</dd><aside id="home-freshness"><dl><div><dt>İlk yayın</dt><dd>29 Temmuz 2026</dd></div></dl></aside><aside>İlk yayın 2026-07-29 · Son güncelleme 2026-07-29 · Son mevzuat kontrolü 2026-09-04</aside></body></html>`);
     await applyContentDates(dir);
     const html=await readFile(join(dir,'index.html'),'utf8');
     const date=getPageMetadata('/').modifiedAt;
     assert.ok(html.includes(`<dd class="value">${date}</dd>`));
     assert.ok(html.includes(`Son güncelleme ${date}`));
     assert.ok(html.includes(`"dateModified":"${date}"`));
+    assert.ok(html.includes('data-standard-freshness="v1"'));
+    for (const value of [getPageMetadata('/').publishedAt,date,getPageMetadata('/').reviewedAt]) assert.ok(html.includes(`<time datetime="${value}">${formatSiteDateTr(value)}</time>`));
   } finally { await rm(dir,{recursive:true,force:true}); }
 });
 test('blog publication dates follow their original generator dates',()=>{
