@@ -26,7 +26,7 @@ export const blogPosts = [
   { slug: 'is-yerinde-finansal-saglik', title: 'İş Yerinde Finansal Sağlık', cluster: 'benefits-wellbeing', generator: 'legacy', indexable: true },
   { slug: 'maas-zam-gorusmesi-nasil-yapilir', title: 'Maaş ve Zam Görüşmesi Nasıl Yapılır?', cluster: 'career-compensation', generator: 'career', indexable: true },
   { slug: '2026-yemek-karti-istisnasi', title: '2026 Yemek Kartı İstisnası', cluster: 'salary-2026', generator: 'core', indexable: true },
-  { slug: '2026-maas-vergi-dilimleri', title: '2026 Maaş Vergi Dilimleri', cluster: 'salary-2026', generator: 'core', indexable: true },
+  { slug: '2026-maas-vergi-dilimleri', title: '2026 Maaş Vergi Dilimleri: Ücret Tarifesi ve Matrah Rehberi', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'is-degisikliginde-vergi-matrahi', title: 'İş Değişikliğinde Vergi Matrahı', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'netten-brute-maas-neden-aylik-degisir', title: 'Netten Brüte Maaş Neden Aylık Değişir?', cluster: 'salary-2026', generator: 'core', indexable: true },
   { slug: 'maas-hesaplama-siteleri-neden-farkli', title: 'Maaş Hesaplama Siteleri Neden Farklı Sonuç Verir?', cluster: 'salary-2026', generator: 'core', indexable: true },
