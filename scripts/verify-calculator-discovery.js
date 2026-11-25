@@ -74,3 +74,10 @@ assert.ok(hub.includes('href="/is-goremezlik-odenegi-hesaplama/"'));
 assert.ok(sitemap.includes('<loc>https://maasim.net/is-goremezlik-odenegi-hesaplama/</loc>'));
 await access(join(dist,'assets','temporary-benefit-engine.js'));
 await access(join(dist,'assets','temporary-benefit-calculator.js'));
+
+const dailyWagePage=await read('/gunluk-ucret-hesaplama/');
+for(const token of ['id="dw-form"','id="dw-kind"','id="dw-monthly"','id="dw-daily"','id="dw-hourly"','1.101,00 TL','146,80 TL','935,85 TL','124,78 TL','"@type":"WebApplication"','"@type":"BreadcrumbList"','/assets/daily-wage-calculator.js','href="/part-time-maas-hesaplama/"','href="/eksik-gun-maas-hesaplama/"'])assert.ok(dailyWagePage.includes(token),'A12 eksik: '+token);
+assert.ok(hub.includes('href="/gunluk-ucret-hesaplama/"'));
+assert.ok(sitemap.includes('<loc>https://maasim.net/gunluk-ucret-hesaplama/</loc>'));
+await access(join(dist,'assets','daily-wage-engine.js'));
+await access(join(dist,'assets','daily-wage-calculator.js'));
