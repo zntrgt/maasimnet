@@ -42,3 +42,15 @@ test('A11 unsupported cases and eligibility checks',()=>{
  assert.throws(()=>calc({reportDays:0}));
  assert.throws(()=>calc({priorDays:361}));
 });
+
+test('A11 article 18 floor applies to historical 2025 earnings',()=>{
+ for(const kind of ['sickness','accident','occupational']){
+  const r=calc({kind,priorPekKurus:31206600});
+  assert.equal(r.rawDailyKurus,86685);
+  assert.equal(r.floorApplied,true);
+  assert.equal(r.dailyBaseKurus,110100);
+  assert.equal(r.dailyPaymentKurus,73400);
+  assert.equal(r.totalKurus,kind==='sickness'?587200:734000);
+ }
+ assert.equal(calc({priorPekKurus:31206600,treatment:'inpatient'}).totalKurus,440400);
+});
