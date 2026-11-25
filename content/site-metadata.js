@@ -52,8 +52,8 @@ const PAGE_OVERRIDES = Object.freeze({
   '/iletisim/': Object.freeze({ modifiedAt: '2026-07-30' }),
   '/cerez-politikasi/': Object.freeze({ modifiedAt: '2026-07-30' }),
   '/hakkimizda/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
-  '/editoryal-politika/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
-  '/kaynak-politikasi/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/editoryal-politika/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-11-25' }),
+  '/kaynak-politikasi/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-11-25' }),
   '/tazminat-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-10-10' }),
   '/ihbar-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
@@ -135,6 +135,8 @@ export const GEO_CONTENT_ROUTES = Object.freeze([
 const GEO_CONTENT_MODIFIED_AT = '2026-11-25';
 
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
+  '/editoryal-politika/',
+  '/kaynak-politikasi/',
   '/gunluk-ucret-hesaplama/',
   '/is-goremezlik-odenegi-hesaplama/',
   '/net-maastan-kidem-tazminati-hesaplama/',
