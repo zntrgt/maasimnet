@@ -1,3 +1,4 @@
+import { DATA_2027 } from '../src/data-2027.js';
 import { DATA_2026 } from '../src/data-2026.js';
 import { HISTORICAL_PAYROLL_CHECKED_AT } from '../src/historical-payroll-data.js';
 import { PROMO_CHECKED_AT } from '../src/promo-data.js';
@@ -18,7 +19,9 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
-  '/2027-maas-hesaplama/': Object.freeze({ publishedAt: '2026-07-30', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
+  '/2027-maas-hesaplama/': Object.freeze({ publishedAt: '2026-07-30', modifiedAt: DATA_2027.checkedAt, reviewedAt: DATA_2027.checkedAt }),
+  '/veriler/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: DATA_2027.checkedAt }),
+  '/veriler/2027/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: DATA_2027.checkedAt, reviewedAt: DATA_2027.checkedAt }),
   '/blog/': Object.freeze({ modifiedAt: '2026-10-10' }),
   // Veri sayfası birleştirmesi: resmî değer bloğu ve Dataset şeması bu sayfalara taşındı.
   '/blog/2026-maas-vergi-dilimleri/': Object.freeze({ modifiedAt: '2026-10-10' }),
@@ -81,6 +84,8 @@ const PAGE_OVERRIDES = Object.freeze({
 });
 
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
+  '/veriler/',
+  '/veriler/2027/',
   '/maas-teklifi-karsilastirma/',
   '/kademeli-emeklilik/',
   '/hesaplama-araclari/',
