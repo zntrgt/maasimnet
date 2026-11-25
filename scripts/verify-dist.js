@@ -1,6 +1,7 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildScenarioComparisons, scenarioHubBlock, raiseBlock } from './apply-scenario-comparisons.js';
 import { createGross100kScenarioData } from './render-scenarios.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -152,3 +153,20 @@ for(const value of Object.values(scenario.replacements)) if(!scenarioHtml.includ
 if (/\{\{SCENARIO_[A-Z0-9_]+\}\}/.test(scenarioHtml)) throw new Error('Senaryo sayfasında çözümlenmemiş token kaldı.');
 
 console.log(`dist doğrulaması başarılı: ${htmlFiles.length} HTML, ${coreBlogPaths.length + benefitsBlogPaths.length + 1} SEO/GEO blog içeriği, sınırlandırılmış Cookiebot TCF sağlayıcıları, Consent Mode v2, sade ana sayfa, tek veri kaynağı, schema graph, güncellik ve indexability hazır.`);
+
+const scenarioData=buildScenarioComparisons();
+for(const [route,kind,expected,count] of [
+ ['senaryolar','hub',scenarioHubBlock(scenarioData),9],
+ ['temmuz-zam-senaryosu','raise',raiseBlock(scenarioData),12]
+]){
+ const html=await readFile(join(dist,route,'index.html'),'utf8');
+ const actual=html.match(new RegExp('<section\\b[^>]*data-scenario-comparison="'+kind+'"[^>]*>[\\s\\S]*?<\\/section>','i'))?.[0]||'';
+ if(!actual|| (actual.match(/<th scope="row">/g)||[]).length!==count)throw new Error('A15 senaryo tablosu eksik: '+route);
+ const expectedCells=[...expected.matchAll(/<td>([^<]+)<\/td>/g)].map(m=>m[1]);
+ const actualCells=[...actual.matchAll(/<td>([^<]+)<\/td>/g)].map(m=>m[1]);
+ if(JSON.stringify(actualCells)!==JSON.stringify(expectedCells))throw new Error('A15 senaryo değerleri motorla eşleşmiyor: '+route);
+ if(!sitemap.includes('<loc>https://maasim.net/'+route+'/</loc>'))throw new Error('A15 sitemap hedefi eksik: '+route);
+}
+const bonusHtml=await readFile(join(dist,'prim-ikramiye-maas-hesaplama','index.html'),'utf8');
+if(!bonusHtml.includes('net artış 30.645,50 TL, toplam Haziran neti 96.398,53 TL'))throw new Error('A15 prim GEO cevabı senaryo ile eşleşmiyor');
+console.log('A15: 9 senaryo ve 12 aylık zam tablosu motor sonuçlarıyla doğrulandı.');
