@@ -19,6 +19,7 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
+  '/gunluk-ucret-hesaplama/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/is-goremezlik-odenegi-hesaplama/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/net-maastan-kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: '2026-11-25' }),
   '/vergi-dilimi-hesaplama/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
@@ -134,6 +135,7 @@ export const GEO_CONTENT_ROUTES = Object.freeze([
 const GEO_CONTENT_MODIFIED_AT = '2026-11-25';
 
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
+  '/gunluk-ucret-hesaplama/',
   '/is-goremezlik-odenegi-hesaplama/',
   '/net-maastan-kidem-tazminati-hesaplama/',
   '/vergi-dilimi-hesaplama/',
