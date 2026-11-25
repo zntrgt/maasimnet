@@ -1,6 +1,6 @@
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
-import { formatSiteDateTr, getPageMetadata, SITE_METADATA } from '../content/site-metadata.js';
+import { formatSiteDateTr, getPageMetadata, SITE_METADATA, STANDARD_FRESHNESS_PATHS } from '../content/site-metadata.js';
 
 async function walkHtml(dir, output = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -40,14 +40,14 @@ function updateStructuredDates(node, metadata) {
   }
   if (!node || typeof node !== 'object') return;
 
-  const contentTypes = ['WebPage', 'Article', 'BlogPosting', 'TechArticle', 'Report', 'Dataset', 'WebApplication'];
+  const contentTypes = ['WebPage', 'CollectionPage', 'Article', 'BlogPosting', 'TechArticle', 'Report', 'Dataset', 'WebApplication'];
   if (hasType(node, contentTypes) || Object.hasOwn(node, 'dateModified')) {
     node.dateModified = hasType(node, ['Dataset']) && metadata.reviewedAt
       ? metadata.reviewedAt
       : metadata.modifiedAt;
   }
 
-  if (hasType(node, ['WebPage', 'Article', 'BlogPosting', 'TechArticle', 'Report']) && !node.datePublished) {
+  if (hasType(node, ['WebPage', 'CollectionPage', 'Article', 'BlogPosting', 'TechArticle', 'Report']) && (!node.datePublished || STANDARD_FRESHNESS_PATHS.includes(metadata.path))) {
     node.datePublished = metadata.publishedAt;
   }
 
@@ -94,9 +94,36 @@ function updateVisibleFreshness(html, metadata) {
     .replace(/son kontrol\s+\d{1,2}\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4}\./g, `son kontrol ${reviewedAtTr}.`);
 }
 
+function applyStandardFreshness(html, metadata) {
+  if (!STANDARD_FRESHNESS_PATHS.includes(metadata.path)) return html;
+  // Tarihler yalnız merkezden alınır. Kontrol kaydı yoksa güncelleme tarihi,
+  // mevzuat kontrol tarihi olarak gösterilmez.
+  const items = [
+    ['İlk yayın', metadata.publishedAt],
+    ['Son güncelleme', metadata.modifiedAt],
+    ...(metadata.reviewedAt ? [['Son mevzuat / veri kontrolü', metadata.reviewedAt]] : [])
+  ];
+  const fields = items.map(([label,value]) => `<div><dt>${label}</dt><dd><time datetime="${value}">${formatSiteDateTr(value)}</time></dd></div>`).join('');
+  const block = `<aside data-standard-freshness="v1" aria-label="İçerik güncelliği" class="freshness"><h2>Güncellik bilgisi</h2><dl>${fields}</dl></aside>`;
+  if (metadata.path === '/') {
+    const homeBlock = /<aside\b[^>]*id="home-freshness"[^>]*>[\s\S]*?<\/aside>/i;
+    if (!homeBlock.test(html)) throw new Error('Ana sayfa güncellik alanı bulunamadı.');
+    return html.replace(homeBlock, old => old.replace(/<dl\b[^>]*>[\s\S]*?<\/dl>/i, `<dl class="grid grid-cols-1 md:grid-cols-3 gap-4">${fields}<div><dt>Geçerlilik dönemi</dt><dd>1 Ocak–31 Aralık 2026</dd></div><div><dt>Sürüm</dt><dd>${SITE_METADATA.releaseVersion}</dd></div></dl>`).replace('id="home-freshness"', 'id="home-freshness" data-standard-freshness="v1"'));
+  }
+  if (metadata.path === '/2027-maas-hesaplama/') {
+    const old = /<div class="estimate-freshness">[\s\S]*?<\/div>/;
+    if (!old.test(html)) throw new Error('2027 güncellik alanı bulunamadı.');
+    return html.replace(old, `<div class="estimate-freshness" data-standard-freshness="v1">${items.map(([label,value])=>`<span>${label === 'Son mevzuat / veri kontrolü' ? 'Son kontrol' : label}: <time datetime="${value}">${formatSiteDateTr(value)}</time></span>`).join('')}<span>Durum: Resmî 2027 parametreleri bekleniyor</span></div>`);
+  }
+  const old = /<p>Son güncelleme:\s*\d{1,2}\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4}<\/p>/i;
+  if (!old.test(html)) throw new Error('Güncellik satırı bulunamadı: '+metadata.path);
+  return html.replace(old, block);
+}
+
 function applyPageDates(html, metadata, pagePath) {
   let updated = updateJsonLd(html, metadata, pagePath);
   updated = updateVisibleFreshness(updated, metadata);
+  updated = applyStandardFreshness(updated, metadata);
   updated = upsertMeta(
     updated,
     /<meta\b[^>]*name=["']last-modified["'][^>]*>/i,
