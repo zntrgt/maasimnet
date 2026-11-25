@@ -5,6 +5,7 @@ import { consolidatedRedirectFor } from '../src/consolidated-redirects.js';
 
 const ORIGIN='https://maasim.net';
 const labels=Object.freeze({
+ '/eksik-gun-maas-hesaplama/':'Eksik gün maaş hesaplama',
  '/is-goremezlik-odenegi-hesaplama/':'Rapor parası ve iş göremezlik ödeneği hesaplama',
  '/net-maastan-kidem-tazminati-hesaplama/':'Net maaştan kıdem tazminatı hesaplama',
  '/':'Brütten nete ve netten brüte maaş hesaplama',
