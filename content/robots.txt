@@ -21,6 +21,8 @@ Allow: /
 User-agent: Perplexity-User
 Allow: /
 
+# Explicit existing exception: Gemini/Vertex grounding AND model training.
+# See docs/ai-crawl-policy.md; final preference requires an explicit decision.
 User-agent: Google-Extended
 Allow: /
 
