@@ -174,3 +174,7 @@ console.log('A15: 9 senaryo ve 12 aylık zam tablosu motor sonuçlarıyla doğru
 // A18: static policy validation is not proof of verified crawler access through Cloudflare.
 const {verifyAiCrawlerPolicy}=await import('./ai-crawl-policy.js');
 console.log('A18 robots: '+JSON.stringify(verifyAiCrawlerPolicy(await readFile(join(dist,'robots.txt'),'utf8'))));
+
+const {verifyGoogleIntegration}=await import('./verify-google-integration.js');
+const googleDashboard=JSON.parse(await readFile(join(root,'analytics','gsc-ga4-dashboard.json'),'utf8'));
+console.log('Google integration content checks: '+JSON.stringify(verifyGoogleIntegration({html:indexHtml,adsTxt:await readFile(join(dist,'ads.txt'),'utf8'),sitemap,robots:await readFile(join(dist,'robots.txt'),'utf8')},googleDashboard.sources.google_analytics_4.measurement_id)));
