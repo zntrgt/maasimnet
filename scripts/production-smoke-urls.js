@@ -43,6 +43,8 @@ const urls = [
   'https://maasim.net/2021-maas-hesaplama/',
   'https://maasim.net/2020-maas-hesaplama/',
   'https://maasim.net/sitemap.xml',
+  'https://maasim.net/robots.txt',
+  'https://maasim.net/llms.txt',
   ...preferred.map((post) => `https://maasim.net${blogRoute(post)}`)
 ];
 
