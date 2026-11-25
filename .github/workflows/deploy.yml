@@ -139,6 +139,7 @@ jobs:
               "${url}?integration_check=${DEPLOY_SHA}" -o "$check_dir/$file"
           done
           node scripts/verify-google-integration.js "$check_dir"
+          node scripts/audit-gsc-coverage.js --live
 
       - name: Production cache and security header smoke test
         id: headers
