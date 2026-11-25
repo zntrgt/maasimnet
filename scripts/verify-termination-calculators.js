@@ -69,3 +69,8 @@ const severancePage=await readFile(join(dist,'kidem-tazminati-hesaplama','index.
 for(const token of ['64.948,77 TL','73.729,87 TL','data-result="severance-ceiling-period"','toplam hizmet günü / 365','2027 Ocak–Haziran kıdem tazminatı tavanı','https://www.csgb.gov.tr/yayinlar/calisma-hayati-istatistikleri-e-bulteni/eylul-2026/ucret-ve-sendikal-istatistikler.html','Tavan verisi kontrolü'])assert.ok(severancePage.includes(token),'A9 eksik: '+token);
 assert.ok(!severancePage.includes('tam yıl + ay / 12 + gün / 365'),'Eski formül açıklaması kalmış');
 assert.ok(ui.includes('result.ceilingPeriod'));
+
+const netSeverance=await readFile(join(dist,'net-maastan-kidem-tazminati-hesaplama','index.html'),'utf8');
+for(const token of ['id="ns-form"','id="ns-prior"','id="ns-month"','id="ns-net-sev"','id="ns-converted"','id="ns-cap"','"@type":"WebApplication"','"@type":"FAQPage"','/assets/net-salary-severance-calculator.js','https://maasim.net/net-maastan-kidem-tazminati-hesaplama/','73.729,87 TL'])assert.ok(netSeverance.includes(token),'A10 eksik: '+token);
+const netSeveranceJs=await readFile(join(dist,'assets','net-salary-severance-engine.js'),'utf8');
+assert.ok(netSeveranceJs.includes('calculatePayrollYear')&&netSeveranceJs.includes('calculateSeverance'));

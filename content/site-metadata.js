@@ -19,6 +19,7 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
+  '/net-maastan-kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: '2026-11-25' }),
   '/vergi-dilimi-hesaplama/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/isveren-maliyeti-hesaplama/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/2027-maas-hesaplama/': Object.freeze({ publishedAt: '2026-07-30', modifiedAt: DATA_2027.checkedAt, reviewedAt: DATA_2027.checkedAt }),
@@ -132,6 +133,7 @@ export const GEO_CONTENT_ROUTES = Object.freeze([
 const GEO_CONTENT_MODIFIED_AT = '2026-11-25';
 
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
+  '/net-maastan-kidem-tazminati-hesaplama/',
   '/vergi-dilimi-hesaplama/',
   '/isveren-maliyeti-hesaplama/',
   '/veriler/',
