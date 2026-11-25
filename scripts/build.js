@@ -20,6 +20,7 @@ import { addEmployerCostCalculator } from './add-employer-cost-calculator.js';
 import { addAnnualDataHub } from './add-annual-data-hub.js';
 import { apply2027QueryOwnership } from './apply-2027-query-ownership.js';
 import { addOfferComparison } from './add-offer-comparison.js';
+import { addDailyWage } from './add-daily-wage.js';
 import { addTemporaryBenefit } from './add-temporary-benefit.js';
 import { addNetSalarySeverance } from './add-net-salary-severance.js';
 import { addTerminationCalculators } from './add-termination-calculators.js';
@@ -94,7 +95,7 @@ await mkdir(assetsDir, { recursive: true });
 for (const file of [
   'app.js','data-2026.js','parameters-2026.js','payroll-engine.js','mobile-payroll-view.js',
   'calculator-actions.js','calculator-analytics.js','money-input.js','payroll-change-reasons.js','contact-form.js',
-  'tax-bracket-engine.js','tax-bracket-calculator.js','employer-cost-engine.js','employer-cost-calculator.js','estimate-2027.js','data-2027.js','offer-comparison.js','temporary-benefit-engine.js','temporary-benefit-calculator.js','net-salary-severance-engine.js','net-salary-severance-calculator.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
+  'tax-bracket-engine.js','tax-bracket-calculator.js','employer-cost-engine.js','employer-cost-calculator.js','estimate-2027.js','data-2027.js','offer-comparison.js','daily-wage-engine.js','daily-wage-calculator.js','temporary-benefit-engine.js','temporary-benefit-calculator.js','net-salary-severance-engine.js','net-salary-severance-calculator.js','termination-engine.js','termination-calculators.js','termination-calculators.css',
   'unemployment-engine.js','unemployment-calculator.js','unemployment-calculator.css',
   'retirement-engine.js','emadder-scenario.js','retirement-calculator.js','retirement-calculator.css',
   'retired-worker-engine.js','rw-calculator.js','rw-calculator.css',
@@ -129,6 +130,7 @@ await addOfferComparison(distDir);
 const terminationResult = await addTerminationCalculators(distDir);
 await addNetSalarySeverance(distDir);
 await addTemporaryBenefit(distDir);
+await addDailyWage(distDir);
 const unemploymentResult = await addUnemploymentCalculator(distDir);
 await addRetirementCalculator(distDir);
 await addRetiredWorkerCalculator(distDir);

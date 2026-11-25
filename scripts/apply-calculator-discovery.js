@@ -6,6 +6,7 @@ const MARKER = 'data-calculator-discovery="v1"';
 
 const TOOL_CANDIDATES = Object.freeze([
   { path: '/', title: 'Maaş Hesaplama 2026', description: 'Brütten nete ve netten brüte maaşı 12 aylık vergi ve SGK akışıyla hesapla.', group: 'salary', keywords: ['maaş hesaplama', 'brütten nete', 'netten brüte'] },
+  { path: '/gunluk-ucret-hesaplama/', title: 'Günlük ve Saatlik Ücret Hesaplama', description: 'Aylık brüt veya net ücretin 30 gün ve 225 saat kabulüyle günlük ve saatlik karşılığını gör.', group: 'salary', keywords: ['günlük ücret hesaplama','saatlik ücret hesaplama'] },
   { path: '/maas-zam-hesaplama/', title: 'Maaş Zam Hesaplama', description: 'Eski maaş, yeni maaş veya zam oranından ikisini gir; üçüncü değeri ve aylık-yıllık farkı hesapla.', group: 'salary', keywords: ['maaş zam hesaplama', 'yüzde zam hesaplama maaş', 'maaşım yüzde kaç arttı', 'zamlı maaş'] },
   { path: '/asgari-ucret-hesaplama/', title: 'Asgari Ücret Hesaplama 2026', description: '2026 brüt/net asgari ücreti, çalışan kesintilerini ve günlük-saatlik karşılıkları gör.', group: 'salary', keywords: ['asgari ücret hesaplama', 'net asgari ücret', 'brüt asgari ücret'] },
   { path: '/tazminat-hesaplama/', title: 'Kıdem ve İhbar Tazminatı Hesaplama', description: 'Kıdem ve ihbar tazminatını aynı ekranda ayrı ayrı ve toplam olarak hesapla.', group: 'termination', keywords: ['tazminat hesaplama', 'kıdem ihbar hesaplama'] },

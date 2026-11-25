@@ -27,6 +27,7 @@ const urls = [
   'https://maasim.net/net-maastan-kidem-tazminati-hesaplama/',
   'https://maasim.net/ihbar-tazminati-hesaplama/',
   'https://maasim.net/issizlik-maasi-hesaplama/',
+  'https://maasim.net/gunluk-ucret-hesaplama/',
   'https://maasim.net/is-goremezlik-odenegi-hesaplama/',
   'https://maasim.net/emeklilik-hesaplama/',
   'https://maasim.net/emekli-zammi-hesaplama/',
