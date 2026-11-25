@@ -98,7 +98,6 @@ export async function auditTechnicalSeo(dist,{repair=false}={}){
  if(repair)await writeFile(join(dist,'llms.txt'),llmsText,'utf8');
  else if(await readFile(join(dist,'llms.txt'),'utf8')!==llmsText)errors.push('llms.txt son sitemap ve title listesiyle uyuşmuyor');
  const report={sitemapUrls:urls.size,checkedTitles:titles.size,breadcrumbPages,breadcrumbAdded,faqPages,llmsLinks:linked.size,errors,warnings};
- if(repair)await writeFile(join(dist,'technical-seo-report.json'),JSON.stringify(report,null,2)+'\n','utf8');
  console.log('A7 teknik SEO: '+JSON.stringify(report));
  if(errors.length)throw new Error(errors.join('\n'));
  return report;
