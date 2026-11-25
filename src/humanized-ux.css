@@ -63,6 +63,6 @@ body[data-humanized-ux="v1"] .metric-hero #stat-avg-net{overflow-wrap:anywhere;m
 @media(max-width:700px){body[data-humanized-ux="v1"] .metric-hero #stat-hero-gross{font-size:clamp(2.45rem,12vw,3.35rem)!important}}
 
 /* A16: do not show a result-specific disclaimer before a committed calculation. */
-.calculation-result-trust{display:none;font-size:12px;line-height:1.55;margin-top:10px;color:#475569;overflow-wrap:anywhere}
+.calculation-result-trust{display:none;font-size:12px;line-height:1.55;margin-top:10px;color:#e2e8f0;overflow-wrap:anywhere}
 body[data-calculation-committed="true"] .metric-hero.has-human-result .calculation-result-trust{display:block}
 .calculation-result-trust a{color:inherit;text-decoration:underline;text-underline-offset:2px}
