@@ -18,7 +18,7 @@ export function factBlock(topic) {
   const id = `official-facts-${topic.key}`;
   const cards = topic.cards.map((card) => `<div><dt>${esc(card.label)}</dt><dd>${esc(card.value)}</dd>${card.note ? `<dd class="official-facts__note">${esc(card.note)}</dd>` : ''}</div>`).join('');
   const sources = topic.sources.map((source) => `<a href="${esc(source.url)}" rel="noopener noreferrer">${esc(source.institution)} – ${esc(source.documentTitle)}</a> (${esc(source.legalBasis)})`).join('; ');
-  return `<section class="official-facts" ${MARKER}="${topic.key}" aria-labelledby="${id}"><h2 id="${id}">Resmî 2026 değerleri</h2><p class="official-facts__answer">${esc(topic.answer)}</p><dl class="official-facts__grid">${cards}</dl><p class="official-facts__source">Kaynak: ${sources}. Son mevzuat kontrolü: <time datetime="${topic.reviewedAt || OFFICIAL_FACTS_CHECKED_AT}">${formatDateTr(topic.reviewedAt || OFFICIAL_FACTS_CHECKED_AT)}</time>.</p></section>`;
+  return `<section class="official-facts" ${MARKER}="${topic.key}" aria-labelledby="${id}"><h2 id="${id}">Resmî 2026 değerleri</h2><p class="official-facts__answer">${esc(topic.answer)}</p><dl class="official-facts__grid">${cards}</dl><p class="official-facts__source">Kaynak: ${sources}. ${topic.reviewedAt ? 'Tavan verisi kontrolü' : 'Son mevzuat kontrolü'}: <time datetime="${topic.reviewedAt || OFFICIAL_FACTS_CHECKED_AT}">${formatDateTr(topic.reviewedAt || OFFICIAL_FACTS_CHECKED_AT)}</time>.</p></section>`;
 }
 
 export function factDataset(topic) {
