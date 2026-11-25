@@ -135,3 +135,9 @@ for (const route of ['veriler', 'veriler/2027']) {
 const annualHtml = await readFile(join(dist, 'veriler/2027/index.html'), 'utf8');
 assert.ok(annualHtml.includes('[TAHMİN]') && annualHtml.includes(DATA_2027.revaluation.sourceUrl));
 assert.ok((await readFile(join(dist,'llms.txt'),'utf8')).includes('https://maasim.net/veriler/2027/'));
+
+const taxHtml = await readFile(join(dist,'vergi-dilimi-hesaplama/index.html'),'utf8');
+for (const token of ['id="tax-bracket-form"','id="tax-prior"','id="tax-start-month"','id="tax-month-body"','id="tax-transition-body"','"@type":"WebApplication"','"@type":"FAQPage"','https://gib.gov.tr/mevzuat/kanun/433/madde/6937','istisna öncesi','/assets/tax-bracket-calculator.js']) assert.ok(taxHtml.includes(token),'Vergi dilimi sayfası eksik: '+token);
+assert.ok(sitemap.includes('<loc>https://maasim.net/vergi-dilimi-hesaplama/</loc>'));
+await access(join(dist,'assets/tax-bracket-engine.js'));
+await access(join(dist,'assets/tax-bracket-calculator.js'));
