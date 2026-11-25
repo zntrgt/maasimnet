@@ -71,9 +71,10 @@ function buildMetricHierarchy(metricsBlock) {
       </details>
     </div>
     <h3 id="stat-avg-net">0,00 ₺</h3>
+    <p id="stat-hero-gross" hidden aria-live="polite">—</p>
     <p id="stat-avg-net-context">Bu maaşla yıl ortalaması net 0,00 ₺, ilk ay 0,00 ₺.</p>
   </article>
-  <details class="secondary-metrics" open>
+  <details class="secondary-metrics">
     <summary>
       <span class="secondary-metrics__heading">
         <strong>Detaylı maaş özeti</strong>
@@ -153,6 +154,7 @@ function togglePayrollDetail(monthIndex) {`
 
   csvButton.disabled = !hasValidResult;
   csvButton.setAttribute('aria-disabled', String(!hasValidResult));
+  document.getElementById('stat-avg-net-context').dataset.januaryNet = formatCurrency(januaryNet);
   document.getElementById('stat-avg-net-context').textContent = \`Bu maaşla yıl ortalaması net \${formatCurrency(averageNet)}, ilk ay \${formatCurrency(januaryNet)}.\`;
   document.getElementById('representative-gross-value').textContent = formatCurrency(averageGross);
   document.getElementById('representative-gross-note').textContent = \`Bu neti tutmak için ortalama brüt yaklaşık \${formatCurrency(averageGross)}; aylara göre değişir.\`;`
