@@ -1,5 +1,6 @@
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
+import { DATA_2026 } from '../src/data-2026.js';
 import { formatSiteDateTr, getPageMetadata, SITE_METADATA, STANDARD_FRESHNESS_PATHS } from '../content/site-metadata.js';
 
 async function walkHtml(dir, output = []) {
@@ -108,7 +109,7 @@ function applyStandardFreshness(html, metadata) {
   if (metadata.path === '/') {
     const homeBlock = /<aside\b[^>]*id="home-freshness"[^>]*>[\s\S]*?<\/aside>/i;
     if (!homeBlock.test(html)) throw new Error('Ana sayfa güncellik alanı bulunamadı.');
-    return html.replace(homeBlock, old => old.replace(/<dl\b[^>]*>[\s\S]*?<\/dl>/i, `<dl class="grid grid-cols-1 md:grid-cols-3 gap-4">${fields}<div><dt>Geçerlilik dönemi</dt><dd>1 Ocak–31 Aralık 2026</dd></div><div><dt>Sürüm</dt><dd>${SITE_METADATA.releaseVersion}</dd></div></dl>`).replace('id="home-freshness"', 'id="home-freshness" data-standard-freshness="v1"'));
+    return html.replace(homeBlock, old => old.replace(/<dl\b[^>]*>[\s\S]*?<\/dl>/i, `<dl class="grid grid-cols-1 md:grid-cols-3 gap-4">${fields}<div><dt>Geçerlilik dönemi</dt><dd>1 Ocak–31 Aralık 2026</dd></div><div><dt>Hesaplama motoru</dt><dd>${DATA_2026.engineVersion}</dd></div><div><dt>Sürüm</dt><dd>${SITE_METADATA.releaseVersion}</dd></div></dl>`).replace('id="home-freshness"', 'id="home-freshness" data-standard-freshness="v1"'));
   }
   if (metadata.path === '/2027-maas-hesaplama/') {
     const old = /<div class="estimate-freshness">[\s\S]*?<\/div>/;
