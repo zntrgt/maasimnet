@@ -11,11 +11,11 @@ export const SITE_METADATA = Object.freeze({
   origin: 'https://maasim.net',
   defaultPublishedAt: '2026-07-29',
   defaultModifiedAt: '2026-07-29',
-  releaseModifiedAt: '2026-09-04',
+  releaseModifiedAt: '2026-11-25',
   blogReviewedAt: '2026-07-31',
   payrollDataReviewedAt: DATA_2026.checkedAt,
   historicalPayrollReviewedAt: HISTORICAL_PAYROLL_CHECKED_AT,
-  releaseVersion: '1.21.0-historical-brutten-nete'
+  releaseVersion: '1.22.0-annual-data-calculators'
 });
 
 const PAGE_OVERRIDES = Object.freeze({
@@ -40,7 +40,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/blog/prim-ikramiye-net-maasi-neden-dusurur/': Object.freeze({ modifiedAt: '2026-10-10' }),
   '/100000-brut-maas-hesaplama/': Object.freeze({ modifiedAt: '2026-09-17' }),
   '/blog/100000-tl-brut-maas-neti-2026/': Object.freeze({ modifiedAt: '2026-09-17' }),
-  '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-09-17' }),
+  '/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: '2026-11-25' }),
   '/hesaplama-araclari/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/kademeli-emeklilik/': Object.freeze({ publishedAt: '2026-09-18', modifiedAt: '2026-11-24' }),
   '/blog/2027-maas-zammi-beklentileri/': Object.freeze({ modifiedAt: '2026-10-10', reviewedAt: '2026-10-10' }),
@@ -67,7 +67,7 @@ const PAGE_OVERRIDES = Object.freeze({
   '/fazla-mesai-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/yillik-izin-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/asgari-ucret-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-10-10' }),
-  '/maas-zam-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
+  '/maas-zam-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04', reviewedAt: '2026-09-04' }),
   '/resmi-tatil-mesai-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/hafta-tatili-ucreti-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
   '/part-time-maas-hesaplama/': Object.freeze({ publishedAt: '2026-09-04', modifiedAt: '2026-09-04' }),
@@ -84,6 +84,12 @@ const PAGE_OVERRIDES = Object.freeze({
   '/veriler/2026/vergi-dilimleri/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt }),
   '/veriler/2026/sgk-tavani/': Object.freeze({ publishedAt: '2026-07-29', modifiedAt: DATA_2026.checkedAt })
 });
+
+// Bu sayfaların yayın ve güncelleme tarihleri kaynak bazında doğrulanmıştır.
+export const STANDARD_FRESHNESS_PATHS = Object.freeze([
+  '/', '/2027-maas-hesaplama/', '/veriler/', '/veriler/2027/',
+  '/isveren-maliyeti-hesaplama/', '/vergi-dilimi-hesaplama/'
+]);
 
 export const INDEXABLE_STATIC_PATHS = Object.freeze([
   '/vergi-dilimi-hesaplama/',
