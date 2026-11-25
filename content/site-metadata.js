@@ -19,6 +19,8 @@ export const SITE_METADATA = Object.freeze({
 });
 
 const PAGE_OVERRIDES = Object.freeze({
+  '/senaryolar/': Object.freeze({ modifiedAt: '2026-11-25' }),
+  '/temmuz-zam-senaryosu/': Object.freeze({ modifiedAt: '2026-11-25' }),
   '/gunluk-ucret-hesaplama/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/is-goremezlik-odenegi-hesaplama/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: '2026-11-25', reviewedAt: '2026-11-25' }),
   '/net-maastan-kidem-tazminati-hesaplama/': Object.freeze({ publishedAt: '2026-11-25', modifiedAt: '2026-11-25' }),
