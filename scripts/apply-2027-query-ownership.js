@@ -58,6 +58,7 @@ export async function apply2027QueryOwnership(dist) {
     /<aside class="home-2027-estimate-cta">[\s\S]*?<\/aside>/i,
     `<aside class="home-2027-estimate-cta" data-search-supports="2027-maas-hesaplama"><strong>2027 ücret senaryolarını karşılaştır</strong><p>2026 maaşına %27, %30 veya %35 zam gelirse ne kadar alırsın? İstersen doğrudan 2027 maaş beklentini gir.</p><a href="${ROUTE}">2027 brütten nete maaş hesaplama →</a><small>Tahmin aracı resmî 2027 bordrosu değildir.</small></aside>`
   );
+  // Keep a single CTA; a late build pass positions it above the calculator.
   await writeFile(homePath, home, 'utf8');
 
   console.log('2027 arama niyeti sahipliği dedicated hesaplayıcı URL üzerinde güçlendirildi.');
