@@ -4,7 +4,7 @@ import { join } from 'node:path';
 const ROUTE = '/2027-maas-hesaplama/';
 const TITLE = '2027 Brütten Nete Maaş Hesaplama | Netten Brüte Tahmin | Maaşım.net';
 const H1 = '2027 Brütten Nete Maaş Hesaplama ve Netten Brüte Tahmin';
-const DESCRIPTION = '2027 brütten nete maaş hesaplama aracıyla tahmini net maaşınızı görün; netten brüte hesaplayın, asgari ücret, SGK tavanı ve vergi dilimi varsayımlarını değiştirin.';
+const DESCRIPTION = '2026 maaşınla %27, %30, %35 zam senaryolarını karşılaştır veya 2027 brüt/net maaş beklentini gir. Tahmini vergi ve SGK varsayımlarıyla 12 aylık bordronu gör.';
 
 function patchJsonLd(html) {
   return html.replace(/<script\b([^>]*)type=["']application\/ld\+json["']([^>]*)>([\s\S]*?)<\/script>/gi, (full, before, after, json) => {
@@ -56,7 +56,7 @@ export async function apply2027QueryOwnership(dist) {
   let home = await readFile(homePath, 'utf8');
   home = home.replace(
     /<aside class="home-2027-estimate-cta">[\s\S]*?<\/aside>/i,
-    `<aside class="home-2027-estimate-cta" data-search-supports="2027-maas-hesaplama"><strong>2027 ücret senaryolarını karşılaştır</strong><p>2027 bordro parametreleri henüz kesinleşmedi. Kendi varsayımlarını girerek farklı ücret senaryolarını karşılaştır.</p><a href="${ROUTE}">2027 brütten nete maaş hesaplama →</a><small>Tahmin aracı resmî 2027 bordrosu değildir.</small></aside>`
+    `<aside class="home-2027-estimate-cta" data-search-supports="2027-maas-hesaplama"><strong>2027 ücret senaryolarını karşılaştır</strong><p>2026 maaşına %27, %30 veya %35 zam gelirse ne kadar alırsın? İstersen doğrudan 2027 maaş beklentini gir.</p><a href="${ROUTE}">2027 brütten nete maaş hesaplama →</a><small>Tahmin aracı resmî 2027 bordrosu değildir.</small></aside>`
   );
   await writeFile(homePath, home, 'utf8');
 
