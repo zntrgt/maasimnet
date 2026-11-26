@@ -63,3 +63,17 @@ export async function apply2027QueryOwnership(dist) {
 
   console.log('2027 arama niyeti sahipliği dedicated hesaplayıcı URL üzerinde güçlendirildi.');
 }
+
+export async function promote2027HomeLink(dist){
+  const path=join(dist,'index.html');
+  let html=await readFile(path,'utf8');
+  const pattern=/<aside class="home-2027-estimate-cta"[^>]*>[\s\S]*?<\/aside>/i;
+  const cta=html.match(pattern)?.[0];
+  if(!cta)throw new Error('2027 home CTA missing');
+  html=html.replace(pattern,'');
+  const hero=/<header class="enterprise-hero"[^>]*>[\s\S]*?<\/header>/i;
+  if(!hero.test(html))throw new Error('Home hero missing');
+  html=html.replace(hero,m=>m+cta);
+  html=html.replace(/<\/head>/i,'<style data-home-2027-priority>.home-2027-estimate-cta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 16px;margin:12px auto 16px;border-width:1px;border-radius:14px}.home-2027-estimate-cta strong{font-size:16px;grid-column:1}.home-2027-estimate-cta p{font-size:13px;margin:0;grid-column:1}.home-2027-estimate-cta a{grid-column:2;grid-row:1/4;justify-content:center;text-align:center;font-size:13px;white-space:normal}.home-2027-estimate-cta small{grid-column:1;margin:0;font-size:11px}@media(max-width:600px){.home-2027-estimate-cta{grid-template-columns:1fr;gap:6px;margin:8px 0 12px}.home-2027-estimate-cta a{grid-column:1;grid-row:auto;min-height:42px;align-items:center}.home-2027-estimate-cta small{grid-row:3}}</style></head>');
+  await writeFile(path,html,'utf8');
+}
