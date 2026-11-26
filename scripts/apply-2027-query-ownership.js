@@ -4,7 +4,7 @@ import { join } from 'node:path';
 const ROUTE = '/2027-maas-hesaplama/';
 const TITLE = '2027 Brütten Nete Maaş Hesaplama | Netten Brüte Tahmin | Maaşım.net';
 const H1 = '2027 Brütten Nete Maaş Hesaplama ve Netten Brüte Tahmin';
-const DESCRIPTION = '2027 brütten nete maaş hesaplama aracıyla tahmini net maaşınızı görün; netten brüte hesaplayın, asgari ücret, SGK tavanı ve vergi dilimi varsayımlarını değiştirin.';
+const DESCRIPTION = '2026 maaşına %27, %30 veya %35 zam gelirse 2027 netin ne olur? Brüt/net beklentini gir, tahmini SGK ve vergiyle 12 aylık maaşını karşılaştır.';
 
 function patchJsonLd(html) {
   return html.replace(/<script\b([^>]*)type=["']application\/ld\+json["']([^>]*)>([\s\S]*?)<\/script>/gi, (full, before, after, json) => {
@@ -56,9 +56,24 @@ export async function apply2027QueryOwnership(dist) {
   let home = await readFile(homePath, 'utf8');
   home = home.replace(
     /<aside class="home-2027-estimate-cta">[\s\S]*?<\/aside>/i,
-    `<aside class="home-2027-estimate-cta" data-search-supports="2027-maas-hesaplama"><strong>2027 ücret senaryolarını karşılaştır</strong><p>2027 bordro parametreleri henüz kesinleşmedi. Kendi varsayımlarını girerek farklı ücret senaryolarını karşılaştır.</p><a href="${ROUTE}">2027 brütten nete maaş hesaplama →</a><small>Tahmin aracı resmî 2027 bordrosu değildir.</small></aside>`
+    `<aside class="home-2027-estimate-cta" data-search-supports="2027-maas-hesaplama"><strong>2027 ücret senaryolarını karşılaştır</strong><p>2026 maaşına %27, %30 veya %35 zam gelirse ne kadar alırsın? İstersen doğrudan 2027 maaş beklentini gir.</p><a href="${ROUTE}">2027 brütten nete maaş hesaplama →</a><small>Tahmin aracı resmî 2027 bordrosu değildir.</small></aside>`
   );
+  // Keep a single CTA; a late build pass positions it above the calculator.
   await writeFile(homePath, home, 'utf8');
 
   console.log('2027 arama niyeti sahipliği dedicated hesaplayıcı URL üzerinde güçlendirildi.');
+}
+
+export async function promote2027HomeLink(dist){
+  const path=join(dist,'index.html');
+  let html=await readFile(path,'utf8');
+  const pattern=/<aside class="home-2027-estimate-cta"[^>]*>[\s\S]*?<\/aside>/i;
+  const cta=html.match(pattern)?.[0];
+  if(!cta)throw new Error('2027 home CTA missing');
+  html=html.replace(pattern,'');
+  const hero=/<header class="enterprise-hero"[^>]*>[\s\S]*?<\/header>/i;
+  if(!hero.test(html))throw new Error('Home hero missing');
+  html=html.replace(hero,m=>m+cta);
+  html=html.replace(/<\/head>/i,'<style data-home-2027-priority>.home-2027-estimate-cta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 16px;margin:12px auto 16px;border-width:1px;border-radius:14px}.home-2027-estimate-cta strong{font-size:16px;grid-column:1}.home-2027-estimate-cta p{font-size:13px;margin:0;grid-column:1}.home-2027-estimate-cta a{grid-column:2;grid-row:1/4;justify-content:center;text-align:center;font-size:13px;white-space:normal}.home-2027-estimate-cta small{grid-column:1;margin:0;font-size:11px}@media(max-width:600px){.home-2027-estimate-cta{grid-template-columns:1fr;gap:6px;margin:8px 0 12px}.home-2027-estimate-cta a{grid-column:1;grid-row:auto;min-height:42px;align-items:center}.home-2027-estimate-cta small{grid-row:3}}</style></head>');
+  await writeFile(path,html,'utf8');
 }

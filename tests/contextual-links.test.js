@@ -6,7 +6,9 @@ test('A8 only adds contextual links missing from main; navigation and script str
  const html='<html><head></head><body><nav><a href="/veriler/2027/">Header</a></nav><main><h1>2027 maaş</h1><p><a href="/blog/2027-maas-zammi-beklentileri/">Rehber</a></p><script>const a=\'<a href="/veriler/2027/">Script</a>\';</script></main></body></html>';
  const route='/2027-maas-hesaplama/';
  const r=addMissingContextLinks(html,route,CONTEXTUAL_LINKS[route]);
- assert.equal(r.added,1);
+ assert.equal(r.added,3);
+ assert.ok(internalAnchorTargets(r.html,route).has('/maas-zam-hesaplama/'));
+ assert.ok(internalAnchorTargets(r.html,route).has('/'));
  assert.match(r.html,/<a href="\/veriler\/2027\/">2027 bordro verilerinin açıklanma durumu<\/a>/);
  assert.equal(addMissingContextLinks(r.html,route,CONTEXTUAL_LINKS[route]).added,0);
 });
