@@ -4,7 +4,7 @@ import { join } from 'node:path';
 const ROUTE = '/2027-maas-hesaplama/';
 const TITLE = '2027 Brütten Nete Maaş Hesaplama | Netten Brüte Tahmin | Maaşım.net';
 const H1 = '2027 Brütten Nete Maaş Hesaplama ve Netten Brüte Tahmin';
-const DESCRIPTION = '2026 maaşınla %27, %30, %35 zam senaryolarını karşılaştır veya 2027 brüt/net maaş beklentini gir. Tahmini vergi ve SGK varsayımlarıyla 12 aylık bordronu gör.';
+const DESCRIPTION = '2026 maaşına %27, %30 veya %35 zam gelirse 2027 netin ne olur? Brüt/net beklentini gir, tahmini SGK ve vergiyle 12 aylık maaşını karşılaştır.';
 
 function patchJsonLd(html) {
   return html.replace(/<script\b([^>]*)type=["']application\/ld\+json["']([^>]*)>([\s\S]*?)<\/script>/gi, (full, before, after, json) => {
