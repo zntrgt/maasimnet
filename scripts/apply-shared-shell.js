@@ -12,7 +12,7 @@ const header = `<nav class="site-header" data-site-header><div class="site-heade
 <a href="/tazminat-hesaplama/">Kıdem &amp; İhbar</a>
 <a href="/veriler/">Veri Merkezi</a><a href="/2027-maas-hesaplama/" class="site-nav__year">2027 Maaş Tahmini</a>
 <a href="/veriler/2026/">2026 Verileri</a>
-<a href="/sss/">SSS</a></div><a class="site-header__cta" href="/#hesaplayici">Maaş Hesapla</a><button class="site-menu-button" type="button" aria-expanded="false" aria-controls="site-mobile-menu" aria-label="Menüyü aç"><span></span><span></span><span></span></button></div><div class="site-mobile-menu" id="site-mobile-menu" data-nosnippet hidden><a href="/hesaplama-araclari/">Hesaplama Araçları</a>
+<a href="/sss/">SSS</a></div><a class="site-header__cta" href="/#hesaplayici">Maaş Hesapla</a><a class="site-header__year-mobile" href="/2027-maas-hesaplama/">2027 Tahmin</a><button class="site-menu-button" type="button" aria-expanded="false" aria-controls="site-mobile-menu" aria-label="Menüyü aç"><span></span><span></span><span></span></button></div><div class="site-mobile-menu" id="site-mobile-menu" data-nosnippet hidden><a href="/hesaplama-araclari/">Hesaplama Araçları</a>
 <a href="/isveren-maliyeti-hesaplama/">İşveren Maliyeti</a>
 <a href="/tazminat-hesaplama/">Kıdem &amp; İhbar</a>
 <a href="/veriler/">Veri Merkezi</a>
