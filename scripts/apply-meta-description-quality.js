@@ -66,7 +66,7 @@ function trimAtWord(value, max = TARGET_MAX) {
 function routeSpecificDescription(route, h1, current) {
   const fixed = new Map([
     ['/', '2026 brütten nete ve netten brüte maaşınızı; vergi dilimleri, SGK, asgari ücret istisnası ve yıllık bordro etkileriyle Maaşım.net’te hesaplayın.'],
-    ['/2027-maas-hesaplama/', '2027 maaşınızı resmi olmayan tahmin senaryolarıyla brütten nete ve netten brüte hesaplayın; vergi, SGK ve asgari ücret varsayımlarını kendiniz değiştirin.'],
+    ['/2027-maas-hesaplama/', '2026 maaşına %27, %30 veya %35 zam gelirse 2027 netin ne olur? Brüt/net beklentini gir, tahmini SGK ve vergiyle 12 aylık maaşını karşılaştır.'],
     ['/maas-teklifi-karsilastirma/', 'Mevcut maaşınızla yeni iş teklifini yıllık net gelir, prim, yan haklar, işveren maliyeti ve vergi dilimi etkileriyle Maaşım.net’te karşılaştırın.'],
     ['/blog/', 'Maaş, vergi, SGK, yan haklar, iş teklifleri ve çalışma hayatı hakkında güncel, kaynaklı rehberleri ve Maaşım.net hesaplamalarını keşfedin.'],
     ['/sss/', 'Brüt-net maaş, gelir vergisi dilimleri, SGK, işveren maliyeti ve bordro hesaplamalarıyla ilgili sık sorulan soruların güncel yanıtlarını inceleyin.'],
