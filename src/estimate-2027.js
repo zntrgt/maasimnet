@@ -75,9 +75,9 @@ export function compareRaises({salaryTl,mode,parameters,rates=STANDARD_RAISES}){
   const targetKurus=raiseSalaryKurus(base,rateBps);
   const rows=rowsFor(parameters,kurusToTl(targetKurus),mode);
   const summary=summarizePayroll(rows);
-  return {rateBps,targetKurus,rows,summary,netDeltaKurus:summary.annualNetKurus-baseline.annualNetKurus};
+  return {rateBps,targetKurus,rows,summary,belowMinimum:rows.some(row=>row.grossKurus<parameters.minimumGrossKurus),netDeltaKurus:summary.annualNetKurus-baseline.annualNetKurus};
  });
- return {baselineRows,baseline,scenarios};
+ return {baselineRows,baseline,baselineBelowMinimum:baselineRows.some(row=>row.grossKurus<PAYROLL_PARAMETERS_2026.minimumGrossKurus),scenarios};
 }
 const formatRates = (rates) => rates.map((rate) => '%' + (rate / 10000)).join(' → ') || '—';
 
@@ -90,6 +90,10 @@ function render() {
     const parameters = buildParameters();
     let target=salary;
     let rows;
+    const compact=document.getElementById('estimate-compare-summary');
+    const minimumNote=document.getElementById('estimate-minimum-warning');
+    compact.hidden=entryMode!=='raise';
+    minimumNote.hidden=true;
     const comparison=document.getElementById('estimate-compare');
     comparison.hidden=entryMode!=='raise';
     if(entryMode==='raise'){
@@ -105,10 +109,13 @@ function render() {
       target=kurusToTl(selection.targetKurus);
       const baseline=data.baseline;
       const cell=n=>money(kurusToTl(n));
-      const renderRow=(name,rs,ss,delta,active)=>'<tr'+(active?' data-selected="true"':'')+'><th scope="row">'+name+'</th><td>'+cell(ss.averageGrossKurus)+'</td><td>'+cell(rs[0].netKurus)+'</td><td>'+cell(rs[11].netKurus)+'</td><td>'+cell(ss.averageNetKurus)+'</td><td>'+cell(ss.annualNetKurus)+'</td><td>'+ (delta===null?'—':(delta>=0?'+':'−')+cell(Math.abs(delta)))+'</td></tr>';
-      document.getElementById('estimate-compare-body').innerHTML=renderRow('2026 · hesaplanan',data.baselineRows,baseline,null,false)+data.scenarios.map(s=>renderRow('%'+(s.rateBps/100).toLocaleString('tr-TR')+' zam · 2027 tahmin',s.rows,s.summary,s.netDeltaKurus,s===selection)).join('');
+      const deltaPercent=delta=>((delta/baseline.annualNetKurus)*100).toLocaleString('tr-TR',{maximumFractionDigits:2,minimumFractionDigits:2})+'%';
+      const renderRow=(name,rs,ss,delta,active,below)=>'<tr'+(active?' data-selected="true"':'')+'><th scope="row">'+name+(below?' <small class="estimate-below-min">Asgari varsayımın altında</small>':'')+'</th><td>'+cell(ss.averageGrossKurus)+'</td><td>'+cell(rs[0].netKurus)+'</td><td>'+cell(rs[11].netKurus)+'</td><td>'+cell(ss.averageNetKurus)+'</td><td>'+cell(ss.annualNetKurus)+'</td><td>'+ (delta===null?'—':(delta>=0?'+':'−')+cell(Math.abs(delta)))+'</td><td>'+(delta===null?'—':deltaPercent(delta))+'</td></tr>';
+      document.getElementById('estimate-compare-body').innerHTML=renderRow('2026 · hesaplanan',data.baselineRows,baseline,null,false,data.baselineBelowMinimum)+data.scenarios.map(s=>renderRow('%'+(s.rateBps/100).toLocaleString('tr-TR')+' zam · 2027 tahmin',s.rows,s.summary,s.netDeltaKurus,s===selection,s.belowMinimum)).join('');
+      compact.innerHTML=data.scenarios.map(s=>'<article'+(s===selection?' data-selected="true"':'')+'><span>%'+(s.rateBps/100).toLocaleString('tr-TR')+' zam</span><strong>'+cell(s.summary.averageNetKurus)+'</strong><small>Ort. net · '+deltaPercent(s.netDeltaKurus)+' net artış</small>'+(s.belowMinimum?'<small class="estimate-below-min">Asgari varsayımın altında</small>':'')+'</article>').join('');
       document.getElementById('estimate-compare-note').textContent=currentMode==='net'?'Net ücret sabit hedef olarak kabul edilir; zam doğrudan net hedefe uygulanır. Gereken brüt her ay yeniden hesaplanır.':'Brüt zammın nete etkisi 2026 bordrosuyla karşılaştırılır; 2027 vergi varsayımları tüm zam seçeneklerinde aynıdır.';
-    }else rows=rowsFor(parameters,salary);
+    }else {rows=rowsFor(parameters,salary);compact.innerHTML='';}
+    minimumNote.hidden=!rows.some(row=>row.grossKurus<parameters.minimumGrossKurus);
     const summary = summarizePayroll(rows);
     const averageNet = kurusToTl(summary.averageNetKurus);
     const averageGross = kurusToTl(summary.averageGrossKurus);
@@ -148,6 +155,8 @@ function render() {
     for(const id of ['estimate-compare-body','estimate-table-body'])document.getElementById(id).innerHTML='';
     document.getElementById('estimate-assumption-summary').textContent='Geçerli maaş ve varsayımlar gir.';
     document.getElementById('estimate-compare-note').textContent='';
+    document.getElementById('estimate-compare-summary').innerHTML='';
+    document.getElementById('estimate-minimum-warning').hidden=true;
     errorBox.textContent = error.message || 'Tahmin hesaplanamadı.';
     errorBox.hidden = false;
   }
@@ -191,9 +200,15 @@ function applyPreset(name) {
 }
 
 if(typeof document!=='undefined'){
-document.querySelectorAll('[data-estimate-input]').forEach(input=>input.addEventListener('input',render));
+document.querySelectorAll('[data-estimate-input]').forEach(input=>input.addEventListener('input',()=>{
+ if(input.id!=='estimate-salary')document.querySelectorAll('[data-estimate-preset]').forEach(b=>b.setAttribute('aria-pressed','false'));
+ render();
+}));
 document.querySelectorAll('[data-estimate-entry]').forEach(button=>button.addEventListener('click',()=>setEntry(button.dataset.estimateEntry)));
 function selectRaise(rate){
+ if(rate==='custom'&&!document.getElementById('estimate-custom-rate').value.trim()){
+  document.getElementById('estimate-custom-rate').focus();return;
+ }
  selectedRaise=rate;
  document.querySelectorAll('[data-estimate-raise]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.estimateRaise===rate)));
  render();
